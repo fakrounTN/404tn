@@ -1,0 +1,237 @@
+# 404TN Evidence Monitor - Multi-Source Registry Configuration
+sources:
+  - id: tap_en
+    name: Tunis Afrique Presse (EN)
+    domain: tap.info.tn
+    enabled: true
+    collector: tap
+    source_type: news_agency
+    language: en
+    urls:
+      - https://www.tap.info.tn/en
+      - https://www.tap.info.tn/en/portal%20-%20politics
+      - https://www.tap.info.tn/en/portal%20-%20economy
+      - https://www.tap.info.tn/en/Focus-Regions
+    interval_minutes: 60
+    max_items: 25
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: tap_fr
+    name: Tunis Afrique Presse (FR)
+    domain: tap.info.tn
+    enabled: true
+    collector: tap
+    source_type: news_agency
+    language: fr
+    urls:
+      - https://www.tap.info.tn/fr
+      - https://www.tap.info.tn/fr/Portail-Politique
+      - https://www.tap.info.tn/fr/Portail-Economie
+      - https://www.tap.info.tn/fr/Environnement_FR
+    interval_minutes: 60
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: tap_ar
+    name: Tunis Afrique Presse (AR)
+    domain: tap.info.tn
+    enabled: true
+    collector: tap
+    source_type: news_agency
+    language: ar
+    urls:
+      - https://www.tap.info.tn/ar
+    interval_minutes: 60
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: pm_tn
+    name: Presidency of the Government
+    domain: pm.gov.tn
+    enabled: true
+    collector: government
+    source_type: official
+    language: ar
+    urls:
+      - https://pm.gov.tn
+    interval_minutes: 120
+    max_items: 15
+    timeout: 15
+    trust_weight: 1.0
+    priority: 1
+
+  - id: environment_tn
+    name: Ministry of Environment (ANPE)
+    domain: environnement.gov.tn
+    enabled: true
+    collector: environment
+    source_type: official
+    language: fr
+    urls:
+      - https://environnement.gov.tn
+    interval_minutes: 240
+    max_items: 15
+    timeout: 15
+    trust_weight: 1.0
+    priority: 2
+
+  - id: agriculture_tn
+    name: Ministry of Agriculture, Water Resources & Fisheries
+    domain: agriculture.tn
+    enabled: false
+    disabled_reason: "Static placeholder domain with 0 articles; official data monitored via ONAGRI"
+    collector: government
+    source_type: official
+    language: fr
+    urls:
+      - https://agriculture.tn
+    interval_minutes: 120
+    max_items: 15
+    timeout: 10
+    trust_weight: 1.0
+    priority: 1
+
+  - id: onagri
+    name: National Observatory of Agriculture (ONAGRI)
+    domain: onagri.nat.tn
+    enabled: true
+    collector: html
+    source_type: state_agency
+    language: fr
+    urls:
+      - http://www.onagri.nat.tn
+    interval_minutes: 180
+    max_items: 15
+    timeout: 15
+    trust_weight: 0.95
+    priority: 2
+
+  - id: sonede
+    name: National Water Distribution Utility (SONEDE)
+    domain: sonede.com.tn
+    enabled: false
+    disabled_reason: "WAF Access Block ('Acces bloque - SONEDE' HTTP 500); water alerts monitored via ONAGRI/TAP"
+    collector: sonede
+    source_type: state_utility
+    language: fr
+    urls:
+      - http://www.sonede.com.tn
+    interval_minutes: 120
+    max_items: 15
+    timeout: 10
+    trust_weight: 0.95
+    priority: 1
+
+  - id: steg
+    name: Tunisian Company of Electricity and Gas (STEG)
+    domain: steg.com.tn
+    enabled: false
+    disabled_reason: "Network border firewall dropping international TCP SYN packets; monitored via TAP/FTDES"
+    collector: steg
+    source_type: state_utility
+    language: fr
+    urls:
+      - http://www.steg.com.tn
+    interval_minutes: 120
+    max_items: 15
+    timeout: 10
+    trust_weight: 0.95
+    priority: 1
+
+  - id: ins_tn
+    name: National Institute of Statistics (INS)
+    domain: ins.tn
+    enabled: true
+    collector: ins
+    source_type: state_agency
+    language: fr
+    urls:
+      - https://ins.tn
+      - https://ins.tn/fr/publications
+    interval_minutes: 360
+    max_items: 15
+    timeout: 15
+    trust_weight: 0.95
+    priority: 2
+
+  - id: ftdes
+    name: Tunisian Forum for Economic and Social Rights (FTDES)
+    domain: ftdes.net
+    enabled: true
+    collector: independent
+    source_type: ngo
+    language: fr
+    urls:
+      - https://ftdes.net/feed/
+    interval_minutes: 120
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: snjt
+    name: National Union of Tunisian Journalists (SNJT)
+    domain: snjt.org
+    enabled: true
+    collector: html
+    source_type: ngo
+    language: ar
+    urls:
+      - https://snjt.org
+    interval_minutes: 240
+    max_items: 15
+    timeout: 15
+    trust_weight: 0.90
+    priority: 2
+
+  - id: inkyfada
+    name: Inkyfada
+    domain: inkyfada.com
+    enabled: true
+    collector: independent
+    source_type: independent_media
+    language: fr
+    urls:
+      - https://inkyfada.com/fr/feed/
+    interval_minutes: 180
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: nawaat
+    name: Nawaat
+    domain: nawaat.org
+    enabled: true
+    collector: independent
+    source_type: independent_media
+    language: fr
+    urls:
+      - https://nawaat.org/feed/
+    interval_minutes: 180
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.90
+    priority: 1
+
+  - id: pubmed_gabes
+    name: PubMed Biomedical Research on Tunisia / Gabès
+    domain: pubmed.ncbi.nlm.nih.gov
+    enabled: true
+    collector: pubmed
+    source_type: scientific_registry
+    language: en
+    query: Tunisia+AND+(pollution+OR+phosphogypsum+OR+water+OR+Gabes)
+    urls:
+      - https://pubmed.ncbi.nlm.nih.gov
+    interval_minutes: 720
+    max_items: 15
+    timeout: 15
+    trust_weight: 0.95
+    priority: 3

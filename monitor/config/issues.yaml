@@ -1,0 +1,88 @@
+# 404TN Issues Taxonomy
+issues:
+  - slug: water
+    id: "01"
+    title: "Water: Cuts, Restrictions, Infrastructure & Regional Inequality"
+    short_title: "Water"
+    category: "RESOURCE COLLAPSE"
+    core_actors:
+      - "SONEDE"
+      - "Ministry of Agriculture, Hydraulic Resources and Maritime Fisheries"
+      - "Presidency of the Republic"
+    tags: ["water", "drought", "dams", "sonede", "rationing", "salinity", "agriculture"]
+
+  - slug: electricity
+    id: "02"
+    title: "Electricity: Outages, Network Load & Service Reliability"
+    short_title: "Electricity"
+    category: "ENERGY SECURITY"
+    core_actors:
+      - "STEG"
+      - "Ministry of Industry, Mines and Energy"
+      - "Central Bank of Tunisia"
+    tags: ["electricity", "steg", "blackout", "gas_import", "peak_load", "substation"]
+
+  - slug: work
+    id: "03"
+    title: "Work: Unemployment, Wages & Economic Pressure"
+    short_title: "Work"
+    category: "ECONOMIC STAGNATION"
+    core_actors:
+      - "Ministry of Social Affairs"
+      - "Ministry of Economy and Planning"
+      - "INS"
+      - "UGTT"
+    tags: ["employment", "unemployment", "inflation", "wages", "smig", "informal_economy"]
+
+  - slug: migration
+    id: "04"
+    title: "Migration: Tunisians Leaving, African Migration & Border Policy"
+    short_title: "Migration"
+    category: "HUMAN MOBILITY"
+    core_actors:
+      - "Ministry of Interior (National Guard)"
+      - "Ministry of Foreign Affairs"
+      - "European Commission"
+      - "FTDES"
+    sub_files:
+      - id: "migration_tunisians"
+        name: "Tunisian Nationals Leaving"
+      - id: "migration_transit"
+        name: "Sub-Saharan Transit & Encampments"
+    tags: ["migration", "harqa", "mediterranean", "sfax", "el_amra", "national_guard", "unhcr"]
+
+  - slug: public-services
+    id: "05"
+    title: "Public Services: Healthcare, Transport & Municipalities"
+    short_title: "Public Services"
+    category: "CIVIC INFRASTRUCTURE"
+    core_actors:
+      - "Ministry of Health (Pharmacie Centrale)"
+      - "Ministry of Transport (Transtu / SNCFT)"
+      - "Ministry of Interior (Special Delegations)"
+    tags: ["health", "hospitals", "medicine", "transport", "transtu", "sncft", "waste_management"]
+
+  - slug: rights-institutions
+    id: "06"
+    title: "Rights & Institutions: Political Power, Freedoms & Accountability"
+    short_title: "Rights & Institutions"
+    category: "GOVERNANCE & ACCOUNTABILITY"
+    core_actors:
+      - "Presidency of the Republic (Carthage)"
+      - "Ministry of Justice"
+      - "ISIE"
+      - "SNJT"
+      - "ONAT (Bar Association)"
+    tags: ["decree_54", "judiciary", "press_freedom", "constitution_2022", "elections", "carthage"]
+
+  - slug: gabes
+    id: "GABÈS"
+    title: "Gabès: Industrial Phosphogypsum Pollution & Environmental Debt"
+    short_title: "Gabès Flagship"
+    category: "ENVIRONMENTAL INVESTIGATION"
+    core_actors:
+      - "Groupe Chimique Tunisien (GCT)"
+      - "Ministry of Environment (ANPE)"
+      - "Ministry of Industry"
+      - "Presidency of the Republic"
+    tags: ["gabes", "phosphogypsum", "pollution", "gct", "marine_dead_zone", "chatt_essalam", "public_health"]

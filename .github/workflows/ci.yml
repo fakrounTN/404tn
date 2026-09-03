@@ -1,0 +1,67 @@
+name: 404TN Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  frontend:
+    name: Frontend Build & Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Frontend Dependencies
+        run: npm ci || npm install
+
+      - name: Build Static Production Distribution
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.404tn.com/api
+          VITE_SITE_URL: https://404tn.com
+
+      - name: Verify Distribution Artifacts
+        run: |
+          test -f dist/index.html
+          test -f dist/robots.txt
+          test -f dist/sitemap.xml
+          test -f dist/404.html
+
+  backend:
+    name: Backend Test Suite & Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: 'pip'
+
+      - name: Install Backend Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r monitor/requirements.txt
+
+      - name: Run Unit Tests (17 Test Fixtures)
+        run: python monitor/tests/run_tests.py
+
+      - name: Test Database Schema Initialization & Backup
+        run: |
+          python monitor/app/database.py
+          python monitor/scripts/backup_db.py
+
+      - name: Verify Secret Hygiene
+        run: |
+          ! grep -rn "cb1_2tu8" monitor/ || exit 1

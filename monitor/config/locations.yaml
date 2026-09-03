@@ -1,0 +1,57 @@
+# 404TN Geographic Locations Registry
+locations:
+  - slug: bizerte
+    name: Bizerte
+    lat: 37.2744
+    lon: 9.8739
+    type: port_city
+    governorate: Bizerte
+    role: "Grain storage, northern naval/maritime base, Ichkeul basin"
+
+  - slug: tunis
+    name: Tunis
+    lat: 36.8065
+    lon: 10.1815
+    type: national_capital
+    governorate: Tunis
+    role: "National administrative, presidential (Carthage) and institutional core"
+
+  - slug: kasserine
+    name: Kasserine
+    lat: 35.1676
+    lon: 8.8365
+    type: interior_center
+    governorate: Kasserine
+    role: "Hydraulic stress, dry taps unrest, Alfa pulp industrial zone"
+
+  - slug: gafsa
+    name: Gafsa
+    lat: 34.4250
+    lon: 8.7842
+    type: mining_basin
+    governorate: Gafsa
+    role: "Phosphate mining extraction basin (CPG), Metlaoui-Mdhilla rail axis"
+
+  - slug: sfax
+    name: Sfax
+    lat: 34.7406
+    lon: 10.7603
+    type: coastal_metropolis
+    governorate: Sfax
+    role: "Migration departure focal point, El Amra rural transit zone, major commercial port"
+
+  - slug: gabes
+    name: Gabès
+    lat: 33.8815
+    lon: 10.0982
+    type: flagship_active_file
+    governorate: Gabès
+    role: "GCT chemical processing complex, phosphogypsum marine discharge, maritime oasis"
+
+  - slug: zarzis
+    name: Zarzis
+    lat: 33.5040
+    lon: 11.1122
+    type: border_coastal_hub
+    governorate: Medenine
+    role: "Maritime search and rescue buffer, Ben Guerdane border corridor"

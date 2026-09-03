@@ -1,0 +1,36 @@
+# 404TN Semantic Keyword Rules
+keywords:
+  water:
+    ar: ["ماء", "صونيد", "انقطاع الماء", "سدود", "جفاف", "عطش", "مياه الشرب"]
+    fr: ["eau", "sonede", "coupure d'eau", "barrage", "sécheresse", "stress hydrique"]
+    en: ["water", "sonede", "water cut", "dam capacity", "drought", "drinking water"]
+
+  electricity:
+    ar: ["كهرباء", "ستاغ", "انقطاع التيار", "الغاز الجزائري", "توليد الطاقة"]
+    fr: ["électricité", "steg", "coupure de courant", "délestage", "gaz algérien"]
+    en: ["electricity", "steg", "blackout", "load shedding", "power grid"]
+
+  work:
+    ar: ["بطالة", "أجور", "تشغيل", "التضخم", "القدرة الشرائية", "الشركات الأهلية"]
+    fr: ["chômage", "salaires", "inflation", "pouvoir d'achat", "entreprises communautaires"]
+    en: ["unemployment", "wages", "inflation", "purchasing power", "jobs", "labor"]
+
+  migration:
+    ar: ["هجرة", "حرقة", "الحرس البحري", "العامرة", "جبنيانة", "المهاجرين"]
+    fr: ["migration", "harqa", "garde maritime", "el amra", "jbeniana", "naufrage"]
+    en: ["migration", "sea crossing", "maritime guard", "el amra", "asylum seekers", "mediterranean"]
+
+  public_services:
+    ar: ["صحة", "مستشفيات", "أدوية", "نقل", "نقل تونس", "السكك الحديدية", "بلديات"]
+    fr: ["santé", "hôpitaux", "médicaments", "transport", "transtu", "sncft", "déchets"]
+    en: ["health", "hospitals", "pharmaceuticals", "transport", "transtu", "sncft", "public services"]
+
+  rights_institutions:
+    ar: ["مرسوم 54", "القضاء", "حرية التعبير", "قيس سعيد", "دستور 2022", "نقابة الصحفيين"]
+    fr: ["décret 54", "justice", "liberté d'expression", "kais saied", "constitution 2022", "snjt"]
+    en: ["decree 54", "judiciary", "press freedom", "kais saied", "constitution", "presidency"]
+
+  gabes:
+    ar: ["قابس", "فسفوجبس", "المجمع الكيميائي", "شاطئ السلام", "تلوث", "تفكيك الوحدات"]
+    fr: ["gabès", "phosphogypse", "groupe chimique", "chatt essalam", "pollution", "anpe"]
+    en: ["gabes", "phosphogypsum", "chemical group", "gct", "industrial pollution", "marine dead zone"]

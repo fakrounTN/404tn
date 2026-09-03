@@ -1,0 +1,247 @@
+{
+  "type": "FeatureCollection",
+  "updated_at": "2026-09-03T01:25:04.906444+00:00",
+  "active_flagship_file": "gabes",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "EV-GABES-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0982,
+          33.8815
+        ]
+      },
+      "properties": {
+        "id": "EV-GABES-01",
+        "slug": "gabes",
+        "location": "Gabès",
+        "issue": "pollution",
+        "status": "ACTIVE FILE",
+        "weight": 1.0,
+        "date": "2026-09-02",
+        "title": "Historical Phosphogypsum Sludge Marine Discharge Baseline",
+        "evidence_id": "EV-GABES-01",
+        "time_bucket": "2026",
+        "freshness": "HISTORICAL BASELINE"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-GABES-03",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.0982,
+          33.8815
+        ]
+      },
+      "properties": {
+        "id": "EV-GABES-03",
+        "slug": "gabes",
+        "location": "Gabès",
+        "issue": "pollution",
+        "status": "ACTIVE FILE",
+        "weight": 0.9,
+        "date": "2026-09-01",
+        "title": "Absence of Real-Time Atmospheric SO2 Telemetry",
+        "evidence_id": "EV-GABES-03",
+        "time_bucket": "24H",
+        "freshness": "NO CURRENT DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-WATER-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1815,
+          36.8065
+        ]
+      },
+      "properties": {
+        "id": "EV-WATER-01",
+        "slug": "tunis",
+        "location": "Tunis",
+        "issue": "water",
+        "status": "VERIFIED",
+        "weight": 0.95,
+        "date": "2026-08-15",
+        "title": "National Dam Reservoir Storage Capacity at 21.4%",
+        "evidence_id": "EV-WATER-01",
+        "time_bucket": "30D",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-INSTITUTIONS-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.1815,
+          36.8065
+        ]
+      },
+      "properties": {
+        "id": "EV-INSTITUTIONS-01",
+        "slug": "tunis",
+        "location": "Tunis",
+        "issue": "rights",
+        "status": "VERIFIED",
+        "weight": 0.95,
+        "date": "2026-07-27",
+        "title": "Tunisian Bar Association Documents 70+ Decree 54 Prosecutions",
+        "evidence_id": "EV-INSTITUTIONS-01",
+        "time_bucket": "2026",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-MIGRATION-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.7603,
+          34.7406
+        ]
+      },
+      "properties": {
+        "id": "EV-MIGRATION-01",
+        "slug": "sfax",
+        "location": "Sfax",
+        "issue": "migration",
+        "status": "VERIFIED",
+        "weight": 0.95,
+        "date": "2026-08-30",
+        "title": "National Guard Documents 34,200+ Maritime Interceptions",
+        "evidence_id": "EV-MIGRATION-01",
+        "time_bucket": "7D",
+        "freshness": "UPDATED < 7D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-ENERGY-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          10.7603,
+          34.7406
+        ]
+      },
+      "properties": {
+        "id": "EV-ENERGY-01",
+        "slug": "sfax",
+        "location": "Sfax",
+        "issue": "electricity",
+        "status": "VERIFIED",
+        "weight": 0.85,
+        "date": "2026-07-09",
+        "title": "STEG Grid Peak Demand Reaches 4,825 MW with Transformer Load",
+        "evidence_id": "EV-ENERGY-01",
+        "time_bucket": "2026",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-WORK-01",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.7842,
+          34.425
+        ]
+      },
+      "properties": {
+        "id": "EV-WORK-01",
+        "slug": "gafsa",
+        "location": "Gafsa",
+        "issue": "work",
+        "status": "VERIFIED",
+        "weight": 0.9,
+        "date": "2026-06-28",
+        "title": "INS Labor Force Survey: Graduate Unemployment at 38.6%",
+        "evidence_id": "EV-WORK-01",
+        "time_bucket": "2026",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-WATER-02",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.8365,
+          35.1676
+        ]
+      },
+      "properties": {
+        "id": "EV-WATER-02",
+        "slug": "kasserine",
+        "location": "Kasserine",
+        "issue": "water",
+        "status": "REPORTED",
+        "weight": 0.85,
+        "date": "2026-08-12",
+        "title": "Sbeitla Municipal Water Outages and Public Unrest Registry",
+        "evidence_id": "EV-WATER-01",
+        "time_bucket": "30D",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-WORK-02",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.8739,
+          37.2744
+        ]
+      },
+      "properties": {
+        "id": "EV-WORK-02",
+        "slug": "bizerte",
+        "location": "Bizerte",
+        "issue": "work",
+        "status": "VERIFIED",
+        "weight": 0.85,
+        "date": "2026-08-24",
+        "title": "Bizerte Durum Grain Storage Silos at 45-Day Cushion",
+        "evidence_id": "EV-WORK-01",
+        "time_bucket": "30D",
+        "freshness": "UPDATED < 30D"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "EV-MIGRATION-02",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          11.1122,
+          33.504
+        ]
+      },
+      "properties": {
+        "id": "EV-MIGRATION-02",
+        "slug": "zarzis",
+        "location": "Zarzis",
+        "issue": "migration",
+        "status": "REPORTED",
+        "weight": 0.8,
+        "date": "2026-08-18",
+        "title": "Search and Rescue Recovery Dispatches in Southern Maritime Buffer",
+        "evidence_id": "EV-MIGRATION-01",
+        "time_bucket": "30D",
+        "freshness": "UPDATED < 7D"
+      }
+    }
+  ]
+}

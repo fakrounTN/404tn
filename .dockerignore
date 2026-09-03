@@ -1,0 +1,47 @@
+# VCS & Config
+.git
+.gitignore
+.dockerignore
+.github
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies & Build artifacts
+node_modules
+dist
+.vite
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.venv
+venv
+
+# Databases & Backups
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.bak
+*.backup
+backups
+monitor/data/*.db*
+
+# Documentation & Logs
+logs
+*.log
+docs
+audit.md
+COLLECTOR_FINAL_REPORT.md
+PRODUCTION_READINESS_REPORT.md
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+.vscode
+.idea

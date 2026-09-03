@@ -1,0 +1,15 @@
+# 404TN Public Crawl & Indexing Directives
+User-agent: *
+Allow: /
+Allow: /en/
+Allow: /ar/
+Allow: /assets/
+Allow: /src/data/
+
+# Disallow internal and unauthenticated API endpoints from direct indexation
+Disallow: /api/
+Disallow: /backups/
+Disallow: /404.html
+
+# Authoritative XML Sitemap Index
+Sitemap: https://404tn.com/sitemap.xml

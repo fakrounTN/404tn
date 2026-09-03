@@ -1,0 +1,196 @@
+/* ==========================================================================
+   404TN Geospatial Intelligence Map Styles (assets/css/map.css)
+   ========================================================================== */
+
+/* Map container dimensions & base */
+.maplibre-map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 520px;
+  min-height: 480px;
+  background-color: #0B0C0D;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .maplibre-map-wrapper {
+    height: 480px;
+    min-height: 440px;
+  }
+}
+
+/* Hide default attribution/logo clutter if present, keep minimal */
+.maplibregl-ctrl-bottom-right,
+.maplibregl-ctrl-bottom-left {
+  z-index: 10;
+}
+
+.maplibregl-ctrl-attrib {
+  background-color: rgba(11, 12, 13, 0.8) !important;
+  color: #706E68 !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 9px !important;
+  padding: 2px 6px !important;
+  border: 1px solid #1E2023 !important;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: #9D9C96 !important;
+  text-decoration: none !important;
+}
+
+/* Minimal navigation controls */
+.maplibregl-ctrl-group {
+  background-color: #111214 !important;
+  border: 1px solid #282A2E !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.maplibregl-ctrl-group button {
+  border-bottom: 1px solid #1E2023 !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.maplibregl-ctrl-group button:last-child {
+  border-bottom: none !important;
+}
+
+.maplibregl-ctrl-icon {
+  filter: invert(0.9) !important;
+}
+
+/* Custom In-Map Filter Bar */
+.map-filter-bar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.map-filter-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.map-filter-pill {
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  background-color: rgba(17, 18, 20, 0.9);
+  border: 1px solid #282A2E;
+  color: #9D9C96;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.map-filter-pill:hover {
+  border-color: #706E68;
+  color: #F1F0EC;
+}
+
+.map-filter-pill.active {
+  background-color: #1E2023;
+  border-color: #C93636;
+  color: #F1F0EC;
+  font-weight: 600;
+}
+
+/* Custom OSINT Hover Tooltip Popup */
+.maplibregl-popup {
+  z-index: 30;
+  max-width: 280px !important;
+}
+
+.maplibregl-popup-content {
+  background-color: #111214 !important;
+  border: 1px solid #2E3136 !important;
+  border-radius: 0 !important;
+  padding: 10px 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+  color: #F1F0EC !important;
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: #2E3136 !important; }
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: #2E3136 !important; }
+.maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: #2E3136 !important; }
+.maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: #2E3136 !important; }
+
+.maplibregl-popup-close-button {
+  color: #706E68 !important;
+  font-size: 14px !important;
+  padding: 2px 6px !important;
+}
+
+.maplibregl-popup-close-button:hover {
+  color: #F1F0EC !important;
+  background: transparent !important;
+}
+
+/* Pulsing Gabes Active File Marker */
+.gabes-pulse-marker {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  cursor: pointer;
+}
+
+.gabes-pulse-marker .core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: #C93636;
+  border-radius: 50%;
+}
+
+.gabes-pulse-marker .ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #C93636;
+  border-radius: 50%;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.4); opacity: 1; }
+  80%, 100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Evidence Density Legend inside map */
+.map-density-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 20;
+  background-color: rgba(11, 12, 13, 0.92);
+  border: 1px solid #1E2023;
+  padding: 6px 10px;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  color: #9D9C96;
+  pointer-events: none;
+}
+
+.map-density-gradient {
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(to right, rgba(212, 162, 89, 0.1), #D4A259 50%, #C93636 100%);
+  margin: 3px 0;
+}

@@ -1,0 +1,86 @@
+# deploy/docker-compose.production.yml
+version: '3.8'
+
+services:
+  # ----------------------------------------------------------------------------
+  # FastAPI Evidence & Telemetry API
+  # ----------------------------------------------------------------------------
+  api:
+    build:
+      context: ..
+      dockerfile: monitor/Dockerfile
+    container_name: 404tn_api
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    environment:
+      - APP_ENV=production
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - DATABASE_PATH=/data/404tn.db
+      - BACKUP_DIR=/backups
+      - CORS_ORIGINS=https://404tn.com,https://www.404tn.com
+      - ALLOWED_HOSTS=api.404tn.com,localhost,127.0.0.1,api
+      - LOG_LEVEL=INFO
+      - ENABLE_DOCS=false
+    volumes:
+      - 404tn_db_data:/data
+      - 404tn_backups:/backups
+    expose:
+      - "8000"
+    networks:
+      - 404tn_internal
+      - tunisia2029_tunisia2029_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # Production Static Frontend (Nginx Unprivileged)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.404tn.com/api
+        VITE_SITE_URL: https://404tn.com
+    container_name: 404tn_frontend
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    expose:
+      - "8080"
+    networks:
+      - 404tn_internal
+      - tunisia2029_tunisia2029_net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  404tn_db_data:
+    name: 404tn_db_data
+  404tn_backups:
+    name: 404tn_backups
+
+networks:
+  404tn_internal:
+    name: 404tn_internal
+    internal: true
+  tunisia2029_tunisia2029_net:
+    external: true

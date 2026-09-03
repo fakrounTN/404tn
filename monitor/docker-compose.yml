@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  404tn_monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 404tn_monitor
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    environment:
+      - DATABASE_PATH=/app/data/404tn.db
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+      - USER_AGENT=404TN Evidence Monitor/1.0 (https://404tn.com)
+    networks:
+      - caddy_net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 300M
+
+networks:
+  caddy_net:
+    external: true

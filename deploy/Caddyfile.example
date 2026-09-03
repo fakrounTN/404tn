@@ -1,0 +1,61 @@
+# deploy/Caddyfile.example
+# 404TN Production Edge Configuration for Caddy
+
+{
+    email admin@404tn.com
+    admin off
+}
+
+# ------------------------------------------------------------------------------
+# WWW Canonical 301 Redirect -> https://404tn.com
+# ------------------------------------------------------------------------------
+www.404tn.com {
+    redir https://404tn.com{uri} permanent
+}
+
+# ------------------------------------------------------------------------------
+# Main 404TN Investigative Platform Frontend
+# ------------------------------------------------------------------------------
+404tn.com {
+    encode zstd gzip
+
+    header {
+        # Security & Transport Hardening
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+        
+        # Evidence-Safe Content-Security-Policy (Permitting MapLibre GL & CARTO Tiles)
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cartocdn.com; connect-src 'self' https://api.404tn.com https://*.cartocdn.com; worker-src 'self' blob:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    }
+
+    reverse_proxy 404tn_frontend:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+
+# ------------------------------------------------------------------------------
+# FastAPI Evidence & Telemetry API
+# ------------------------------------------------------------------------------
+api.404tn.com {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "no-referrer"
+    }
+
+    reverse_proxy 404tn_api:8000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
