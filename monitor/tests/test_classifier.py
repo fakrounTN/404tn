@@ -183,6 +183,160 @@ class TestClassifier(unittest.TestCase):
         issue = classify_issue(summary, headline=headline)
         self.assertEqual(issue, "rights")
 
+    # =========================================================================
+    # PHASE 4.1 FINAL HARDENING: NEGATIVE REGRESSION TESTS (N1 - N9)
+    # =========================================================================
+
+    def test_n1_foreign_personal_data_rejected_tunisia_context(self):
+        """TEST N1: source_domain=nawaat.org, foreign article with 'المعطيات الشخصية' but no TN entity -> False."""
+        headline = "حماية المعطيات الشخصية في الاتحاد الأوروبي والقوانين الرقمية الجديدة"
+        summary = "الاتحاد الأوروبي يناقش تشريعات حماية المعطيات الشخصية والخصوصية الرقمية في بروكسل."
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="nawaat.org")
+        self.assertFalse(has_tn, "Thematic 'المعطيات الشخصية' without Tunisia entity must NOT pass Tunisia context")
+
+    def test_n2_foreign_opinion_trials_rejected_tunisia_context(self):
+        """TEST N2: source_domain=inkyfada.com, foreign story with 'محاكمات الرأي' but no TN entity -> False."""
+        headline = "محاكمات الرأي في الشرق الأوسط وتراجع مؤشرات الديمقراطية"
+        summary = "تقرير حقوقي دولي حول محاكمات الرأي وسجناء الرأي في عدة دول عربية."
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="inkyfada.com")
+        self.assertFalse(has_tn, "Thematic 'محاكمات الرأي' without Tunisia entity must NOT pass Tunisia context")
+
+    def test_n3_generic_thematic_rights_vocabulary_rejected_tunisia_context(self):
+        """TEST N3: Editorial source with generic rights vocabulary (الاستبداد, السجن, حقوق الإنسان, الحريات) -> False."""
+        headline = "مواجهة الاستبداد والدفاع عن الحريات وحقوق الإنسان"
+        summary = "مقال فكري حول ظروف السجن والتعذيب والقمع والاحتجاز في الأنظمة الشمولية."
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="nawaat.org")
+        self.assertFalse(has_tn, "Generic rights vocabulary alone must NOT satisfy Layer 2 Tunisia context")
+
+    def test_n4_inkyfada_marseille_minors_rejected_tunisia_context(self):
+        """TEST N4: Inkyfada Marseille foreign minors story without TN entity -> False."""
+        headline = "Les mineurs isolés étrangers à Marseille, un accompagnement “low cost”"
+        summary = "A Marseille, les structures d'accueil et d'accompagnement des mineurs isolés manquent de moyens."
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="inkyfada.com")
+        self.assertFalse(has_tn, "Foreign-only Marseille article must fail Tunisia context despite editorial domain")
+
+    def test_n5_generic_ins_publications_rejected_substantive(self):
+        """TEST N5: Generic INS 'Publications' header -> substantive FALSE."""
+        is_sub, reason = is_substantive_evidence("Publications", source_domain="ins.tn")
+        self.assertFalse(is_sub, "Generic INS header must be rejected by substantive gate")
+        self.assertEqual(reason, "generic_navigation_page")
+
+    def test_n6_generic_onagri_actualites_rejected_substantive(self):
+        """TEST N6: Generic ONAGRI 'Actualités' header -> substantive FALSE."""
+        is_sub, reason = is_substantive_evidence("Actualités", source_domain="onagri.nat.tn")
+        self.assertFalse(is_sub, "Generic ONAGRI header must be rejected by substantive gate")
+        self.assertEqual(reason, "generic_navigation_page")
+
+    def test_n7_pm_photocopier_procurement_rejected_substantive(self):
+        """TEST N7: PM photocopier procurement tender -> substantive FALSE."""
+        tender = "طلب عروض عدد 2026/21 لإقتناء آلات ناسخة لفائدة رئاسة الحكومة"
+        is_sub, reason = is_substantive_evidence(tender, source_domain="pm.gov.tn")
+        self.assertFalse(is_sub, "PM procurement notice must be rejected by substantive gate")
+        self.assertEqual(reason, "routine_admin_notice")
+
+    def test_n8_real_football_world_cup_rejected_sports(self):
+        """TEST N8: Real football / Coupe du monde / FTF story -> sports_recreational_event."""
+        headline = "Coupe du monde 2026 : Lamouchi viré, Hervé Renard en mission, les coulisses du fiasco tunisien"
+        is_sub, reason = is_substantive_evidence(headline, source_domain="inkyfada.com")
+        self.assertFalse(is_sub, "Real football world cup coverage must be excluded as sports")
+        self.assertEqual(reason, "sports_recreational_event")
+
+    def test_n9_pubmed_foreign_lab_assay_rejected(self):
+        """TEST N9: Foreign / non-crisis PubMed biomedical laboratory study -> routine_admin_notice / False."""
+        pubmed = "In vitro antioxidant and cytotoxic activity of essential oil on rat liver cells"
+        is_sub, reason = is_substantive_evidence(pubmed, source_domain="pubmed.ncbi.nlm.nih.gov")
+        self.assertFalse(is_sub, "Biomedical in-vitro lab study must be excluded")
+        self.assertEqual(reason, "routine_admin_notice")
+
+    # =========================================================================
+    # PHASE 4.1 FINAL HARDENING: POSITIVE REGRESSION TESTS (P1 - P8)
+    # =========================================================================
+
+    def test_p1_ins_employment_unemployment_statistics(self):
+        """TEST P1: INS employment/unemployment statistics -> substantive TRUE, TN context TRUE, issue=work."""
+        headline = "Indicateurs de l’emploi et du chômage, deuxième trimestre 2026"
+        summary = "L'Institut National de la Statistique publie les taux de chômage et indicateurs de la population active."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="ins.tn")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="ins.tn")
+        self.assertTrue(has_tn, "Official INS provenance establishes Tunisia context for substantive metrics")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "work", "Employment/unemployment statistics must classify as 'work'")
+
+    def test_p2_ins_cpi_publication(self):
+        """TEST P2: INS CPI publication -> substantive TRUE, TN context TRUE, not excluded for missing literal 'Tunisie'."""
+        headline = "Indice des prix à la consommation, Août 2026"
+        summary = "Augmentation mensuelle des prix à la consommation familiale et inflation sous-jacente."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="ins.tn")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="ins.tn")
+        self.assertTrue(has_tn, "INS CPI publication must pass Tunisia context via Tier 1 provenance")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "work")
+
+    def test_p3_nawaat_identifiable_journalist_snjt_legal_nexus(self):
+        """TEST P3: Nawaat + identifiable Tunisian journalist + SNJT / legal nexus -> TN context TRUE, issue=rights."""
+        headline = "محمد اليوسفي: النقابة الوطنية للصحفيين تندد بالمرسوم 54"
+        summary = "تواصل الملاحقات القضائية واستهداف حرية الصحافة والتعبير بمقتضى المرسوم 54."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="nawaat.org")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="nawaat.org")
+        self.assertTrue(has_tn, "Identifiable Tunisian journalist + SNJT + Decree 54 establishes domestic nexus")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "rights")
+
+    def test_p4_article_containing_kais_saied_public_figure(self):
+        """TEST P4: Article mentioning identifiable public figure 'قيس سعيد' -> TN context TRUE."""
+        headline = "تصريحات قيس سعيد حول إصلاح الإدارة ومكافحة الفساد"
+        summary = "الرئيس قيس سعيد يشدد على ضرورة تطهير الإدارة العمومية من الفساد المالي والإداري."
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="inkyfada.com")
+        self.assertTrue(has_tn, "Specific identifiable public figure 'قيس سعيد' establishes Tunisia nexus")
+
+    def test_p5_article_containing_decree_54_legal_nexus(self):
+        """TEST P5: Article containing 'المرسوم 54' -> TN context TRUE, issue=rights."""
+        headline = "محاكمة صحفي بموجب المرسوم 54 تثير ردود فعل حقوقية واسعة"
+        summary = "إحالة جديدة أمام القضاء على خلفية تدوينة بمقتضى الفصل 24 من المرسوم 54."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="nawaat.org")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="nawaat.org")
+        self.assertTrue(has_tn, "Controlled Tunisian legal instrument 'المرسوم 54' establishes domestic nexus")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "rights")
+
+    def test_p6_ftdes_explicit_tunisian_institution_governorate(self):
+        """TEST P6: FTDES + explicit Tunisian institution/governorate -> TN context TRUE, issue=water."""
+        headline = "تقرير المنتدى التونسي للحقوق الاقتصادية والاجتماعية حول أزمة المياه في قفصة"
+        summary = "المنتدى التونسي للحقوق الاقتصادية والاجتماعية يوثق انقطاعات مياه الشرب في الحوض المنجمي بقفصة."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="ftdes.net")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="ftdes.net")
+        self.assertTrue(has_tn, "FTDES + Gafsa establishes clear Tunisia context")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "water")
+
+    def test_p7_explicit_country_signals_any_domain(self):
+        """TEST P7: Explicit 'Tunisie' / 'تونس' / 'Tunisia' -> TN context TRUE regardless of source domain."""
+        headline = "Interruption de distribution d'eau potable en Tunisie suite à une avarie majeure"
+        summary = "La société nationale des eaux intervient sur le réseau principal de distribution."
+        is_sub, _ = is_substantive_evidence(headline, summary, source_domain="reuters.com")
+        self.assertTrue(is_sub)
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="reuters.com")
+        self.assertTrue(has_tn, "Explicit country name 'Tunisie' establishes Tunisia context for any source domain")
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "water")
+
+    def test_p8_ftdes_forum_social_mondial_not_sports(self):
+        """TEST P8: FTDES Forum Social Mondial environmental/migration justice -> NOT sports, classify issue."""
+        headline = "Justice environnementale et justice migratoire au cœur de la participation du FTDES au Forum Social Mondial 2026"
+        summary = "Le Forum Social Mondial réunit les mouvements civiques pour la justice environnementale et les droits sociaux."
+        is_sub, reason = is_substantive_evidence(headline, summary, source_domain="ftdes.net")
+        self.assertTrue(is_sub, f"Forum Social Mondial must be substantive, got exclusion: {reason}")
+        self.assertNotEqual(reason, "sports_recreational_event")
+        has_tn = has_tunisia_context(f"{headline} {summary}", source_domain="ftdes.net")
+        self.assertTrue(has_tn)
+        issue = classify_issue(f"{headline} {summary}", headline=headline)
+        self.assertEqual(issue, "rights", "Social/environmental justice advocacy must classify as 'rights'")
+
 
 if __name__ == "__main__":
     unittest.main()

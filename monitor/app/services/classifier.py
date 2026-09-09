@@ -48,12 +48,13 @@ SPORTS_PATTERNS = [
     r"medaille d['’]or", r"medaille d['’]argent", r"medaille de bronze", r"medaillee?",
     r"championnat", r"firas katoussi", r"karem ben hnia", r"moetaman billah", r"ahmed jaziri",
     r"marwa bouzayani", r"rehab dhahri", r"aymen bacha", r"lamouchi", r"herve renard", r"hervé renard",
-    r"coupe du monde", r"mondial 2026", r"la ftf\b", r"\bftf\b", r"federation tunisienne de football",
+    r"coupe du monde", r"mondial (?:de |du )?football", r"mondial 2026 (?:de |du )?football",
+    r"mondial fifa", r"la ftf\b", r"\bftf\b", r"federation tunisienne de football",
     r"equipe nationale de football", r"selection nationale", r"ligue 1", r"mercato", r"mercato estival",
     r"foot - ", r"football", r"athletisme", r"steeple", r"3000 m steeple", r"handball", r"basketball",
     r"العاب البحر الابيض المتوسط", r"العاب متوسطية", r"الالعاب المتوسطية", r"تارانتو",
     r"ميدالية ذهبية", r"ميدالية فضية", r"ميدالية برونزية", r"ميدالية", r"الميدالية",
-    r"الذهبية", r"الفضية", r"البرونزية", r"بطولة العالم", r"كرة القدم", r"رفع الاثقال", r"رفع اثقال", r"رفع الأثقال",
+    r"الميدالية الذهبية", r"الميدالية الفضية", r"الميدالية البرونزية", r"بطولة العالم", r"كرة القدم", r"رفع الاثقال", r"رفع اثقال", r"رفع الأثقال",
     r"جامعة كرة القدم", r"الجامعة التونسية لكرة القدم", r"كأس العالم", r"كاس العالم",
     r"المنتخب الوطني لكرة القدم", r"المنتخب التونسي", r"ألعاب القوى", r"العاب القوى", r"سباق 3000",
     r"كرة اليد", r"كرة السلة", r"الترجي الرياضي", r"النادي الافريقي", r"النجم الساحلي", r"النادي الصفاقسي"
@@ -135,16 +136,22 @@ PRIMARY_TAXONOMY = {
             "chomage", "taux de chomage", "demandeurs d'emploi", "diplomes chomeurs",
             "recrutement public", "pouvoir d'achat", "inflation", "smig", "greve", "ugtt",
             "salaires", "augmentation salariale", "pente des prix", "indice des prix",
+            "indice des prix a la consommation", "indice des prix à la consommation", "prix a la consommation",
+            "indicateurs de l'emploi", "indicateurs de l’emploi", "chiffres du chomage", "chiffres du chômage",
+            "croissance economique", "croissance economique au", "croissance économique", "production industrielle",
+            "indice de la production industrielle", "indice de la production",
             "unemployment", "unemployment rate", "job market", "wage increase", "purchasing power",
-            "food inflation", "labor strike",
+            "food inflation", "labor strike", "economic growth", "industrial production", "consumer price index",
             "بطالة", "البطالة", "نسبة البطالة", "تشغيل", "التشغيل", "أجور", "الأجور", "اجور", "الاجور",
             "قدرة شرائية", "القدرة الشرائية", "تضخم", "التضخم", "إضراب", "الإضراب", "اضراب", "الاضراب",
             "انتداب", "الانتداب", "أسعار المواد الأساسية", "اصحاب الشهادات", "أصحاب الشهادات",
             "اصحاب الشهائد", "أصحاب الشهائد", "المعطلين عن العمل", "سوق الشغل",
             "الاتحاد العام التونسي للشغل", "مطالب الشغل", "فرص عمل", "سوق العمل", "قانون العمل",
-            "ظروف العمل", "عقود العمل", "مناصب عمل", "توفير مواطن الشغل", "عمال الحضائر", "التشغيل الهش"
+            "ظروف العمل", "عقود العمل", "مناصب عمل", "توفير مواطن الشغل", "عمال الحضائر", "التشغيل الهش",
+            "النمو الاقتصادي", "مؤشر أسعار الاستهلاك", "مؤشر اسعار الاستهلاك", "مؤشرات التشغيل",
+            "مؤشرات البطالة", "الإنتاج الصناعي", "الانتاج الصناعي", "الناتج المحلي الإجمالي", "الناتج المحلي الاجمالي"
         ],
-        "context": ["emploi", "employment", "job", "salary", "salaire", "travailleurs", "ouvriers", "bct", "ins", "fmi", "رواتب"]
+        "context": ["emploi", "employment", "job", "salary", "salaire", "travailleurs", "ouvriers", "bct", "ins", "fmi", "croissance", "pib", "رواتب", "نمو", "انتاج صناعي", "إنتاج صناعي"]
     },
     "public_services": {
         "strong": [
@@ -239,14 +246,16 @@ TUNISIA_SIGNALS = [
     "médenine", "tataouine", "tozeur", "kebili", "kébili", "kerkennah", "el amra", "jbeniana",
     "djerba", "tabarka", "ghardimaou", "mateur", "menzel bourguiba", "moknine", "chebba",
     "redeyef", "metlaoui", "moulares", "sbeitla", "makthar", "bouhajla", "regueb", "feriana", "thala",
+    "ben guerdane", "remada", "ras jdir",
     "قابس", "صفاقس", "قفصة", "القصرين", "بنزرت", "جرجيس", "سوسة", "المنستير",
     "المهدية", "نابل", "القيروان", "سيدي بوزيد", "باجة", "جندوبة", "الكاف",
     "سليانة", "زغوان", "مدنين", "تطاوين", "توزر", "قبلي", "قرقنة", "قرطاج", "باردو", "العامرة", "جبنيانة",
     "جربة", "طبرقة", "غار الدماء", "ماطر", "منزل بورقيبة", "المكنين", "الشابة", "الرديف", "المتلوي",
+    "بن قردان", "رمادة", "راس جدير", "رأس جدير",
     # Specific National Public Entities & Institutions
-    "sonede", "steg", "ins", "onagri", "anpe", "gct", "cpg", "ugtt", "snjt", "ftdes", "onas",
+    "sonede", "steg", "ins", "onagri", "anpe", "gct", "cpg", "ugtt", "snjt", "ftdes", "ltdh", "onas",
     "transtu", "sncft", "bct", "pct", "pharmacie centrale", "arp", "isie", "carthage", "kasbah", "la kasbah",
-    "assemblee des representants", "presidence de la republique", "presidence du gouvernement", "inpdp",
+    "assemblee des representants", "presidence de la republique", "presidence du gouvernement", "inpdp", "inpt",
     "ministere de l'agriculture", "ministre de l'agriculture", "ministere de l'environnement", "ministre de l'environnement",
     "ministere de la sante", "ministre de la sante", "ministere de l'interieur", "ministre de l'interieur",
     "ministere de la justice", "ministre de la justice", "ministere des affaires sociales", "ministre des affaires sociales",
@@ -254,14 +263,68 @@ TUNISIA_SIGNALS = [
     "وزارة البيئة", "وزير البيئة", "وزارة الفلاحة", "وزارة الصحة", "وزارة الداخلية", "وزارة العدل",
     "وزارة الشؤون الاجتماعية", "وزارة الصناعة", "وزارة النقل", "وزارة التربية", "وزارة التعليم العالي",
     "صوناد", "ستاغ", "المجمع الكيميائي", "الرائد الرسمي", "الديوان الوطني للتطهير", "ديوان التطهير",
-    "مجلس نواب الشعب", "هيئة الانتخابات", "رئاسة الجمهورية", "رئاسة الحكومة", "قصر قرطاج", "القصبة", "jort"
+    "مجلس نواب الشعب", "هيئة الانتخابات", "رئاسة الجمهورية", "رئاسة الحكومة", "قصر قرطاج", "القصبة", "jort",
+    "النقابة الوطنية للصحفيين التونسيين", "نقابة الصحفيين التونسيين",
+    "المنتدى التونسي للحقوق الاقتصادية والاجتماعية", "منتدى الحقوق الاقتصادية والاجتماعية",
+    "الرابطة التونسية للدفاع عن حقوق الإنسان", "الرابطة التونسية للدفاع عن حقوق الانسان"
 ]
 
-# Dedicated national institutions whose publications are demonstrably restricted to Tunisia-specific content
-DEDICATED_TUNISIA_DOMAINS = {
-    "ins.tn", "environnement.gov.tn", "pm.gov.tn", "onagri.nat.tn",
-    "snjt.org", "ftdes.net", "inkyfada.com", "nawaat.org"
+# =========================================================================
+# LAYERED PROVENANCE & TUNISIA CONTEXT ARCHITECTURE
+# =========================================================================
+
+# Tier 1: Dedicated National Public Institutions & Official State Agencies
+# Mandate is demonstrably 100% domestic Tunisian official data, administration, and public statistics.
+# Note: Non-substantive pages (Actualités, tenders) are still filtered out by is_substantive_evidence().
+NATIONAL_INSTITUTION_DOMAINS = {
+    "ins.tn", "environnement.gov.tn", "pm.gov.tn", "onagri.nat.tn"
 }
+
+# Tier 2: Domestic Editorial Media & Civil Society Organizations
+# Broad news/editorial coverage that may include foreign wires, but where mention of domestic entities,
+# figures, legal instruments, or monitored civic issues establishes authoritative Tunisia nexus.
+EDITORIAL_TUNISIA_DOMAINS = {
+    "nawaat.org", "inkyfada.com", "snjt.org", "ftdes.net"
+}
+
+# Backward compatibility alias
+DEDICATED_TUNISIA_DOMAINS = NATIONAL_INSTITUTION_DOMAINS | EDITORIAL_TUNISIA_DOMAINS
+
+# Domestic political figures, journalists, legal instruments, and monitored institutional entities
+# that establish Tunisian context when published by Tier 2 domestic editorial/civic sources.
+# NOTE: Generic thematic/rights vocabulary (e.g. personal data, prison, torture, trial) MUST NOT
+# be included here; it belongs exclusively in Primary Taxonomy / Layer 3.
+DOMESTIC_ENTITY_NEXUS = [
+    # Identifiable Tunisian Public Figures & Political Actors
+    "قيس سعيد", "الرئيس قيس سعيد", "رئيس الجمهورية قيس سعيد", "منظومة قيس سعيد",
+    "kais saied", "president kais saied", "president saied",
+    "هيثم المكي", "محمد اليوسفي", "زياد الهاني", "مراد الزغيدي", "برهان بسيس", "سنية الدهماني",
+    "شذى بلحاج مبارك", "خولة بوكريم", "غسان بن خليفة", "نجيب الشابي", "أحمد نجيب الشابي",
+    "جوهر بن مبارك", "عصام الشابي", "غازي الشواشي", "خيام التركي", "رضا بالحاج",
+    "عبير موسي", "راشد الغنوشي", "نور الدين البحيري", "عياشي الهمامي", "بشرى بلحاج حميدة",
+    "haythem el meki", "mohamed elyesfi", "ziad el heni", "mourad zghidi", "borhen bssais",
+    "sonia dahmani", "chedha hadj mbarek", "khawla boukrim", "ghassen ben khelifa",
+    "jaouhar ben mbarek", "issam chebbi", "ghazi chaouachi", "khayam turki",
+    "ridha belhadj", "abir moussi", "rached ghannouchi", "noureddine bhiri",
+
+    # Specific Tunisian Legal & Constitutional Instruments
+    "مرسوم 54", "المرسوم 54", "مرسوم عدد 54", "المرسوم عدد 54",
+    "decret 54", "decret-loi 54", "decree 54", "decree-law 54",
+    "دستور 2022", "constitution tunisienne", "constitution de 2022",
+    "الرائد الرسمي للجمهورية التونسية",
+
+    # Specific Identifiable Tunisian Institutions & Civil Society Bodies
+    "النقابة الوطنية للصحفيين التونسيين", "نقابة الصحفيين التونسيين", "snjt",
+    "المنتدى التونسي للحقوق الاقتصادية والاجتماعية", "منتدى الحقوق الاقتصادية والاجتماعية", "ftdes",
+    "الرابطة التونسية للدفاع عن حقوق الإنسان", "الرابطة التونسية للدفاع عن حقوق الانسان", "ltdh",
+    "الهيئة الوطنية لحماية المعطيات الشخصية", "الهيئة الوطنية للوقاية من التعذيب", "inpdp", "inpt",
+    "القطب القضائي لمكافحة الإرهاب", "قطب مكافحة الارهاب", "قطب مكافحة الإرهاب", "القطب القضائي المالي",
+
+    # Specific Identifiable Tunisian Detention Facilities
+    "سجن المرناقية", "المرناقية", "سجن بوشوشة", "بوشوشة", "سجن برج الرومي",
+    "سجن الهوارب", "سجن حربوب", "سجن صواف", "سجن بلاريجيا",
+    "mornaguia", "bouchoucha", "borj erroumi"
+]
 
 def _strip_accents(text: str) -> str:
     """Normalize and strip diacritical marks, and normalize Arabic orthographic variants (hamzas, ta marbuta)."""
@@ -297,13 +360,32 @@ def _matches_keyword(keyword: str, text: str) -> bool:
 def has_tunisia_context(text: str, source_domain: str = None, source_id: str = None) -> bool:
     """
     Validates that an article has a verified, credible Tunisia connection.
-    Rejects unrelated foreign articles (e.g. Nepal power outage, French water quality, Marseille foreign minors)
-    that may coincidentally match generic issue keywords or originate from dedicated domains.
+    Layered 3-tier architecture:
+    - Tier 1: Dedicated National Public Institutions & Official State Agencies (INS, ONAGRI, ME, PM).
+      Mandate is 100% domestic Tunisian official data; provenance establishes national geographic scope.
+      Note: Non-substantive pages (Actualités, tenders) are still filtered out by is_substantive_evidence().
+    - Tier 3: Explicit Textual Signals (TUNISIA_SIGNALS) across all sources.
+    - Tier 2: Domestic Editorial / Civil Society Outlets (Nawaat, Inkyfada, SNJT, FTDES).
+      Returns True if domestic entity/figure/decree/civic nexus is present in text.
+    Foreign-only articles without domestic nexus (e.g. Marseille minors, Nepal power grid) return False.
     """
-    if not text:
-        return False
+    clean_text = text or ""
+    domain = (source_domain or "").lower().strip()
 
-    return any(_matches_keyword(sig, text) for sig in TUNISIA_SIGNALS)
+    # Tier 1: National Public Entities & Official State Agencies
+    if domain in NATIONAL_INSTITUTION_DOMAINS:
+        return True
+
+    # Tier 3 (Fast Check): Explicit Textual Signals in text across all sources
+    if any(_matches_keyword(sig, clean_text) for sig in TUNISIA_SIGNALS):
+        return True
+
+    # Tier 2: Editorial & Civil Society Outlets with Domestic Entity Nexus
+    if domain in EDITORIAL_TUNISIA_DOMAINS:
+        if any(_matches_keyword(entity, clean_text) for entity in DOMESTIC_ENTITY_NEXUS):
+            return True
+
+    return False
 
 def is_substantive_evidence(headline: str, summary: str = "", body: str = "", source_domain: str = None) -> Tuple[bool, str]:
     """
