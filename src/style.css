@@ -379,3 +379,37 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background: linear-gradient(to right, rgba(212, 162, 89, 0.1), #D4A259 50%, #C93636 100%);
   margin: 3px 0;
 }
+
+/* ==========================================================================
+   TIMELINE GRID & CARD STRUCTURAL INTEGRITY
+   ========================================================================== */
+#timeline-events-container {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  #timeline-events-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  #timeline-events-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+#timeline-events-container > div,
+#timeline-events-container > article,
+.timeline-card {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+

@@ -4,6 +4,7 @@ import { initEvidenceDrawer, openEvidenceDrawer } from './evidence-drawer.js';
 import { initTimelineController } from './timeline.js';
 import { initAccountabilityController } from './accountability.js';
 import { getGabesDossier, getStats, getIssueBySlug, getIssues } from './api.js';
+import { escapeHtml, stripHtml } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   initHeader();
@@ -233,10 +234,10 @@ function initFilesDossierModal() {
     const recordsWithMetrics = (liveDossier.evidence_records || []).filter(r => r.metric_value);
     if (recordsWithMetrics.length > 0) {
       metricsContainer.innerHTML = recordsWithMetrics.slice(0, 4).map(m => `
-        <div class="p-4 bg-background-subtle border border-surface-800 cursor-pointer hover:border-surface-600 transition-colors" data-evidence-id="${m.id}">
-          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">${m.source_name || 'OFFICIAL REPORT'}</div>
-          <div class="text-2xl font-editorial font-semibold text-bone-100 my-1 text-crimson">${m.metric_value} ${m.metric_unit || ''}</div>
-          <div class="text-xs text-surface-400 leading-relaxed font-light truncate">${m.headline}</div>
+        <div class="p-4 bg-background-subtle border border-surface-800 cursor-pointer hover:border-surface-600 transition-colors" data-evidence-id="${escapeHtml(m.id)}">
+          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">${escapeHtml(stripHtml(m.source_name || 'OFFICIAL REPORT'))}</div>
+          <div class="text-2xl font-editorial font-semibold text-bone-100 my-1 text-crimson">${escapeHtml(m.metric_value)} ${escapeHtml(m.metric_unit || '')}</div>
+          <div class="text-xs text-surface-400 leading-relaxed font-light truncate">${escapeHtml(stripHtml(m.headline || ''))}</div>
         </div>
       `).join("");
     } else {
@@ -253,14 +254,14 @@ function initFilesDossierModal() {
     const evRecords = liveDossier.evidence_records || [];
     if (evRecords.length > 0) {
       eventsContainer.innerHTML = evRecords.slice(0, 5).map(e => `
-        <div class="relative pl-5 pb-4 border-l border-surface-800 last:border-l-0 cursor-pointer group" data-evidence-id="${e.id}">
+        <div class="relative pl-5 pb-4 border-l border-surface-800 last:border-l-0 cursor-pointer group" data-evidence-id="${escapeHtml(e.id)}">
           <span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-crimson group-hover:scale-125 transition-transform"></span>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono text-crimson uppercase font-medium">${e.event_date || e.published_at || 'CURRENT'}</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.2 bg-surface-900 text-surface-400 border border-surface-800">${e.classification}</span>
+            <span class="text-xs font-mono text-crimson uppercase font-medium">${escapeHtml(e.event_date || e.published_at || 'CURRENT')}</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.2 bg-surface-900 text-surface-400 border border-surface-800">${escapeHtml(e.classification || 'FACT')}</span>
           </div>
-          <p class="text-xs text-surface-200 mt-1 leading-relaxed font-sans group-hover:text-crimson transition-colors">${e.headline}</p>
-          <div class="text-[10px] font-mono text-surface-500 mt-1">SRC: ${e.source_name || 'VERIFIED SOURCE'}</div>
+          <p class="text-xs text-surface-200 mt-1 leading-relaxed font-sans group-hover:text-crimson transition-colors break-words">${escapeHtml(stripHtml(e.headline || ''))}</p>
+          <div class="text-[10px] font-mono text-surface-500 mt-1">SRC: ${escapeHtml(stripHtml(e.source_name || 'VERIFIED SOURCE'))}</div>
         </div>
       `).join("");
 
@@ -274,7 +275,7 @@ function initFilesDossierModal() {
       sourcesContainer.innerHTML = Object.entries(uniqueSources).map(([name, url]) => `
         <li class="flex items-start text-xs font-mono text-surface-400 gap-2 bg-surface-900/60 p-2.5 border border-surface-800">
           <span class="text-sand select-none font-semibold">SRC:</span>
-          <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-surface-300 hover:text-crimson transition-colors truncate">${name}</a>
+          <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="text-surface-300 hover:text-crimson transition-colors truncate">${escapeHtml(stripHtml(name))}</a>
         </li>
       `).join("");
     } else {
@@ -318,16 +319,16 @@ async function loadGabesData() {
   container.innerHTML = gabes.metrics.map(m => `
     <div class="p-4 bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group">
       <div class="flex items-center justify-between">
-        <span class="text-surface-500 uppercase block text-[10px] font-mono">${m.label}</span>
-        <span class="text-[9px] font-mono uppercase px-1.5 py-0.2 bg-background border border-surface-800 ${m.status === 'HISTORICAL BASELINE' ? 'text-amber-400' : (m.status === 'NO CURRENT DATA' ? 'text-surface-400' : 'text-crimson')}">${m.status}</span>
+        <span class="text-surface-500 uppercase block text-[10px] font-mono">${escapeHtml(stripHtml(m.label || ''))}</span>
+        <span class="text-[9px] font-mono uppercase px-1.5 py-0.2 bg-background border border-surface-800 ${m.status === 'HISTORICAL BASELINE' ? 'text-amber-400' : (m.status === 'NO CURRENT DATA' ? 'text-surface-400' : 'text-crimson')}">${escapeHtml(m.status || '')}</span>
       </div>
       <div class="text-xl font-editorial font-bold my-1 ${m.status === 'NO CURRENT DATA' ? 'text-surface-400' : 'text-crimson'} group-hover:text-white transition-colors">
-        ${m.value}
+        ${escapeHtml(m.value || '')}
       </div>
-      <div class="text-[10px] text-surface-400 block mt-0.5 font-light">${m.subtext}</div>
+      <div class="text-[10px] text-surface-400 block mt-0.5 font-light">${escapeHtml(stripHtml(m.subtext || ''))}</div>
       <div class="text-[9px] text-surface-500 font-mono mt-2 pt-2 border-t border-surface-800/60 flex items-center justify-between">
-        <span>PERIOD: ${m.source_period}</span>
-        <span class="text-sand text-[9px] uppercase tracking-wider">${m.type ? m.type.replace(/_/g, ' ') : 'CONTEXT'}</span>
+        <span>PERIOD: ${escapeHtml(stripHtml(m.source_period || ''))}</span>
+        <span class="text-sand text-[9px] uppercase tracking-wider">${escapeHtml(m.type ? m.type.replace(/_/g, ' ') : 'CONTEXT')}</span>
       </div>
     </div>
   `).join("");
