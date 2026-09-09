@@ -172,5 +172,5 @@ class PublicStatsSchema(BaseModel):
     active_sources_count: int
     verified_facts_count: int
     documented_claims_count: int
-    last_collection_run: str
+    last_collection_run: Optional[str] = None
     system_status: str

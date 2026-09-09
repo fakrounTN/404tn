@@ -854,13 +854,17 @@ def get_public_stats():
         cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND classification = 'CLAIM'")
         claims_count = cursor.fetchone()[0]
 
+        # No run-level collection completion timestamp is currently persisted in the database.
+        # Strict semantic correctness: return None (null in JSON) rather than approximating from per-source attempts or evidence writes.
+        last_collection_run = None
+
         return PublicStatsSchema(
             total_evidence_records=total_ev,
             monitored_sources_count=configured_count,
             active_sources_count=enabled_count,
             verified_facts_count=facts_count,
             documented_claims_count=claims_count,
-            last_collection_run=datetime.now(timezone.utc).isoformat(),
+            last_collection_run=last_collection_run,
             system_status="OPERATIONAL"
         )
 
