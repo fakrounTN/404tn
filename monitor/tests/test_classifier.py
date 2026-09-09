@@ -109,5 +109,81 @@ class TestClassifier(unittest.TestCase):
         classification, status = classify_epistemic(headline, body, "unknown")
         self.assertEqual(status, "UNDER REVIEW")
 
+    def test_arabic_work_stemming_no_false_positive_on_coastal_protection(self):
+        """Case A: مبادرة حماية السواحل must not trigger 'work' due to isolated 'عمل' in summary."""
+        headline = "مبادرة حماية السواحل"
+        summary = "أشرف السيّد وزير البيئة حبيب عبيد، مساء الاثنين 16 مارس 2026، على جلسة عمل لتقديم كيفية الانخراط في مبادرة حماية الساحل ."
+        issue = classify_issue(summary, headline=headline)
+        self.assertEqual(issue, "pollution")
+        self.assertNotEqual(issue, "work")
+
+    def test_foreign_only_subject_matter_rejected_regardless_of_domain(self):
+        """Case B: Foreign-only content (Marseille minors) must fail Tunisia context even on inkyfada.com."""
+        text = "Les mineurs isolés étrangers à Marseille, un accompagnement “low cost”. A Marseille, les structures d'accueil..."
+        has_tn = has_tunisia_context(text, source_domain="inkyfada.com")
+        self.assertFalse(has_tn, "Foreign-only Marseille article must not pass Tunisia context")
+
+    def test_sports_and_football_management_rejected(self):
+        """Case C: Football World Cup and FTF coaching turmoil must be excluded as sports."""
+        sports_headlines = [
+            "Départ de Renard, silence de la FTF et guerre interne : les coulisses de l’après Coupe du monde 2026",
+            "Coupe du monde 2026 : Lamouchi viré, Hervé Renard en mission, les coulisses du fiasco tunisien"
+        ]
+        for h in sports_headlines:
+            is_sub, reason = is_substantive_evidence(h, source_domain="inkyfada.com")
+            self.assertFalse(is_sub, f"Sports/FTF story '{h}' should be excluded")
+            self.assertEqual(reason, "sports_recreational_event")
+
+    def test_routine_procurement_tenders_rejected(self):
+        """Case D: Public procurement and photocopier acquisitions must be excluded as routine admin."""
+        tenders = [
+            "طلب عروض عدد 2026/21 لإقتناء آلات ناسخة لفائدة رئاسة الحكومة",
+            "Avis d'appel d'offres national pour l'acquisition d'equipements informatiques"
+        ]
+        for t in tenders:
+            is_sub, reason = is_substantive_evidence(t, source_domain="pm.gov.tn")
+            self.assertFalse(is_sub, f"Procurement tender '{t}' should be excluded")
+            self.assertEqual(reason, "routine_admin_notice")
+
+    def test_generic_navigation_and_ministry_headers_rejected(self):
+        """Case E: Generic navigation suffixes like 'Actualités - ME' and circular headers must be excluded."""
+        generic_headers = [
+            "Actualités - ME", "Actualités", "Publications", "Communiqués de presse", "نشاط الوزارة", "بلاغات"
+        ]
+        for gh in generic_headers:
+            is_sub, reason = is_substantive_evidence(gh)
+            self.assertFalse(is_sub, f"Generic header '{gh}' should be excluded")
+            self.assertEqual(reason, "generic_navigation_page")
+
+    def test_pubmed_biomedical_lab_assays_rejected(self):
+        """Case G: In-vitro biochemical assays / rat liver studies without public crisis evidence must be excluded."""
+        pubmed_abstract = "In vitro antioxidant and cytotoxic activity of essential oil from Tunisian plants on rat liver cells."
+        is_sub, reason = is_substantive_evidence(pubmed_abstract, source_domain="pubmed.ncbi.nlm.nih.gov")
+        self.assertFalse(is_sub, "Generic in-vitro lab study must be excluded")
+        self.assertEqual(reason, "routine_admin_notice")
+
+    def test_arabic_prison_deaths_custody_classified_as_rights(self):
+        """Case H: Prison deaths and detention accountability must classify under rights."""
+        headline = "حين تحتجز الدولة الجسد: من يجيب عن الموت خلف القضبان؟"
+        summary = "تقرير استقصائي حول ظروف السجون وحالات الوفيات في مراكز الاحتجاز بتونس."
+        issue = classify_issue(summary, headline=headline)
+        self.assertEqual(issue, "rights")
+
+    def test_data_privacy_violation_classified_as_rights(self):
+        """Case I: Personal data privacy violations must classify under rights."""
+        headline = "صفحات ومواقع رسمية تعطي المثال في انتهاك المعطيات الشخصية"
+        summary = "مواقع عمومية تونسية تنشر بيانات شخصية للمواطنين بالمخالفة للقانون."
+        issue = classify_issue(summary, headline=headline)
+        self.assertEqual(issue, "rights")
+
+    def test_opinion_trials_protests_classified_as_rights(self):
+        """Case J: Protests against opinion trials and persecution must classify under rights."""
+        headline = "وقفة احتجاجية لحراك نفس ضد التنكيل بالتونسيين ومحاكمات الرأي"
+        summary = "مظاهرة وسط العاصمة تونس للمطالبة بوقف التضييق على الحريات وإطلاق سراح المعتقلين."
+        issue = classify_issue(summary, headline=headline)
+        self.assertEqual(issue, "rights")
+
+
 if __name__ == "__main__":
     unittest.main()
+

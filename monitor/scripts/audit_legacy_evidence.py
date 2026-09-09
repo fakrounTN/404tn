@@ -102,7 +102,8 @@ def audit_legacy_evidence(db_path: Optional[str] = None) -> Dict[str, Any]:
     # Connect strictly in read-only mode using sqlite URI
     # On Windows / Posix, URI read-only ensures no lock modification or accidental write
     try:
-        uri = f"file:{os.path.abspath(target_db)}?mode=ro"
+        import pathlib
+        uri = pathlib.Path(target_db).resolve().as_uri() + "?mode=ro"
         conn = sqlite3.connect(uri, uri=True)
     except Exception:
         conn = sqlite3.connect(target_db)
@@ -190,6 +191,7 @@ def audit_legacy_evidence(db_path: Optional[str] = None) -> Dict[str, Any]:
             "raw_current_issue": raw_current_issue,
             "proposed_issue": proposed_issue,
             "decision": decision,
+            "action": decision,
             "confidence": round(confidence, 2),
             "reason": decision_reason
         }

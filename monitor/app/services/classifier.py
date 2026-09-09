@@ -1,14 +1,40 @@
 # monitor/app/services/classifier.py
 import re
 import unicodedata
+import functools
 from typing import Tuple, List, Optional, Dict, Any
 
 # Low-value, generic landing pages, training announcements, sports, and routine administrative patterns
 GENERIC_PAGE_PATTERNS = [
-    r"^actualites?$", r"^actualite$", r"^rapports?$", r"^rapports? d['’]activites?$",
-    r"^publications?$", r"^accueil$", r"^index$", r"^archives?$", r"^recherche$",
-    r"^contact$", r"^a propos$", r"^qui sommes[- ]nous\??$",
-    r"^الرئيسية$", r"^أخبار$", r"^اخبار$", r"^تقارير$", r"^إصدارات$", r"^اصدارات$", r"^وثائق$", r"^من نحن\??$"
+    r"^actualites?(?:\s*[-–—/|:]\s*.*)?$",
+    r"^actualite(?:\s*[-–—/|:]\s*.*)?$",
+    r"^news(?:\s*[-–—/|:]\s*.*)?$",
+    r"^rapports?(?:\s*d['’]activites?)?$",
+    r"^publications?$",
+    r"^communiques?(?:\s*de\s*presse)?$",
+    r"^accueil$",
+    r"^index$",
+    r"^archives?$",
+    r"^recherche$",
+    r"^contact$",
+    r"^a propos$",
+    r"^qui sommes[- ]nous\??$",
+    r"^evenements?$",
+    r"^galerie(?:\s*photos?)?$",
+    r"^documents?$",
+    r"^الرئيسية$",
+    r"^أخبار(?:\s*[-–—/|:]\s*.*)?$",
+    r"^اخبار(?:\s*[-–—/|:]\s*.*)?$",
+    r"^أخبار\s+الوزارة$",
+    r"^نشاط\s+الوزارة$",
+    r"^تقارير$",
+    r"^إصدارات$",
+    r"^اصدارات$",
+    r"^وثائق$",
+    r"^بلاغات(?:\s*صحفية)?$",
+    r"^بيانات(?:\s*صحفية)?$",
+    r"^من نحن\??$",
+    r"^اتصل بنا$"
 ]
 
 TRAINING_WORKSHOP_PATTERNS = [
@@ -20,16 +46,40 @@ TRAINING_WORKSHOP_PATTERNS = [
 SPORTS_PATTERNS = [
     r"jeux mediterraneens", r"jm tarente", r"tarente", r"aviron", r"halterophilie", r"gymnastique",
     r"medaille d['’]or", r"medaille d['’]argent", r"medaille de bronze", r"medaillee?",
-    r"championnat", r"firas katoussi", r"karem ben hnia", r"moetaman billah",
+    r"championnat", r"firas katoussi", r"karem ben hnia", r"moetaman billah", r"ahmed jaziri",
+    r"marwa bouzayani", r"rehab dhahri", r"aymen bacha", r"lamouchi", r"herve renard", r"hervé renard",
+    r"coupe du monde", r"mondial 2026", r"la ftf\b", r"\bftf\b", r"federation tunisienne de football",
+    r"equipe nationale de football", r"selection nationale", r"ligue 1", r"mercato", r"mercato estival",
+    r"foot - ", r"football", r"athletisme", r"steeple", r"3000 m steeple", r"handball", r"basketball",
     r"العاب البحر الابيض المتوسط", r"العاب متوسطية", r"الالعاب المتوسطية", r"تارانتو",
     r"ميدالية ذهبية", r"ميدالية فضية", r"ميدالية برونزية", r"ميدالية", r"الميدالية",
-    r"الذهبية", r"الفضية", r"البرونزية", r"بطولة العالم", r"كرة القدم", r"رفع الاثقال", r"رفع اثقال", r"رفع الأثقال"
+    r"الذهبية", r"الفضية", r"البرونزية", r"بطولة العالم", r"كرة القدم", r"رفع الاثقال", r"رفع اثقال", r"رفع الأثقال",
+    r"جامعة كرة القدم", r"الجامعة التونسية لكرة القدم", r"كأس العالم", r"كاس العالم",
+    r"المنتخب الوطني لكرة القدم", r"المنتخب التونسي", r"ألعاب القوى", r"العاب القوى", r"سباق 3000",
+    r"كرة اليد", r"كرة السلة", r"الترجي الرياضي", r"النادي الافريقي", r"النجم الساحلي", r"النادي الصفاقسي"
 ]
 
 ROUTINE_ADMIN_PATTERNS = [
+    # Contests & Apps
     r"open applications for best reporting", r"application mobile pour acceder aux services",
     r"lancement de la bibliotheque documentaire en ligne", r"concours pour le recrutement",
-    r"المسابقة الوطنية لأفضل عمل صحفي", r"تطبيق جوال"
+    r"المسابقة الوطنية لأفضل عمل صحفي", r"تطبيق جوال",
+    # Public Tenders & Procurement
+    r"appel d['’]offres?", r"appels d['’]offres?", r"avis d['’]appel d['’]offres?",
+    r"marche public", r"marches publics", r"consultation pour l['’]acquisition",
+    r"acquisition de materiel", r"fourniture de bureau", r"avis de consultation",
+    r"طلب عروض", r"طلبات العروض", r"طلب العروض", r"استشارة لاقتناء", r"استشارة عدد",
+    r"طلب عروض عدد", r"لاقتناء", r"صفقة عمومية", r"صفقات عمومية", r"طلب عروض وطني",
+    r"طلب عروض دولي", r"اقتناء آلات ناسخة", r"اقتناء سيارات", r"اقتناء معدات",
+    # Protocol / Ceremonial
+    r"remise des lettres de creance", r"visite de courtoisie", r"echange de voeux",
+    r"تسليم أوراق اعتماد", r"تسلم أوراق اعتماد", r"تبادل التهاني", r"برقية تهنئة",
+    # Generic In-Vitro / Laboratory Biomedical / Botanical Chemistry (PubMed)
+    r"in vitro antioxidant", r"essential oil composition", r"phytochemical screening",
+    r"antimicrobial activity of", r"cytotoxic activity of", r"in vitro evaluation",
+    r"chemical composition and biological activities", r"synthesis and characterization of",
+    r"molecular docking", r"rat liver", r"activite antioxydante", r"huile essentielle de",
+    r"criblage phytochimique"
 ]
 
 # PRIMARY SUBJECT TAXONOMY DEFINITION (EN, FR, AR)
@@ -91,9 +141,10 @@ PRIMARY_TAXONOMY = {
             "قدرة شرائية", "القدرة الشرائية", "تضخم", "التضخم", "إضراب", "الإضراب", "اضراب", "الاضراب",
             "انتداب", "الانتداب", "أسعار المواد الأساسية", "اصحاب الشهادات", "أصحاب الشهادات",
             "اصحاب الشهائد", "أصحاب الشهائد", "المعطلين عن العمل", "سوق الشغل",
-            "الاتحاد العام التونسي للشغل", "مطالب الشغل", "فرص عمل"
+            "الاتحاد العام التونسي للشغل", "مطالب الشغل", "فرص عمل", "سوق العمل", "قانون العمل",
+            "ظروف العمل", "عقود العمل", "مناصب عمل", "توفير مواطن الشغل", "عمال الحضائر", "التشغيل الهش"
         ],
-        "context": ["emploi", "employment", "job", "salary", "salaire", "travailleurs", "ouvriers", "bct", "ins", "fmi", "عمل", "رواتب"]
+        "context": ["emploi", "employment", "job", "salary", "salaire", "travailleurs", "ouvriers", "bct", "ins", "fmi", "رواتب"]
     },
     "public_services": {
         "strong": [
@@ -119,11 +170,24 @@ PRIMARY_TAXONOMY = {
             "prison", "detenu", "detenus", "detenue", "torture", "proces", "droits de l'homme",
             "syndicat des journalistes", "detention arbitraire", "negligences medicales dans les prisons",
             "prisonniers d'opinion", "freedom of expression", "press freedom", "human rights",
+            "donnees personnelles", "protection des donnees personnelles", "atteinte aux donnees personnelles",
+            "violation des donnees personnelles", "mort en detention", "morts dans les prisons",
+            "deces en prison", "conditions carcerales", "torture en detention", "proces politique",
+            "proces d'opinion", "prisonniers politiques", "liberation des detenus",
             "مرسوم 54", "المرسوم 54", "حرية الصحافة", "حرية التعبير", "نقابة الصحفيين", "النقابة الوطنية للصحفيين",
             "محكمة", "المحكمة", "قضاء", "القضاء", "قضاة", "القضاة", "سجن", "السجن", "سجون", "السجون",
             "إيقاف", "الإيقاف", "ايقاف", "بطاقة إيداع", "بطاقة ايداع", "سجناء", "السجناء", "معتقل",
             "معتقلين", "المعتقلين", "حقوق الإنسان", "حقوق الانسان", "محاكمة", "المحاكمة",
-            "المنظمة التونسية لمناهضة التعذيب", "مناهضة التعذيب", "تعذيب"
+            "المنظمة التونسية لمناهضة التعذيب", "مناهضة التعذيب", "تعذيب",
+            "خلف القضبان", "الموت خلف القضبان", "موت خلف القضبان", "الوفيات في السجون", "وفيات السجون",
+            "احتجاز", "تحتجز الدولة", "التعذيب في السجون", "سوء المعاملة في السجون", "المعاملة اللاإنسانية",
+            "الاحتجاز التعسفي", "مراكز الاحتجاز", "أوضاع السجون", "ظروف السجون", "الانتهاكات داخل السجون",
+            "المعطيات الشخصية", "انتهاك المعطيات الشخصية", "حماية المعطيات الشخصية", "بيانات شخصية",
+            "الهيئة الوطنية لحماية المعطيات الشخصية", "محاكمات الرأي", "محاكمات الراي", "سجناء الرأي",
+            "سجناء الراي", "سجين رأي", "ملاحقات قضائية", "التنكيل بالمعارضين", "التنكيل بالتونسيين",
+            "حراك نفس", "وقفة احتجاجية", "اطلاق سراح المعتقلين", "إطلاق سراح المعتقلين", "معتقلي الرأي",
+            "معتقلو الرأي", "التضييق على الحريات", "استهداف المعارضين", "قمع الحريات", "محاكمات سياسية",
+            "سجين سياسي", "المعتقلين السياسيين", "المعتقلون السياسيون"
         ],
         "context": ["justice", "avocat", "lawyer", "liberte", "freedom", "droit", "عدالة", "محامين", "حقوق", "حرية"]
     },
@@ -140,9 +204,13 @@ PRIMARY_TAXONOMY = {
         "strong": [
             "phosphogypse", "dechets industriels", "dechets toxiques", "rejets chimiques",
             "pollution marine", "catastrophe environnementale", "anpe", "toxic gas",
-            "فسفوجيبس", "نفايات صناعية", "تلوث بحري", "تلوث بيئي", "كارثة بيئية", "الرويسات"
+            "protection du littoral", "littoral", "erosion côtiere", "erosion cotiere",
+            "degradation environnementale", "rejets polluants",
+            "فسفوجيبس", "نفايات صناعية", "تلوث بحري", "تلوث بيئي", "كارثة بيئية", "الرويسات",
+            "حماية السواحل", "السواحل", "حماية الشريط الساحلي", "شريط ساحلي", "تأكل السواحل",
+            "الانجراف البحري", "حماية البيئة", "البيئة الساحلية", "انقاذ الشواطئ"
         ],
-        "context": ["pollution", "environnement", "environment", "dechets", "تلوث", "بيئة", "نفايات"]
+        "context": ["pollution", "environnement", "environment", "dechets", "تلوث", "بيئة", "نفايات", "سواحل"]
     },
     "institutions": {
         "strong": [
@@ -153,7 +221,7 @@ PRIMARY_TAXONOMY = {
             "رئاسة الجمهورية", "رئيس الجمهورية", "تحوير وزاري", "مجلس نواب الشعب", "هيئة الانتخابات",
             "دستور 2022", "قصر قرطاج", "القصبة", "شغور منصب الرئيس", "أمر رئاسي"
         ],
-        "context": ["president", "gouvernement", "ministre", "politique", "رئيس", "حكومة", "وزير"]
+        "context": ["cour constitutionnelle", "dissolution", "remaniement", "etat d'urgence", "instabilite politique", "تحوير وزاري", "أمر رئاسي", "حل البرلمان", "حالة الطوارئ"]
     }
 }
 
@@ -162,22 +230,31 @@ TUNISIA_SIGNALS = [
     # Explicit Country & Nationality
     "tunisia", "tunisian", "tunisie", "tunisienne", "tunisiens", "tunisiennes",
     "تونس", "تونسي", "تونسية", "التونسي", "التونسية", "تونسيين", "التونسيين", "تونسيات", "التونسيات",
-    "بتونس", "لتونس", "بالجمهورية التونسية", "الجمهورية التونسية",
+    "بتونس", "لتونس", "بالجمهورية التونسية", "الجمهورية التونسية", "بالبلاد التونسية", "البلاد التونسية",
     # Specific Governorates, Cities & Strategic Hubs
     "tunis", "carthage", "bardo", "ariana", "ben arous", "manouba",
     "gabes", "gabès", "sfax", "gafsa", "kasserine", "bizerte", "zarzis",
     "sousse", "monastir", "mahdia", "nabeul", "kairouan", "sidi bouzid",
     "beja", "béja", "jendouba", "kef", "siliana", "zaghouan", "medenine",
     "médenine", "tataouine", "tozeur", "kebili", "kébili", "kerkennah", "el amra", "jbeniana",
+    "djerba", "tabarka", "ghardimaou", "mateur", "menzel bourguiba", "moknine", "chebba",
+    "redeyef", "metlaoui", "moulares", "sbeitla", "makthar", "bouhajla", "regueb", "feriana", "thala",
     "قابس", "صفاقس", "قفصة", "القصرين", "بنزرت", "جرجيس", "سوسة", "المنستير",
     "المهدية", "نابل", "القيروان", "سيدي بوزيد", "باجة", "جندوبة", "الكاف",
     "سليانة", "زغوان", "مدنين", "تطاوين", "توزر", "قبلي", "قرقنة", "قرطاج", "باردو", "العامرة", "جبنيانة",
+    "جربة", "طبرقة", "غار الدماء", "ماطر", "منزل بورقيبة", "المكنين", "الشابة", "الرديف", "المتلوي",
     # Specific National Public Entities & Institutions
     "sonede", "steg", "ins", "onagri", "anpe", "gct", "cpg", "ugtt", "snjt", "ftdes", "onas",
     "transtu", "sncft", "bct", "pct", "pharmacie centrale", "arp", "isie", "carthage", "kasbah", "la kasbah",
-    "assemblee des representants", "presidence de la republique",
+    "assemblee des representants", "presidence de la republique", "presidence du gouvernement", "inpdp",
+    "ministere de l'agriculture", "ministre de l'agriculture", "ministere de l'environnement", "ministre de l'environnement",
+    "ministere de la sante", "ministre de la sante", "ministere de l'interieur", "ministre de l'interieur",
+    "ministere de la justice", "ministre de la justice", "ministere des affaires sociales", "ministre des affaires sociales",
+    "ministere du transport", "ministre du transport", "ministere de l'education", "ministere de l'industrie",
+    "وزارة البيئة", "وزير البيئة", "وزارة الفلاحة", "وزارة الصحة", "وزارة الداخلية", "وزارة العدل",
+    "وزارة الشؤون الاجتماعية", "وزارة الصناعة", "وزارة النقل", "وزارة التربية", "وزارة التعليم العالي",
     "صوناد", "ستاغ", "المجمع الكيميائي", "الرائد الرسمي", "الديوان الوطني للتطهير", "ديوان التطهير",
-    "مجلس نواب الشعب", "هيئة الانتخابات", "رئاسة الجمهورية", "jort"
+    "مجلس نواب الشعب", "هيئة الانتخابات", "رئاسة الجمهورية", "رئاسة الحكومة", "قصر قرطاج", "القصبة", "jort"
 ]
 
 # Dedicated national institutions whose publications are demonstrably restricted to Tunisia-specific content
@@ -201,27 +278,28 @@ def _strip_accents(text: str) -> str:
 def _is_arabic(text: str) -> bool:
     return any('\u0600' <= c <= '\u06FF' for c in text)
 
+@functools.lru_cache(maxsize=2048)
+def _get_compiled_pattern(clean_kw: str) -> re.Pattern:
+    if _is_arabic(clean_kw):
+        return re.compile(r"(?:^|[^\w\u0600-\u06FF])(?:[وفلبك]|ال|بال|لل|فال|وال)?" + re.escape(clean_kw) + r"(?:[^\w\u0600-\u06FF]|$)", re.IGNORECASE)
+    else:
+        return re.compile(r"(?:\b|^)" + re.escape(clean_kw) + r"(?:\b|$)", re.IGNORECASE)
+
 def _matches_keyword(keyword: str, text: str) -> bool:
     """Checks for whole-word match or exact phrase match with accent normalization and Arabic attached prefix support."""
     if not keyword or not text:
         return False
     clean_kw = _strip_accents(keyword)
     clean_text = _strip_accents(text)
-    if _is_arabic(clean_kw):
-        pattern = r"(?:^|[^\w\u0600-\u06FF])(?:[وفلبك]|ال|بال|لل|فال|وال)?" + re.escape(clean_kw) + r"(?:[^\w\u0600-\u06FF]|$)"
-    else:
-        pattern = r"(?:\b|^)" + re.escape(clean_kw) + r"(?:\b|$)"
-    return bool(re.search(pattern, clean_text, flags=re.IGNORECASE))
+    pattern = _get_compiled_pattern(clean_kw)
+    return bool(pattern.search(clean_text))
 
 def has_tunisia_context(text: str, source_domain: str = None, source_id: str = None) -> bool:
     """
     Validates that an article has a verified, credible Tunisia connection.
-    Rejects unrelated foreign articles (e.g. Nepal power outage, French water quality)
-    that may coincidentally match generic issue keywords.
+    Rejects unrelated foreign articles (e.g. Nepal power outage, French water quality, Marseille foreign minors)
+    that may coincidentally match generic issue keywords or originate from dedicated domains.
     """
-    if source_domain and source_domain.lower() in DEDICATED_TUNISIA_DOMAINS:
-        return True
-
     if not text:
         return False
 
@@ -333,24 +411,36 @@ def classify_issue_advanced(text: str, headline: str = None, body: str = None) -
             reason="Disambiguation rule: Gafsa phosphate mining hydraulic strain prioritized over pollution/gabes"
         )
 
-    # Disambiguation B: Prison medical neglect / detention conditions -> 'rights'
-    is_prison = any(_matches_keyword(w, clean_h) for w in ["prison", "prisons", "detenu", "detenus", "detenue", "detention", "سجن", "سجناء", "معتقل", "معتقلين", "ايقاف", "إيقاف"])
+    # Disambiguation B: Prison conditions / detention deaths / legal custody -> 'rights'
+    is_prison = any(_matches_keyword(w, clean_h) or _matches_keyword(w, clean_s) for w in [
+        "prison", "prisons", "detenu", "detenus", "detenue", "detention", "conditions carcerales",
+        "mort en detention", "deces en prison",
+        "سجن", "سجناء", "معتقل", "معتقلين", "ايقاف", "إيقاف", "خلف القضبان", "الموت خلف القضبان",
+        "وفيات السجون", "الوفيات في السجون", "احتجاز", "تحتجز الدولة"
+    ])
     if is_prison:
         return ClassificationResult(
             primary_issue="rights",
             secondary_topics=["public_services"] if any(_matches_keyword(w, full_text) for w in ["hopital", "sante", "صحة"]) else [],
             confidence=0.95,
-            reason="Disambiguation rule: Prison detention and legal proceedings classified under rights"
+            reason="Disambiguation rule: Prison detention, custody deaths, and legal proceedings classified under rights"
         )
 
-    # Disambiguation C: SNJT / Press Freedom / Journalist Defense -> 'rights'
-    is_snjt = any(_matches_keyword(w, clean_h) for w in ["snjt", "نقابة الصحفيين", "journaliste", "journalistes", "صحفي", "صحفيين", "صحفيي"])
-    if is_snjt and any(_matches_keyword(w, full_text) for w in ["decret 54", "liberte", "حرية", "بيان", "تساند", "محاكمة", "قضاء", "مرسوم 54"]):
+    # Disambiguation C: SNJT / Press Freedom / Decree 54 / Opinion trials / Data Privacy / Civil Liberties -> 'rights'
+    is_rights_core = any(_matches_keyword(w, clean_h) for w in [
+        "decret 54", "decree 54", "merkoum 54", "مرسوم 54", "المرسوم 54",
+        "liberte de la presse", "liberte d'expression", "حرية الصحافة", "حرية التعبير",
+        "donnees personnelles", "المعطيات الشخصية", "انتهاك المعطيات الشخصية",
+        "محاكمات الرأي", "محاكمات الراي", "سجناء الرأي", "سجناء الراي", "حراك نفس",
+        "التنكيل بالتونسيين", "معتقلي الرأي"
+    ])
+    is_snjt = any(_matches_keyword(w, clean_h) for w in ["snjt", "نقابة الصحفيين", "النقابة الوطنية للصحفيين", "journaliste", "journalistes", "صحفي", "صحفيين", "صحفيي"])
+    if is_rights_core or (is_snjt and any(_matches_keyword(w, full_text) for w in ["decret 54", "liberte", "حرية", "بيان", "تساند", "محاكمة", "قضاء", "مرسوم 54", "معتقلين", "ايقاف"])):
         return ClassificationResult(
             primary_issue="rights",
             secondary_topics=["institutions"],
             confidence=0.95,
-            reason="Disambiguation rule: SNJT journalist defense / Decree 54 legal action classified under rights"
+            reason="Disambiguation rule: Core civil liberties / SNJT defense / opinion trials / data privacy classified under rights"
         )
 
     # Disambiguation D: Gabès industrial / coastal pollution -> 'gabes'
