@@ -12,6 +12,7 @@ from monitor.app.collectors.ins import INSCollector
 from monitor.app.collectors.government import GovernmentCollector
 from monitor.app.collectors.environment import EnvironmentCollector
 from monitor.app.collectors.independent import IndependentCollector
+from monitor.app.collectors.international import InternationalCollector
 
 COLLECTORS: Dict[str, Type[BaseCollector]] = {
     "tap": TAPCollector,
@@ -23,6 +24,7 @@ COLLECTORS: Dict[str, Type[BaseCollector]] = {
     "government": GovernmentCollector,
     "environment": EnvironmentCollector,
     "independent": IndependentCollector,
+    "international": InternationalCollector,
     "pubmed": PubMedCollector,
     "science": PubMedCollector
 }

@@ -1,57 +1,265 @@
-# 404TN Geographic Locations Registry
+# 404TN Authoritative Geographic Locations Registry (24 Governorates)
 locations:
-  - slug: bizerte
-    name: Bizerte
-    lat: 37.2744
-    lon: 9.8739
-    type: port_city
-    governorate: Bizerte
-    role: "Grain storage, northern naval/maritime base, Ichkeul basin"
-
   - slug: tunis
     name: Tunis
+    name_fr: Tunis
+    name_ar: تونس
+    code: TN-11
     lat: 36.8065
     lon: 10.1815
     type: national_capital
     governorate: Tunis
-    role: "National administrative, presidential (Carthage) and institutional core"
+    role: "National administrative, institutional core, Carthage presidential palace, Bardo parliament"
+
+  - slug: ariana
+    name: Ariana
+    name_fr: Ariana
+    name_ar: أريانة
+    code: TN-12
+    lat: 36.8665
+    lon: 10.1647
+    type: northern_metropolis
+    governorate: Ariana
+    role: "Northern Grand Tunis suburban corridor, Raoued, Soukra, Kalaat el Andalous"
+
+  - slug: ben_arous
+    name: Ben Arous
+    name_fr: Ben Arous
+    name_ar: بن عروس
+    code: TN-13
+    lat: 36.7531
+    lon: 10.2189
+    type: industrial_port_corridor
+    governorate: Ben Arous
+    role: "Southern Grand Tunis industrial belt, Rades maritime port, Megrine, Mornag"
+
+  - slug: manouba
+    name: Manouba
+    name_fr: Manouba
+    name_ar: منوبة
+    code: TN-14
+    lat: 36.8083
+    lon: 10.0972
+    type: periurban_agricultural
+    governorate: Manouba
+    role: "Western Grand Tunis, Oued Ellil, Mornaguia, Tebourba agricultural basin"
+
+  - slug: nabeul
+    name: Nabeul
+    name_fr: Nabeul
+    name_ar: نابل
+    code: TN-21
+    lat: 36.4561
+    lon: 10.7376
+    type: coastal_agricultural_peninsula
+    governorate: Nabeul
+    role: "Cap Bon peninsula, citrus & tomato agro-industrial hub, Hammamet, Kelibia"
+
+  - slug: zaghouan
+    name: Zaghouan
+    name_fr: Zaghouan
+    name_ar: زغوان
+    code: TN-22
+    lat: 36.4029
+    lon: 10.1429
+    type: interior_hydraulic_hub
+    governorate: Zaghouan
+    role: "Historical Roman aqueduct source, hydraulic reservoirs, El Fahs, Zriba"
+
+  - slug: bizerte
+    name: Bizerte
+    name_fr: Bizerte
+    name_ar: بنزرت
+    code: TN-23
+    lat: 37.2744
+    lon: 9.8739
+    type: northern_maritime_hub
+    governorate: Bizerte
+    role: "Northern port, grain storage, Menzel Bourguiba naval base, Ichkeul lake basin"
+
+  - slug: beja
+    name: Béja
+    name_fr: Béja
+    name_ar: باجة
+    code: TN-31
+    lat: 36.7256
+    lon: 9.1817
+    type: cereal_breadbasket
+    governorate: Béja
+    role: "Northern cereal agriculture, Medjez El Bab, Testour, Sidi Salem dam"
+
+  - slug: jendouba
+    name: Jendouba
+    name_fr: Jendouba
+    name_ar: جندوبة
+    code: TN-32
+    lat: 36.5011
+    lon: 8.7802
+    type: northwest_watershed
+    governorate: Jendouba
+    role: "Northwestern mountain forests, Tabarka coastal transit, Bou Heurtma dam"
+
+  - slug: kef
+    name: Le Kef
+    name_fr: Le Kef
+    name_ar: الكاف
+    code: TN-33
+    lat: 36.1822
+    lon: 8.7149
+    type: high_plateau_border
+    governorate: Le Kef
+    role: "Western high plateau cereal & mining border, Dahmani, Tajerouine, Mellègue dam"
+
+  - slug: siliana
+    name: Siliana
+    name_fr: Siliana
+    name_ar: سليانة
+    code: TN-34
+    lat: 36.0849
+    lon: 9.3708
+    type: interior_agro_hydraulic
+    governorate: Siliana
+    role: "Central agro-pastoral interior, Makthar, Siliana dam reservoir"
+
+  - slug: kairouan
+    name: Kairouan
+    name_fr: Kairouan
+    name_ar: القيروان
+    code: TN-41
+    lat: 35.6781
+    lon: 10.0963
+    type: central_alluvial_basin
+    governorate: Kairouan
+    role: "Central agricultural irrigation hub, Sbikha, Bouhajla, Nebhana/El Houareb dams"
 
   - slug: kasserine
     name: Kasserine
+    name_fr: Kasserine
+    name_ar: القصرين
+    code: TN-42
     lat: 35.1676
     lon: 8.8365
-    type: interior_center
+    type: western_interior_focal
     governorate: Kasserine
-    role: "Hydraulic stress, dry taps unrest, Alfa pulp industrial zone"
+    role: "Hydraulic stress, dry taps unrest, Alfa pulp SNCPA industrial complex, Sbeitla, Thala"
 
-  - slug: gafsa
-    name: Gafsa
-    lat: 34.4250
-    lon: 8.7842
-    type: mining_basin
-    governorate: Gafsa
-    role: "Phosphate mining extraction basin (CPG), Metlaoui-Mdhilla rail axis"
+  - slug: sidi_bouzid
+    name: Sidi Bouzid
+    name_fr: Sidi Bouzid
+    name_ar: سيدي بوزيد
+    code: TN-43
+    lat: 35.0382
+    lon: 9.4849
+    type: agricultural_groundwater_basin
+    governorate: Sidi Bouzid
+    role: "Groundwater overexploitation, dairy & vegetable production, Regueb, Meknassy"
+
+  - slug: sousse
+    name: Sousse
+    name_fr: Sousse
+    name_ar: سوسة
+    code: TN-51
+    lat: 35.8256
+    lon: 10.6369
+    type: central_coastal_hub
+    governorate: Sousse
+    role: "Sahel economic & tourism metropolis, commercial port, Msaken, Enfidha industrial zone"
+
+  - slug: monastir
+    name: Monastir
+    name_fr: Monastir
+    name_ar: المنستير
+    code: TN-52
+    lat: 35.7779
+    lon: 10.8261
+    type: coastal_textile_corridor
+    governorate: Monastir
+    role: "Sahel textile export cluster, fishing ports, Moknine, Ksar Hellal, Teboulba"
+
+  - slug: mahdia
+    name: Mahdia
+    name_fr: Mahdia
+    name_ar: المهدية
+    code: TN-53
+    lat: 35.5047
+    lon: 11.0622
+    type: coastal_maritime_buffer
+    governorate: Mahdia
+    role: "Maritime fishing fleet, olive cultivation, Chebba, El Jem, coastal migration buffer"
 
   - slug: sfax
     name: Sfax
+    name_fr: Sfax
+    name_ar: صفاقس
+    code: TN-61
     lat: 34.7406
     lon: 10.7603
-    type: coastal_metropolis
+    type: south_central_economic_focal
     governorate: Sfax
-    role: "Migration departure focal point, El Amra rural transit zone, major commercial port"
+    role: "Migration departure focal point, El Amra rural transit zone, major commercial port, Kerkennah islands"
+
+  - slug: gafsa
+    name: Gafsa
+    name_fr: Gafsa
+    name_ar: قفصة
+    code: TN-71
+    lat: 34.4250
+    lon: 8.7842
+    type: phosphate_mining_basin
+    governorate: Gafsa
+    role: "Phosphate mining extraction basin (CPG), Metlaoui-Mdhilla rail axis, Redeyef, Moulares"
+
+  - slug: tozeur
+    name: Tozeur
+    name_fr: Tozeur
+    name_ar: توزر
+    code: TN-72
+    lat: 33.9197
+    lon: 8.1335
+    type: desert_oasis_corridor
+    governorate: Tozeur
+    role: "Chott el Djerid oasis ecosystem, date palm production, deep aquifer depletion, Nefta"
+
+  - slug: kebili
+    name: Kébili
+    name_fr: Kébili
+    name_ar: قبلي
+    code: TN-73
+    lat: 33.7044
+    lon: 8.9690
+    type: saharan_geothermal_oasis
+    governorate: Kébili
+    role: "Geothermal agricultural greenhouses, Nefzaoua oasis, Douz, Souk Lahad"
 
   - slug: gabes
     name: Gabès
+    name_fr: Gabès
+    name_ar: قابس
+    code: TN-81
     lat: 33.8815
     lon: 10.0982
     type: flagship_active_file
     governorate: Gabès
-    role: "GCT chemical processing complex, phosphogypsum marine discharge, maritime oasis"
+    role: "GCT chemical processing complex, phosphogypsum marine discharge, maritime oasis, Chatt Essalam"
 
-  - slug: zarzis
-    name: Zarzis
-    lat: 33.5040
-    lon: 11.1122
-    type: border_coastal_hub
-    governorate: Medenine
-    role: "Maritime search and rescue buffer, Ben Guerdane border corridor"
+  - slug: medenine
+    name: Médenine
+    name_fr: Médenine
+    name_ar: مدنين
+    code: TN-82
+    lat: 33.3549
+    lon: 10.5055
+    type: border_island_corridor
+    governorate: Médenine
+    role: "Zarzis search and rescue buffer, Djerba island tourism, Ben Guerdane Ras Jedir border post"
+
+  - slug: tataouine
+    name: Tataouine
+    name_fr: Tataouine
+    name_ar: تطاوين
+    code: TN-83
+    lat: 32.9297
+    lon: 10.4518
+    type: deep_saharan_energy_corridor
+    governorate: Tataouine
+    role: "El Kamour energy transit corridor, Saharan desert border, Remada, Dehiba"

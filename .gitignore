@@ -32,8 +32,7 @@ yarn-error.log*
 *.db-shm
 *.bak
 *.backup
-backups/
-monitor/data/*.db*
+monitor/data/*
 !monitor/data/.gitkeep
 
 # Certificates & Keys

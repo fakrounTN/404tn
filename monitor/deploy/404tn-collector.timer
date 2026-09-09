@@ -1,0 +1,17 @@
+[Unit]
+Description=404TN Evidence Monitor V2 Scheduled Ingestion Timer (5 Daily Windows)
+Requires=404tn-collector.service
+
+[Timer]
+# 5 Daily Ingestion Windows (06:00, 09:00, 13:00, 18:00, 23:30 Africa/Tunis)
+OnCalendar=*-*-* 06:00:00
+OnCalendar=*-*-* 09:00:00
+OnCalendar=*-*-* 13:00:00
+OnCalendar=*-*-* 18:00:00
+OnCalendar=*-*-* 23:30:00
+
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

@@ -33,7 +33,53 @@ class EvidenceItemSchema(BaseModel):
     presidential_response: Optional[str] = None
     outcome: Optional[str] = None
     tags: Optional[List[str]] = []
+    secondary_topics: Optional[List[str]] = []
+    classification_confidence: float = 0.9
+    classification_reason: Optional[str] = None
+    ingestion_status: str = "AUTO_ACCEPTED"
     freshness: Optional[str] = None
+
+class GovernorateStatsSchema(BaseModel):
+    slug: str
+    governorate: str
+    name_ar: str
+    name_fr: str
+    code: str
+    lat: float
+    lon: float
+    role: Optional[str] = None
+    type: Optional[str] = "governorate"
+    unique_events: int = 0
+    evidence_records: int = 0
+    sources_count: int = 0
+    water_count: int = 0
+    electricity_count: int = 0
+    work_count: int = 0
+    migration_count: int = 0
+    public_services_count: int = 0
+    rights_count: int = 0
+    pollution_count: int = 0
+    last_updated: Optional[str] = None
+
+class EventClusterSchema(BaseModel):
+    cluster_id: str
+    id: str
+    issue: str
+    location: str
+    governorate: Optional[str] = None
+    delegation: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    event_date: str
+    primary_headline: str
+    summary: Optional[str] = None
+    source_count: int = 1
+    evidence_count: int = 1
+    sources: List[str] = []
+    evidence_ids: List[str] = []
+    status: str = "REPORTED"
+    classification: str = "FACT"
+    weight: float = 1.0
 
 class LocationMapNodeSchema(BaseModel):
     slug: str
@@ -51,11 +97,18 @@ class LocationMapNodeSchema(BaseModel):
 
 class MapResponseSchema(BaseModel):
     type: str = "FeatureCollection"
+    mode: str = "incidents"
+    time_filter: str = "ALL"
+    issue_filter: str = "ALL"
+    disclaimer: str = "Density reflects documented evidence collected by 404TN, not a definitive measurement of real-world severity."
     updated_at: str
     total_monitored_nodes: int
     active_flagship_file: str
-    locations: List[LocationMapNodeSchema]
+    governorates: List[GovernorateStatsSchema] = []
+    clusters: List[EventClusterSchema] = []
+    locations: List[LocationMapNodeSchema] = []
     features: List[Dict[str, Any]] = []
+    national_summary: Dict[str, Any] = {}
 
 class TimelineEventSchema(BaseModel):
     id: str

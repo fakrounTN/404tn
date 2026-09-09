@@ -1,0 +1,14 @@
+[Unit]
+Description=404TN Evidence Monitor V2 Collection Runner (Docker Trigger)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/404tn/repo
+ExecStart=/usr/bin/docker compose -f /opt/404tn/repo/deploy/docker-compose.production.yml --env-file /opt/404tn/.env.production run --rm --no-deps api python monitor/scripts/collect.py
+Restart=no
+TimeoutSec=900
+StandardOutput=journal
+StandardError=journal
+NoNewPrivileges=true

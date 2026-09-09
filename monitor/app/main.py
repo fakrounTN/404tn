@@ -15,9 +15,11 @@ from monitor.app.database import get_db, init_db
 from monitor.app.schemas import (
     EvidenceItemSchema, LocationMapNodeSchema, MapResponseSchema,
     TimelineEventSchema, AccountabilityRecordSchema, IssueDetailSchema,
-    SourceHealthSchema, PublicStatsSchema
+    SourceHealthSchema, PublicStatsSchema, GovernorateStatsSchema, EventClusterSchema
 )
 from monitor.app.services.freshness import calculate_freshness
+from monitor.app.services.clustering import cluster_evidence_items
+from monitor.app.services.locations import GOVERNORATE_DEFINITIONS, load_locations
 
 # Production Configuration
 APP_ENV = os.environ.get("APP_ENV", "development").lower()
@@ -111,6 +113,7 @@ MONTH_NAMES = {
 TOPIC_MAP = {
     "water": "WATER",
     "electricity": "ENERGY",
+    "energy": "ENERGY",
     "pollution": "GABÈS",
     "gabes": "GABÈS",
     "work": "ECONOMY",
@@ -130,7 +133,7 @@ def health_check():
     try:
         with get_db() as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) as cnt FROM evidence WHERE id LIKE 'EV-AUTO-%'")
+            cursor.execute("SELECT COUNT(*) as cnt FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)")
             evidence_count = cursor.fetchone()["cnt"]
             db_ok = True
     except Exception as e:
@@ -145,84 +148,284 @@ def health_check():
         "total_evidence_records": evidence_count
     }
 
-@app.get("/api/map", response_model=MapResponseSchema, summary="Geospatial Monitored Nodes and GeoJSON Features")
-def get_map_nodes():
-    """Returns dynamic map features and monitored coordinate nodes derived from real EV-AUTO-* evidence."""
-    locations_cfg = _load_locations_config()
+@app.get("/api/map", response_model=MapResponseSchema, summary="Geospatial Monitored Nodes, Clusters and 24 Governorates")
+def get_map_nodes(
+    mode: Optional[str] = Query("incidents", description="incidents | density | governorates"),
+    time_filter: Optional[str] = Query("ALL", description="24H | 7D | 30D | SUMMER 2026 | ALL"),
+    issue: Optional[str] = Query("ALL", description="ALL | WATER | ELECTRICITY | WORK | MIGRATION | PUBLIC SERVICES | RIGHTS | POLLUTION"),
+    governorate: Optional[str] = Query(None, description="Filter by governorate slug or name")
+):
+    """
+    Returns dynamic map features, event clusters, and 24-governorate statistics derived from real EV-AUTO-* evidence.
+    Supports Incidents, Evidence Density, and Governorate View modes with multi-dimensional filtering.
+    """
+    now = datetime.now(timezone.utc)
+
+    # 1. Load authoritative 24 governorates
+    loc_registry = load_locations()
+    gov_defs_list = list(loc_registry.values()) if loc_registry else [
+        {
+            "slug": g["slug"],
+            "name": g["governorate"],
+            "governorate": g["governorate"],
+            "name_ar": g["name_ar"],
+            "name_fr": g["name_fr"],
+            "code": f"TN-{g['slug'][:2].upper()}",
+            "lat": g["centroid"][0],
+            "lon": g["centroid"][1],
+            "role": f"Administrative governorate of {g['governorate']}",
+            "type": "governorate"
+        }
+        for g in GOVERNORATE_DEFINITIONS
+    ]
 
     with get_db() as conn:
         cursor = conn.cursor()
 
-        # Build monitored nodes dynamically from authoritative locations registry + live evidence aggregation
-        nodes = []
-        for loc in locations_cfg:
-            slug = loc["slug"]
-            name = loc["name"]
-            cursor.execute("""
-                SELECT COUNT(*) as cnt, MAX(headline) as latest
-                FROM evidence
-                WHERE id LIKE 'EV-AUTO-%' AND (location = ? OR location = ?)
-            """, (name, slug))
-            agg = cursor.fetchone()
-            count = agg["cnt"] if agg else 0
-            latest = agg["latest"] if agg and agg["latest"] else f"Active monitoring node for {name}"
-
-            nodes.append(LocationMapNodeSchema(
-                slug=slug,
-                name=name,
-                lat=loc["lat"],
-                lon=loc["lon"],
-                status="ACTIVE FILE" if slug == "gabes" else ("VERIFIED" if count > 0 else "REPORTED"),
-                type=loc.get("type", "node"),
-                governorate=loc.get("governorate", name),
-                role=loc.get("role", ""),
-                issues=[loc.get("type", "monitoring")],
-                evidence_count=count,
-                latest_evidence=latest,
-                freshness="UPDATED < 24H" if count > 0 else "HISTORICAL BASELINE"
-            ))
-
-        # Query real geocoded evidence records (EV-AUTO-* only)
+        # Query all real AUTO_ACCEPTED evidence records
         cursor.execute("""
             SELECT * FROM evidence
-            WHERE id LIKE 'EV-AUTO-%' AND latitude IS NOT NULL AND longitude IS NOT NULL
+            WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)
             ORDER BY COALESCE(event_date, published_at) DESC
         """)
-        ev_rows = cursor.fetchall()
-        features = []
-        for ev in ev_rows:
-            date_val = ev["event_date"] or (ev["published_at"][:10] if ev["published_at"] else "2026")
-            features.append({
-                "type": "Feature",
-                "id": ev["id"],
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [float(ev["longitude"]), float(ev["latitude"])]  # GeoJSON [lon, lat]
-                },
-                "properties": {
-                    "id": ev["id"],
-                    "location": ev["location"] or "Tunisia",
-                    "issue": ev["issue"],
-                    "status": ev["status"] or "REPORTED",
-                    "weight": ev["evidence_confidence"] or 1.0,
-                    "date": date_val,
-                    "title": ev["headline"],
-                    "evidence_id": ev["id"],
-                    "classification": ev["classification"] or "FACT",
-                    "freshness": ev["current_or_historical"] or "CURRENT",
-                    "source_name": ev["source_name"],
-                    "source_url": ev["source_url"]
-                }
-            })
+        all_raw_rows = [dict(r) for r in cursor.fetchall()]
+
+        # 2. Time & Issue & Governorate In-Memory Filtering
+        filtered_evidence = []
+        for r in all_raw_rows:
+            date_raw = r.get("event_date") or r.get("published_at") or ""
+            date_iso = date_raw[:10] if len(date_raw) >= 10 else ""
+
+            # Time filter
+            if time_filter and time_filter != "ALL":
+                tf = time_filter.upper()
+                if tf == "24H":
+                    try:
+                        p_dt = datetime.fromisoformat(r["collected_at"].replace("Z", "+00:00"))
+                        if (now - p_dt).total_seconds() > 86400:
+                            continue
+                    except Exception:
+                        pass
+                elif tf == "7D":
+                    try:
+                        p_dt = datetime.fromisoformat(r["collected_at"].replace("Z", "+00:00"))
+                        if (now - p_dt).total_seconds() > 7 * 86400:
+                            continue
+                    except Exception:
+                        pass
+                elif tf == "30D":
+                    try:
+                        p_dt = datetime.fromisoformat(r["collected_at"].replace("Z", "+00:00"))
+                        if (now - p_dt).total_seconds() > 30 * 86400:
+                            continue
+                    except Exception:
+                        pass
+                elif tf in ("SUMMER 2026", "2026"):
+                    if not (date_iso.startswith("2026") and any(f"-0{m}" in date_iso for m in [6, 7, 8, 9])):
+                        continue
+
+            # Issue filter
+            if issue and issue.upper() != "ALL":
+                iss_filter = issue.strip().lower()
+                if iss_filter == "energy":
+                    iss_filter = "electricity"
+                rec_issue = (r.get("issue") or "general").lower()
+                if rec_issue == "energy":
+                    rec_issue = "electricity"
+                if iss_filter == "water" and rec_issue != "water":
+                    continue
+                elif iss_filter == "electricity" and rec_issue != "electricity":
+                    continue
+                elif iss_filter in ("work", "economy") and rec_issue not in ("work", "economy"):
+                    continue
+                elif iss_filter == "migration" and rec_issue != "migration":
+                    continue
+                elif iss_filter in ("public services", "public_services") and rec_issue != "public_services":
+                    continue
+                elif iss_filter in ("rights", "institutions", "rights & institutions") and rec_issue not in ("rights", "institutions", "governance"):
+                    continue
+                elif iss_filter in ("pollution", "gabes", "pollution / gabes") and rec_issue not in ("pollution", "gabes"):
+                    continue
+
+            # Governorate filter
+            if governorate:
+                gov_param = governorate.strip().lower()
+                rec_gov = (r.get("governorate") or r.get("location") or "").lower()
+                if gov_param not in rec_gov:
+                    continue
+
+            filtered_evidence.append(r)
+
+        # 3. Perform Conservative Multi-Source Event Clustering
+        all_clusters = cluster_evidence_items(filtered_evidence)
+
+        # 4. Compute 24 Governorate Statistics
+        gov_stats_list: List[GovernorateStatsSchema] = []
+        loc_nodes_list: List[LocationMapNodeSchema] = []
+
+        for g in gov_defs_list:
+            g_name = g["name"]
+            g_slug = g["slug"]
+            g_gov = g.get("governorate", g_name)
+
+            # Match items and clusters belonging to this governorate
+            gov_items = [
+                item for item in filtered_evidence
+                if (item.get("governorate") and item.get("governorate").lower() == g_gov.lower()) or
+                   (item.get("location") and g_gov.lower() in item.get("location").lower()) or
+                   (item.get("location") and g_name.lower() in item.get("location").lower())
+            ]
+            gov_clusters = [
+                c for c in all_clusters
+                if (c.get("governorate") and c.get("governorate").lower() == g_gov.lower()) or
+                   (c.get("location") and g_gov.lower() in c.get("location").lower())
+            ]
+
+            sources_set = {item.get("source_name") for item in gov_items if item.get("source_name")}
+
+            # Compute per-issue counts for governorate
+            water_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "water")
+            elec_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("electricity", "energy"))
+            work_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("work", "economy"))
+            mig_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "migration")
+            ps_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "public_services")
+            rights_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance"))
+            pol_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+
+            latest_dt = max([it.get("event_date") or it.get("published_at") or "" for it in gov_items], default=None)
+
+            gov_schema = GovernorateStatsSchema(
+                slug=g_slug,
+                governorate=g_gov,
+                name_ar=g.get("name_ar", g_name),
+                name_fr=g.get("name_fr", g_name),
+                code=g.get("code", f"TN-{g_slug[:2].upper()}"),
+                lat=g["lat"],
+                lon=g["lon"],
+                role=g.get("role", ""),
+                type=g.get("type", "governorate"),
+                unique_events=len(gov_clusters),
+                evidence_records=len(gov_items),
+                sources_count=len(sources_set),
+                water_count=water_cnt,
+                electricity_count=elec_cnt,
+                work_count=work_cnt,
+                migration_count=mig_cnt,
+                public_services_count=ps_cnt,
+                rights_count=rights_cnt,
+                pollution_count=pol_cnt,
+                last_updated=latest_dt
+            )
+            gov_stats_list.append(gov_schema)
+
+            # Node schema for backward compatibility
+            loc_nodes_list.append(LocationMapNodeSchema(
+                slug=g_slug,
+                name=g_name,
+                lat=g["lat"],
+                lon=g["lon"],
+                status="ACTIVE FILE" if g_slug == "gabes" else ("VERIFIED" if len(gov_items) > 0 else "REPORTED"),
+                type=g.get("type", "governorate"),
+                governorate=g_gov,
+                role=g.get("role", ""),
+                issues=[g.get("type", "monitoring")],
+                evidence_count=len(gov_items),
+                latest_evidence=gov_items[0]["headline"] if gov_items else f"Active monitoring node for {g_name}",
+                freshness="UPDATED < 24H" if len(gov_items) > 0 else "HISTORICAL BASELINE"
+            ))
+
+        # 5. Build GeoJSON Features based on Mode
+        features: List[Dict[str, Any]] = []
+
+        if mode in ("incidents", "density"):
+            # GeoJSON Points for each geocoded cluster
+            for c in all_clusters:
+                if c.get("latitude") is not None and c.get("longitude") is not None:
+                    feat_id = c["evidence_ids"][0] if len(c.get("evidence_ids", [])) == 1 else c["cluster_id"]
+                    features.append({
+                        "type": "Feature",
+                        "id": feat_id,
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [float(c["longitude"]), float(c["latitude"])]  # GeoJSON [lon, lat]
+                        },
+                        "properties": {
+                            "id": feat_id,
+                            "cluster_id": c["cluster_id"],
+                            "location": c["location"],
+                            "governorate": c["governorate"],
+                            "delegation": c["delegation"],
+                            "issue": c["issue"],
+                            "status": c["status"],
+                            "weight": c.get("weight", 1.0),  # Unique cluster weight
+                            "date": c["event_date"],
+                            "title": c["primary_headline"],
+                            "headline": c["primary_headline"],
+                            "evidence_id": c["evidence_ids"][0] if c["evidence_ids"] else c["cluster_id"],
+                            "evidence_ids": c["evidence_ids"],
+                            "evidence_count": c["evidence_count"],
+                            "source_count": c["source_count"],
+                            "sources": c["sources"],
+                            "classification": c["classification"]
+                        }
+                    })
+        elif mode == "governorates":
+            # GeoJSON Points for all 24 governorates
+            for g_stat in gov_stats_list:
+                features.append({
+                    "type": "Feature",
+                    "id": f"GOV-{g_stat.code}",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [float(g_stat.lon), float(g_stat.lat)]
+                    },
+                    "properties": g_stat.model_dump()
+                })
+
+        # 6. National Evidence Isolation Summary
+        national_items = [
+            it for it in filtered_evidence
+            if it.get("location_scope") == "NATIONAL" or it.get("governorate") is None or it.get("latitude") is None
+        ]
+        national_summary = {
+            "total_national_records": len(national_items),
+            "water_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "water"),
+            "electricity_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("electricity", "energy")),
+            "work_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("work", "economy")),
+            "migration_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "migration"),
+            "public_services_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "public_services"),
+            "rights_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance")),
+            "pollution_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+        }
 
         return MapResponseSchema(
             type="FeatureCollection",
-            updated_at=datetime.now(timezone.utc).isoformat(),
-            total_monitored_nodes=len(nodes),
+            mode=mode,
+            time_filter=time_filter or "ALL",
+            issue_filter=issue or "ALL",
+            disclaimer="Density reflects documented evidence collected by 404TN, not a definitive measurement of real-world severity.",
+            updated_at=now.isoformat(),
+            total_monitored_nodes=len(gov_stats_list),
             active_flagship_file="gabes",
-            locations=nodes,
-            features=features
+            governorates=gov_stats_list,
+            clusters=[EventClusterSchema(**c) for c in all_clusters],
+            locations=loc_nodes_list,
+            features=features,
+            national_summary=national_summary
         )
+
+@app.get("/api/evidence/review-queue", summary="Internal Review Queue for Borderline Candidates")
+def get_review_queue():
+    """Returns evidence records flagged as REVIEW_REQUIRED."""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT * FROM evidence
+            WHERE ingestion_status = 'REVIEW_REQUIRED'
+            ORDER BY collected_at DESC
+        """)
+        rows = cursor.fetchall()
+        return [dict(r) for r in rows]
 
 @app.get("/api/evidence/{evidence_id}", response_model=EvidenceItemSchema, summary="Deep Evidence Provenance Detail")
 def get_evidence_detail(evidence_id: str):
@@ -234,6 +437,7 @@ def get_evidence_detail(evidence_id: str):
             raise HTTPException(status_code=404, detail=f"Evidence record {evidence_id} not found")
         
         tags_list = json.loads(row["tags"]) if row["tags"] else []
+        sec_topics = json.loads(row["secondary_topics"]) if "secondary_topics" in row.keys() and row["secondary_topics"] else []
         freshness_label = calculate_freshness(row["published_at"], row["current_or_historical"])
 
         return EvidenceItemSchema(
@@ -267,6 +471,10 @@ def get_evidence_detail(evidence_id: str):
             presidential_response=row["presidential_response"],
             outcome=row["outcome"],
             tags=tags_list,
+            secondary_topics=sec_topics,
+            classification_confidence=row["classification_confidence"] if "classification_confidence" in row.keys() and row["classification_confidence"] is not None else 0.9,
+            classification_reason=row["classification_reason"] if "classification_reason" in row.keys() else None,
+            ingestion_status=row["ingestion_status"] if "ingestion_status" in row.keys() and row["ingestion_status"] else "AUTO_ACCEPTED",
             freshness=freshness_label
         )
 
@@ -280,7 +488,7 @@ def get_timeline_events(
         cursor = conn.cursor()
         cursor.execute("""
             SELECT * FROM evidence
-            WHERE id LIKE 'EV-AUTO-%' AND headline IS NOT NULL AND source_url IS NOT NULL
+            WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND headline IS NOT NULL AND source_url IS NOT NULL
             ORDER BY COALESCE(event_date, published_at) DESC
         """)
         rows = cursor.fetchall()
@@ -362,7 +570,7 @@ def get_gabes_dossier():
         cursor.execute("""
             SELECT * FROM evidence
             WHERE (issue = 'gabes' OR location = 'Gabès' OR headline LIKE '%Gabès%' OR headline LIKE '%Gabes%')
-            AND id LIKE 'EV-AUTO-%'
+            AND id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)
             ORDER BY COALESCE(event_date, published_at) DESC
         """)
         evidence_rows = cursor.fetchall()
@@ -439,7 +647,7 @@ ISSUE_DEFINITIONS = [
         "category": "ENERGY SECURITY",
         "description": "Outages, network peak load pressure, gas import dependency and service reliability.",
         "status": "LOAD-SHEDDING RISK",
-        "issues": ["electricity"],
+        "issues": ["electricity", "energy"],
         "accountable_institutions": [
             "STEG (Tunisian Company of Electricity and Gas)",
             "Ministry of Industry, Mines and Energy",
@@ -512,7 +720,7 @@ ISSUE_DEFINITIONS = [
 def get_issues_index():
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT issue, COUNT(*) as count FROM evidence WHERE id LIKE 'EV-AUTO-%' AND issue != 'general' AND issue IS NOT NULL GROUP BY issue")
+        cursor.execute("SELECT issue, COUNT(*) as count FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND issue != 'general' AND issue IS NOT NULL GROUP BY issue")
         counts = {r["issue"]: r["count"] for r in cursor.fetchall()}
 
         result = []
@@ -523,7 +731,7 @@ def get_issues_index():
             placeholders = ",".join("?" for _ in d["issues"])
             cursor.execute(f"""
                 SELECT headline, event_date, published_at FROM evidence
-                WHERE id LIKE 'EV-AUTO-%' AND issue IN ({placeholders})
+                WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND issue IN ({placeholders})
                 ORDER BY COALESCE(event_date, published_at) DESC LIMIT 1
             """, d["issues"])
             latest_row = cursor.fetchone()
@@ -561,7 +769,7 @@ def get_issue_by_slug(slug: str):
         placeholders = ",".join("?" for _ in match_def["issues"])
         cursor.execute(f"""
             SELECT * FROM evidence
-            WHERE id LIKE 'EV-AUTO-%' AND issue IN ({placeholders})
+            WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND issue IN ({placeholders})
             ORDER BY COALESCE(event_date, published_at) DESC
             LIMIT 30
         """, match_def["issues"])
@@ -606,13 +814,13 @@ def get_public_stats():
 
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%'")
+        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)")
         total_ev = cursor.fetchone()[0]
 
-        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND classification = 'FACT'")
+        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND classification = 'FACT'")
         facts_count = cursor.fetchone()[0]
 
-        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND classification = 'CLAIM'")
+        cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL) AND classification = 'CLAIM'")
         claims_count = cursor.fetchone()[0]
 
         return PublicStatsSchema(

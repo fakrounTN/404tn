@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  collector-cron:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: 404tn-collector-cron
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - DATABASE_PATH=/app/monitor/data/404tn.db
+      - TZ=Africa/Tunis
+    volumes:
+      - ../data:/app/monitor/data
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "0 6,9,13,18 * * * cd /app && python monitor/scripts/collect.py >> /app/monitor/data/collector.log 2>&1" > /etc/crontabs/root
+        echo "30 23 * * * cd /app && python monitor/scripts/collect.py >> /app/monitor/data/collector.log 2>&1" >> /etc/crontabs/root
+        echo "0 1 * * * cd /app && python monitor/scripts/daily_quality_report.py --save >> /app/monitor/data/quality_reports.log 2>&1" >> /etc/crontabs/root
+        crond -f -l 2

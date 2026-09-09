@@ -37,7 +37,17 @@ CREATE TABLE IF NOT EXISTS evidence (
     presidential_response TEXT,
     outcome TEXT,
     tags TEXT,
-    content_hash TEXT UNIQUE
+    content_hash TEXT UNIQUE,
+    secondary_topics TEXT,
+    classification_confidence REAL DEFAULT 0.9,
+    classification_reason TEXT,
+    ingestion_status TEXT DEFAULT 'AUTO_ACCEPTED' CHECK(ingestion_status IN ('AUTO_ACCEPTED', 'REVIEW_REQUIRED', 'REJECTED')),
+    location_scope TEXT DEFAULT 'UNRESOLVED' CHECK(location_scope IN ('LOCAL', 'GOVERNORATE', 'MULTI_GOVERNORATE', 'NATIONAL', 'UNRESOLVED')),
+    governorate TEXT,
+    delegation TEXT,
+    locality TEXT,
+    location_confidence REAL DEFAULT 0.0,
+    location_method TEXT DEFAULT 'UNRESOLVED'
 );
 
 CREATE TABLE IF NOT EXISTS sources (
@@ -102,21 +112,62 @@ CREATE TABLE IF NOT EXISTS accountability_records (
     updated_at TEXT NOT NULL,
     FOREIGN KEY (latest_evidence_id) REFERENCES evidence(id)
 );
+'''
 
+INDEXES_SQL = '''
 -- Performance indexes
 CREATE INDEX IF NOT EXISTS idx_evidence_issue ON evidence(issue);
 CREATE INDEX IF NOT EXISTS idx_evidence_published_at ON evidence(published_at);
 CREATE INDEX IF NOT EXISTS idx_evidence_event_date ON evidence(event_date);
 CREATE INDEX IF NOT EXISTS idx_evidence_source_domain ON evidence(source_domain);
 CREATE INDEX IF NOT EXISTS idx_evidence_location ON evidence(location);
+CREATE INDEX IF NOT EXISTS idx_evidence_governorate ON evidence(governorate);
+CREATE INDEX IF NOT EXISTS idx_evidence_scope ON evidence(location_scope);
 CREATE INDEX IF NOT EXISTS idx_evidence_status ON evidence(status);
+CREATE INDEX IF NOT EXISTS idx_evidence_ingestion_status ON evidence(ingestion_status);
 CREATE INDEX IF NOT EXISTS idx_timeline_date ON timeline_events(event_date);
 CREATE INDEX IF NOT EXISTS idx_timeline_topic ON timeline_events(topic);
 '''
 
-def create_tables(conn: sqlite3.Connection):
-    """Initializes standard schema and indexes on any SQLite connection."""
+def create_tables(conn_or_path):
+    """Initializes standard schema, indexes, and applies idempotent column migrations."""
+    if isinstance(conn_or_path, str):
+        with sqlite3.connect(conn_or_path) as c:
+            create_tables(c)
+        return
+
+    conn = conn_or_path
     conn.executescript(SCHEMA_SQL)
+
+    # Idempotent column migrations for existing databases
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA table_info(evidence)")
+    existing_cols = {row[1] if isinstance(row, tuple) else row["name"] for row in cursor.fetchall()}
+
+    if "secondary_topics" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN secondary_topics TEXT")
+    if "classification_confidence" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN classification_confidence REAL DEFAULT 0.9")
+    if "classification_reason" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN classification_reason TEXT")
+    if "ingestion_status" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN ingestion_status TEXT DEFAULT 'AUTO_ACCEPTED'")
+    if "location_scope" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN location_scope TEXT DEFAULT 'UNRESOLVED'")
+    if "governorate" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN governorate TEXT")
+    if "delegation" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN delegation TEXT")
+    if "locality" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN locality TEXT")
+    if "location_confidence" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN location_confidence REAL DEFAULT 0.0")
+    if "location_method" not in existing_cols:
+        cursor.execute("ALTER TABLE evidence ADD COLUMN location_method TEXT DEFAULT 'UNRESOLVED'")
+
+    # Create indexes after schema and columns are guaranteed to exist
+    conn.executescript(INDEXES_SQL)
+    conn.commit()
 
 def get_db_connection(db_path: str = None):
     target_path = db_path or DB_PATH

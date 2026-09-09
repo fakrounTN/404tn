@@ -235,3 +235,51 @@ sources:
     timeout: 15
     trust_weight: 0.95
     priority: 3
+
+  - id: african_manager_en
+    name: African Manager (English)
+    domain: africanmanager.com
+    enabled: true
+    collector: rss
+    source_type: independent_media
+    language: en
+    urls:
+      - https://africanmanager.com/site_eng/feed/
+      - https://africanmanager.com/site_eng/
+    interval_minutes: 120
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.85
+    priority: 2
+
+  - id: reuters_tunisia
+    name: Reuters (Tunisia Coverage)
+    domain: reuters.com
+    enabled: true
+    collector: international
+    source_type: international_wire
+    language: en
+    urls:
+      - https://www.reuters.com/world/africa/
+    interval_minutes: 180
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.95
+    priority: 2
+
+  - id: ap_tunisia
+    name: Associated Press (Tunisia Coverage)
+    domain: apnews.com
+    enabled: false
+    disabled_reason: "AP News blocks automated requests with HTTP 403 Cloudflare challenge; marked unavailable without bypass/evasion"
+    collector: international
+    source_type: international_wire
+    language: en
+    urls:
+      - https://apnews.com/hub/tunisia
+      - https://apnews.com/hub/africa
+    interval_minutes: 180
+    max_items: 20
+    timeout: 15
+    trust_weight: 0.95
+    priority: 2

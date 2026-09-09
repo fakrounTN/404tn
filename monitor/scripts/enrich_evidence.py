@@ -7,7 +7,7 @@ from typing import Dict, Any
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from monitor.app.database import DB_PATH, get_db
-from monitor.app.services.locations import extract_location
+from monitor.app.services.locations import resolve_location_advanced, extract_location
 
 def enrich_evidence(apply: bool = False, db_path: str = None) -> Dict[str, int]:
     """
@@ -36,8 +36,13 @@ def enrich_evidence(apply: bool = False, db_path: str = None) -> Dict[str, int]:
     cursor = conn.cursor()
 
     try:
+        # Check available columns in evidence table
+        cursor.execute("PRAGMA table_info(evidence)")
+        cols = {r["name"] for r in cursor.fetchall()}
+        has_new_cols = "location_scope" in cols
+
         # STRICT RULE: Process ONLY EV-AUTO-* records. Never touch seeded records.
-        cursor.execute("SELECT id, headline, summary, location, latitude, longitude FROM evidence WHERE id LIKE 'EV-AUTO-%'")
+        cursor.execute("SELECT * FROM evidence WHERE id LIKE 'EV-AUTO-%'")
         rows = cursor.fetchall()
         metrics["records_scanned"] = len(rows)
 
@@ -50,16 +55,26 @@ def enrich_evidence(apply: bool = False, db_path: str = None) -> Dict[str, int]:
             text_to_scan = f"{headline} {summary}"
 
             try:
-                canonical_loc, lat, lon = extract_location(text_to_scan)
+                res = resolve_location_advanced(text_to_scan, headline=headline, summary=summary)
 
-                if lat is not None and lon is not None:
+                if res.scope in ["LOCAL", "GOVERNORATE"] and res.latitude is not None and res.longitude is not None:
+                    canonical_loc = res.governorate or res.canonical_name
+                    lat = res.latitude
+                    lon = res.longitude
                     metrics["matched_locations"] += 1
-                    # Check if coordinates were missing or need updating
+
                     if row["latitude"] != lat or row["longitude"] != lon or row["location"] != canonical_loc:
                         metrics["coordinates_added"] += 1
-                        updates.append((canonical_loc, lat, lon, ev_id))
+                        if has_new_cols:
+                            updates.append((
+                                canonical_loc, lat, lon, res.scope, res.governorate,
+                                res.delegation, res.locality, res.location_confidence,
+                                res.location_method, ev_id
+                            ))
+                        else:
+                            updates.append((canonical_loc, lat, lon, ev_id))
                 else:
-                    if canonical_loc and canonical_loc != "Tunisia":
+                    if res.scope == "MULTI_GOVERNORATE":
                         metrics["ambiguous"] += 1
                     else:
                         metrics["unresolved"] += 1
@@ -76,11 +91,20 @@ def enrich_evidence(apply: bool = False, db_path: str = None) -> Dict[str, int]:
         print(f"Errors                          : {metrics['errors']}")
 
         if apply and updates:
-            cursor.executemany("""
-                UPDATE evidence
-                SET location = ?, latitude = ?, longitude = ?
-                WHERE id = ?
-            """, updates)
+            if has_new_cols:
+                cursor.executemany("""
+                    UPDATE evidence
+                    SET location = ?, latitude = ?, longitude = ?,
+                        location_scope = ?, governorate = ?, delegation = ?,
+                        locality = ?, location_confidence = ?, location_method = ?
+                    WHERE id = ?
+                """, updates)
+            else:
+                cursor.executemany("""
+                    UPDATE evidence
+                    SET location = ?, latitude = ?, longitude = ?
+                    WHERE id = ?
+                """, updates)
             conn.commit()
             print(f"\nSUCCESS: Applied {len(updates)} location & coordinate updates to database.")
         elif not apply:
