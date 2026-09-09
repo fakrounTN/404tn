@@ -72,15 +72,57 @@ ROUTINE_ADMIN_PATTERNS = [
     r"طلب عروض", r"طلبات العروض", r"طلب العروض", r"استشارة لاقتناء", r"استشارة عدد",
     r"طلب عروض عدد", r"لاقتناء", r"صفقة عمومية", r"صفقات عمومية", r"طلب عروض وطني",
     r"طلب عروض دولي", r"اقتناء آلات ناسخة", r"اقتناء سيارات", r"اقتناء معدات",
-    # Protocol / Ceremonial
+    # Protocol / Ceremonial / Official Festivities / Commemorative Days
+    r"موكب الإحتفال", r"موكب الاحتفال", r"موكب إحياء", r"موكب احياء",
+    r"يوم العلم", r"الإحتفال بيوم العلم", r"الاحتفال بيوم العلم",
+    r"عيد الشجرة", r"عيد الشهداء", r"عيد الاستقلال", r"عيد الجلاء", r"عيد المرأة",
+    r"حفل تكريم", r"موكب تسليم", r"موكب رسمي",
+    r"ceremonie de celebration", r"journee du savoir", r"fete de l['’]arbre",
+    r"fete de l['’]independance", r"fete des martyrs", r"fete de l['’]evacuation",
     r"remise des lettres de creance", r"visite de courtoisie", r"echange de voeux",
     r"تسليم أوراق اعتماد", r"تسلم أوراق اعتماد", r"تبادل التهاني", r"برقية تهنئة",
-    # Generic In-Vitro / Laboratory Biomedical / Botanical Chemistry (PubMed)
-    r"in vitro antioxidant", r"essential oil composition", r"phytochemical screening",
-    r"antimicrobial activity of", r"cytotoxic activity of", r"in vitro evaluation",
-    r"chemical composition and biological activities", r"synthesis and characterization of",
-    r"molecular docking", r"rat liver", r"activite antioxydante", r"huile essentielle de",
-    r"criblage phytochimique"
+    # Internal Organizational Congresses & General Assemblies
+    r"إعلام بالمؤتمر", r"اعلام بالمؤتمر",
+    r"المؤتمر الوطني الرابع للمنتدى", r"المؤتمر الوطني للمنتدى",
+    r"المؤتمر الوطني للنقابة", r"المؤتمر الانتخابي",
+    r"congres national du ftdes", r"congres national de l['’]ugtt", r"congres du snjt",
+    r"assemblee generale ordinaire", r"assemblee generale elective",
+    r"الجلسة العامة العادية", r"الجلسة العامة الانتخابية"
+]
+
+# GENERALIZED ACADEMIC / BIOMEDICAL STUDY INDICATORS (PubMed)
+ACADEMIC_LAB_INDICATORS = [
+    r"in vitro", r"in-vitro", r"molecular docking", r"synthesis and characterization",
+    r"spectroscopic characterization", r"crystal structure", r"essential oil composition",
+    r"phytochemical screening", r"antioxidant activity", r"activite antioxydante",
+    r"cytotoxic activity", r"antimicrobial susceptibility", r"antimicrobial resistance of isolates",
+    r"characterization of isolates", r"isolates from pets", r"isolated from healthy",
+    r"isolated from animal", r"experimental model", r"rat liver", r"dental caries",
+    r"prevalence of intestinal parasites", r"genetic polymorphism of", r"enterococcus spp",
+    r"staphylococcus aureus", r"escherichia coli isolates", r"bacterial isolates"
+]
+
+# MONITORED REAL-WORLD PUBLIC SYSTEM, POLLUTION, HEALTH & EPIDEMIOLOGICAL IMPACT SIGNALS
+MONITORED_SYSTEM_IMPACT_SIGNALS = [
+    # Drinking water / groundwater / hydraulic quality
+    r"drinking water", r"eau potable", r"contamination de l['’]eau", r"water contamination",
+    r"groundwater contamination", r"water quality", r"water pollution", r"polluted water",
+    r"water scarcity", r"nappe phreatique", r"nappes phreatiques", r"sonede", r"مياه الشرب", r"تلوث المياه",
+    # Ambient air pollution / industrial emissions
+    r"air pollution", r"pollution de l['’]air", r"particulate matter", r"ambient exposure",
+    r"industrial pollution", r"pollution industrielle", r"emissions toxiques", r"gaz toxiques",
+    r"rejets polluants", r"تلوث الهواء",
+    # Heavy metals / marine ecotoxicology / industrial toxic discharge
+    r"heavy metal", r"heavy metals", r"metaux lourds", r"bioaccumulation", r"coastal pollution",
+    r"pollution marine", r"phosphogypsum", r"phosphogypse", r"gulf of gabes", r"golfe de gabes",
+    r"chatt essalam", r"gct", r"cpg", r"anpe", r"تلوث بحري", r"فسفوجيبس", r"خليج قابس",
+    # Population-level exposure / public health burden
+    r"human exposure", r"population exposure", r"health risk assessment", r"epidemiological study",
+    r"epidemiological burden", r"public health impact", r"risk of exposure", r"sanitary risk",
+    r"risque sanitaire", r"sante publique", r"صحة عمومية",
+    # Public health supply / hospital infrastructure
+    r"penurie de medicaments", r"drug shortage", r"medicine shortage", r"hospital shortage",
+    r"penurie hospitaliere", r"hopital public", r"مستشفيات عمومية", r"نقص الادوية", r"نقص الأدوية"
 ]
 
 # PRIMARY SUBJECT TAXONOMY DEFINITION (EN, FR, AR)
@@ -122,14 +164,19 @@ PRIMARY_TAXONOMY = {
             "migrants subsahariens", "migrants irreguliers", "migration irreguliere",
             "irregular migration", "coast guard", "sea crossing", "migrant boat", "drowned migrants",
             "el amra", "jbeniana", "zarzis",
-            "هجرة غير نظامية", "الهجرة غير النظامية", "حرقّة", "الحرقّة", "حرقة", "الحرقة",
+            "هجرة غير نظامية", "الهجرة غير النظامية",
+            "حرقة", "الحرقة", "حرقّة", "الحرقّة",
+            "حرڨة", "الحرڨة", "حرڤة", "الحرڤة",
+            "حراقة", "الحراقة", "حراڨة", "الحراڨة", "حراڤة", "الحراڤة",
+            "حرقت", "حرقوا", "حرڨت", "حرڤت", "حرڨوا", "حرڤوا",
+            "يحرڨ", "يحرڤ", "يحرق", "حرڨ", "حرڤ",
             "حرس بحري", "الحرس البحري", "اجتياز الحدود", "غرق مركب", "غرق قارب",
             "جثث", "الجثث", "انتشال", "مهاجرين غير نظاميين", "المهاجرين غير النظاميين",
             "مهاجرون غير نظاميين", "المهاجرون غير النظاميين", "العامرة", "جبنيانة", "جرجيس",
             "عمليات اجتياز", "انقاذ مهاجرين", "احباط محاولة اجتياز", "مهاجرين", "المهاجرين",
             "ضحايا ومفقودين", "المفقودين في البحر", "مفقودين في البحر", "ضحايا في البحر", "مفقودي البحر", "مفقودين", "المفقودين"
         ],
-        "context": ["migration", "migrant", "migrants", "immigration", "passeurs", "هجرة", "الهجرة", "مهاجر", "المهاجر"]
+        "context": ["migration", "migrant", "migrants", "immigration", "passeurs", "migratoire", "هجرة", "الهجرة", "مهاجر", "المهاجر"]
     },
     "work": {
         "strong": [
@@ -180,23 +227,24 @@ PRIMARY_TAXONOMY = {
             "donnees personnelles", "protection des donnees personnelles", "atteinte aux donnees personnelles",
             "violation des donnees personnelles", "mort en detention", "morts dans les prisons",
             "deces en prison", "conditions carcerales", "torture en detention", "proces politique",
-            "proces d'opinion", "prisonniers politiques", "liberation des detenus",
+            "proces d'opinion", "prisonniers politiques", "liberation des detenus", "incarceration",
             "مرسوم 54", "المرسوم 54", "حرية الصحافة", "حرية التعبير", "نقابة الصحفيين", "النقابة الوطنية للصحفيين",
             "محكمة", "المحكمة", "قضاء", "القضاء", "قضاة", "القضاة", "سجن", "السجن", "سجون", "السجون",
             "إيقاف", "الإيقاف", "ايقاف", "بطاقة إيداع", "بطاقة ايداع", "سجناء", "السجناء", "معتقل",
             "معتقلين", "المعتقلين", "حقوق الإنسان", "حقوق الانسان", "محاكمة", "المحاكمة",
+            "حكمت بسجنه", "حكم بالسجن", "إيداع بالسجن", "ايداع بالسجن", "تتبع قضائي", "ملاحقات قضائية", "استنطاق",
             "المنظمة التونسية لمناهضة التعذيب", "مناهضة التعذيب", "تعذيب",
             "خلف القضبان", "الموت خلف القضبان", "موت خلف القضبان", "الوفيات في السجون", "وفيات السجون",
             "احتجاز", "تحتجز الدولة", "التعذيب في السجون", "سوء المعاملة في السجون", "المعاملة اللاإنسانية",
             "الاحتجاز التعسفي", "مراكز الاحتجاز", "أوضاع السجون", "ظروف السجون", "الانتهاكات داخل السجون",
             "المعطيات الشخصية", "انتهاك المعطيات الشخصية", "حماية المعطيات الشخصية", "بيانات شخصية",
             "الهيئة الوطنية لحماية المعطيات الشخصية", "محاكمات الرأي", "محاكمات الراي", "سجناء الرأي",
-            "سجناء الراي", "سجين رأي", "ملاحقات قضائية", "التنكيل بالمعارضين", "التنكيل بالتونسيين",
+            "سجناء الراي", "سجين رأي", "التنكيل بالمعارضين", "التنكيل بالتونسيين",
             "حراك نفس", "وقفة احتجاجية", "اطلاق سراح المعتقلين", "إطلاق سراح المعتقلين", "معتقلي الرأي",
             "معتقلو الرأي", "التضييق على الحريات", "استهداف المعارضين", "قمع الحريات", "محاكمات سياسية",
             "سجين سياسي", "المعتقلين السياسيين", "المعتقلون السياسيون"
         ],
-        "context": ["justice", "avocat", "lawyer", "liberte", "freedom", "droit", "عدالة", "محامين", "حقوق", "حرية"]
+        "context": ["avocat", "lawyer", "liberte", "freedom", "droit", "محامين", "حرية"]
     },
     "gabes": {
         "strong": [
@@ -217,7 +265,7 @@ PRIMARY_TAXONOMY = {
             "حماية السواحل", "السواحل", "حماية الشريط الساحلي", "شريط ساحلي", "تأكل السواحل",
             "الانجراف البحري", "حماية البيئة", "البيئة الساحلية", "انقاذ الشواطئ"
         ],
-        "context": ["pollution", "environnement", "environment", "dechets", "تلوث", "بيئة", "نفايات", "سواحل"]
+        "context": ["pollution", "environnement", "environnementale", "environnemental", "environment", "environmental", "dechets", "تلوث", "بيئة", "بيئي", "بيئية", "نفايات", "سواحل"]
     },
     "institutions": {
         "strong": [
@@ -238,20 +286,59 @@ TUNISIA_SIGNALS = [
     "tunisia", "tunisian", "tunisie", "tunisienne", "tunisiens", "tunisiennes",
     "تونس", "تونسي", "تونسية", "التونسي", "التونسية", "تونسيين", "التونسيين", "تونسيات", "التونسيات",
     "بتونس", "لتونس", "بالجمهورية التونسية", "الجمهورية التونسية", "بالبلاد التونسية", "البلاد التونسية",
-    # Specific Governorates, Cities & Strategic Hubs
-    "tunis", "carthage", "bardo", "ariana", "ben arous", "manouba",
-    "gabes", "gabès", "sfax", "gafsa", "kasserine", "bizerte", "zarzis",
-    "sousse", "monastir", "mahdia", "nabeul", "kairouan", "sidi bouzid",
-    "beja", "béja", "jendouba", "kef", "siliana", "zaghouan", "medenine",
-    "médenine", "tataouine", "tozeur", "kebili", "kébili", "kerkennah", "el amra", "jbeniana",
-    "djerba", "tabarka", "ghardimaou", "mateur", "menzel bourguiba", "moknine", "chebba",
-    "redeyef", "metlaoui", "moulares", "sbeitla", "makthar", "bouhajla", "regueb", "feriana", "thala",
-    "ben guerdane", "remada", "ras jdir",
-    "قابس", "صفاقس", "قفصة", "القصرين", "بنزرت", "جرجيس", "سوسة", "المنستير",
-    "المهدية", "نابل", "القيروان", "سيدي بوزيد", "باجة", "جندوبة", "الكاف",
-    "سليانة", "زغوان", "مدنين", "تطاوين", "توزر", "قبلي", "قرقنة", "قرطاج", "باردو", "العامرة", "جبنيانة",
-    "جربة", "طبرقة", "غار الدماء", "ماطر", "منزل بورقيبة", "المكنين", "الشابة", "الرديف", "المتلوي",
-    "بن قردان", "رمادة", "راس جدير", "رأس جدير",
+    # Specific 24 Governorates, Delegations, Cities & Strategic Hubs (FR / EN)
+    "tunis", "carthage", "bardo", "la goulette", "la marsa", "sidi bou said",
+    "ariana", "ettadhamen", "soukra", "kalaat el andalous", "raoued",
+    "ben arous", "hammam lif", "hammam chatt", "mornag", "boumhel", "ezzahra", "rades",
+    "manouba", "oued ellil", "douar hicher", "tebourba", "denden",
+    "nabeul", "hammamet", "kelibia", "menzel temime", "korba", "grombalia", "soliman", "dar chaabane",
+    "zaghouan", "el fahs", "nadhour", "zriba",
+    "bizerte", "mateur", "menzel bourguiba", "ras jebel", "ghar el melh", "sejenane", "tinja",
+    "beja", "béja", "medjez el bab", "testour", "nefza", "teboursouk", "thibar",
+    "jendouba", "tabarka", "ghardimaou", "ain draham", "bou salem",
+    "kef", "le kef", "dahmani", "tajerouine", "sakiet sidi youssef",
+    "siliana", "makthar", "bou arada", "gaafour", "kesra", "el krib",
+    "sousse", "msaken", "kalaa kebira", "kalaa sghira", "enfidha", "akouda", "hergla",
+    "monastir", "moknine", "ksar hellal", "jemmal", "teboulba", "bekalta", "ouardanine", "sahline",
+    "mahdia", "ksour essef", "chebba", "el djem", "mellouleche", "ouled chamekh", "souassi",
+    "sfax", "sakiet ezzit", "sakiet eddaier", "el amra", "jbeniana", "kerkennah", "mahares", "skhira", "thyna", "agareb",
+    "kairouan", "bouhajla", "sbikha", "oueslatia", "haffouz", "nasrallah", "cherarda",
+    "kasserine", "sbeitla", "feriana", "thala", "hidra", "sbiba", "foussana", "majel belabbes",
+    "sidi bouzid", "regueb", "jelma", "menzel bouzaiene", "menzel bouzaine", "meknassy", "bir el hafey", "cebbala",
+    "gabes", "gabès", "chatt essalam", "gannouch", "mareth", "el hamma", "metouia", "menzel habib",
+    "medenine", "médenine", "zarzis", "djerba", "ben guerdane", "ben gardane", "benguerdane", "bengardane", "houmt souk", "midoun", "ajim", "beni khedache",
+    "tataouine", "remada", "ghomrassen", "dhehiba", "smâr", "bir lahmar",
+    "gafsa", "metlaoui", "redeyef", "moulares", "mdhilla", "el guettar", "sened",
+    "tozeur", "nefta", "degache", "tamaghza", "hazoua",
+    "kebili", "kébili", "douz", "souk lahad", "el faouar", "rejime maatoug",
+    "ras jdir", "bassin minier",
+    # Specific 24 Governorates & Delegations (AR)
+    "تونس", "قرطاج", "باردو", "حلق الوادي", "المرسى", "سيدي بوسعيد",
+    "أريانة", "اريانة", "التضامن", "سكرة", "رواد",
+    "بن عروس", "حمام الأنف", "حمام الانف", "حمام الشط", "مرناق", "بومهل", "الزهراء", "رادس",
+    "منوبة", "وادي الليل", "دوار هيشر", "طبربة",
+    "نابل", "الحمامات", "قليبية", "منزل تميم", "قربة", "قرمبالية", "ڨرمبالية", "ڤرمبالية", "سليمان",
+    "زغوان", "الفحص", "الناظور", "الزريبة",
+    "بنزرت", "ماطر", "منزل بورقيبة", "رأس الجبل", "راس الجبل", "غار الملح", "سجنان", "تينجة",
+    "باجة", "مجاز الباب", "تستور", "نفزة", "تبرسق", "تيبار",
+    "جندوبة", "طبرقة", "غار الدماء", "عين دراهم", "بوسالم",
+    "الكاف", "الدهماني", "تاجروين", "ساقية سيدي يوسف",
+    "سليانة", "مكثر", "بوعرادة", "قعفور", "ڨعفور", "ڤعفور", "كسرى", "الكريب",
+    "سوسة", "مساكن", "القلعة الكبرى", "القلعة الصغرى", "النفيضة", "أكودة", "هرقلة",
+    "المنستير", "المكنين", "قصر هلال", "ڨصر هلال", "ڤصر هلال", "جمال", "طبلبة", "البقالطة", "الوردانين", "الساحلين",
+    "المهدية", "قصور الساف", "ڨصور الساف", "ڤصور الساف", "الشابة", "الجم", "ملولش", "أولاد شامخ", "السواسي",
+    "صفاقس", "ساقية الزيت", "ساقية الدائر", "العامرة", "جبنيانة", "قرقنة", "المحرس", "الصخيرة", "طينة", "عقارب",
+    "القيروان", "بوحجلة", "السبيخة", "الوسلاتية", "حفوز", "نصرالله", "الشراردة",
+    "القصرين", "سبيطلة", "فريانة", "تالة", "حيدرة", "سبيبة", "فوسانة", "ماجل بلعباس",
+    "سيدي بوزيد", "الرقاب", "جلمة", "منزل بوزيان", "المكناسي", "بئر الحفي", "السبالة",
+    "قابس", "ڨابس", "ڤابس", "شط السلام", "غنوش", "ڨنوش", "ڤنوش", "مارث", "الحامة", "المطوية", "منزل الحبيب",
+    "مدنين", "جرجيس", "جربة", "بن قردان", "بنقردان", "بن ڨردان", "بن ڤردان", "بنڨردان", "بنڤردان", "حومة السوق", "ميدون", "أجيم", "بني خداش",
+    "تطاوين", "رمادة", "غمراسن", "ذهيبة", "الصمار", "بئر لحمر",
+    "قفصة", "ڨفصة", "ڤفصة", "المتلوي", "الرديف", "أم العرائس", "ام العرائس", "المظيلة", "القطار", "السند",
+    "توزر", "نفطة", "دقاش", "تمغزة", "حزوة",
+    "قبلي", "ڨبلي", "ڤبلي", "دوز", "سوق الأحد", "سوق الاحد", "الفوار", "رجيم معتوق",
+    "قمرت", "ڨمرت", "ڤمرت",
+    "راس جدير", "رأس جدير", "الحوض المنجمي",
     # Specific National Public Entities & Institutions
     "sonede", "steg", "ins", "onagri", "anpe", "gct", "cpg", "ugtt", "snjt", "ftdes", "ltdh", "onas",
     "transtu", "sncft", "bct", "pct", "pharmacie centrale", "arp", "isie", "carthage", "kasbah", "la kasbah",
@@ -326,13 +413,28 @@ DOMESTIC_ENTITY_NEXUS = [
     "mornaguia", "bouchoucha", "borj erroumi"
 ]
 
+# Controlled surnames that qualify for contextual nexus ONLY when published by Tier 2 domestic editorial
+# sources AND combined with strong judicial/custody/prosecution context.
+CONTROLLED_EDITORIAL_SURNAMES = [
+    "اليوسفي", "الزغيدي", "بسيس", "الدهماني", "المكي", "الهاني", "بن مبارك", "الشواشي",
+    "elyesfi", "youssfi", "zghidi", "bssais", "bsayes", "dahmani", "el heni", "heni",
+    "el meki", "mekki", "ben mbarek", "chaouachi"
+]
+
+CUSTODY_JUDICIAL_SIGNALS = [
+    "سجن", "السجن", "سجنه", "سجنها", "حبس", "حبسه", "إيداع", "ايداع", "بطاقة إيداع", "بطاقة ايداع",
+    "إيقاف", "ايقاف", "موقوف", "موقوفة", "محاكمة", "محاكمته", "قضاء", "قاضي التحقيق", "ملاحقة قضائية",
+    "تتبع قضائي", "حكمت بسجنه", "حكم بالسجن", "استنطاق", "مرسوم 54", "المرسوم 54", "نقابة الصحفيين",
+    "prison", "detention", "proces", "juge d'instruction", "mandat de depot", "arrete", "incarceration"
+]
+
 def _strip_accents(text: str) -> str:
-    """Normalize and strip diacritical marks, and normalize Arabic orthographic variants (hamzas, ta marbuta)."""
+    """Normalize and strip diacritical marks, and normalize standard Arabic orthographic variants (hamzas, ta marbuta, alif maqsura)."""
     if not text:
         return ""
     decomposed = unicodedata.normalize("NFKD", text)
     cleaned = "".join(c for c in decomposed if not unicodedata.combining(c)).lower()
-    # Normalize Arabic alef forms and ta marbuta
+    # Normalize Arabic alef forms, ta marbuta, and alif maqsura
     cleaned = re.sub(r"[إأآا]", "ا", cleaned)
     cleaned = re.sub(r"ة", "ه", cleaned)
     cleaned = re.sub(r"ى", "ي", cleaned)
@@ -344,7 +446,22 @@ def _is_arabic(text: str) -> bool:
 @functools.lru_cache(maxsize=2048)
 def _get_compiled_pattern(clean_kw: str) -> re.Pattern:
     if _is_arabic(clean_kw):
-        return re.compile(r"(?:^|[^\w\u0600-\u06FF])(?:[وفلبك]|ال|بال|لل|فال|وال)?" + re.escape(clean_kw) + r"(?:[^\w\u0600-\u06FF]|$)", re.IGNORECASE)
+        # Single Arabic word >= 3 characters: attach pronoun suffixes
+        if len(clean_kw) >= 3 and " " not in clean_kw:
+            return re.compile(
+                r"(?:^|[^\w\u0600-\u06FF])(?:[وفلبك]|ال|بال|لل|فال|وال)?"
+                + re.escape(clean_kw)
+                + r"(?:ه|ها|هم|هن|هما|كم|نا|ي)?"
+                + r"(?:[^\w\u0600-\u06FF]|$)",
+                re.IGNORECASE
+            )
+        else:
+            return re.compile(
+                r"(?:^|[^\w\u0600-\u06FF])(?:[وفلبك]|ال|بال|لل|فال|وال)?"
+                + re.escape(clean_kw)
+                + r"(?:[^\w\u0600-\u06FF]|$)",
+                re.IGNORECASE
+            )
     else:
         return re.compile(r"(?:\b|^)" + re.escape(clean_kw) + r"(?:\b|$)", re.IGNORECASE)
 
@@ -366,7 +483,8 @@ def has_tunisia_context(text: str, source_domain: str = None, source_id: str = N
       Note: Non-substantive pages (Actualités, tenders) are still filtered out by is_substantive_evidence().
     - Tier 3: Explicit Textual Signals (TUNISIA_SIGNALS) across all sources.
     - Tier 2: Domestic Editorial / Civil Society Outlets (Nawaat, Inkyfada, SNJT, FTDES).
-      Returns True if domestic entity/figure/decree/civic nexus is present in text.
+      Returns True if domestic entity/figure/decree/civic nexus is present in text, or if a controlled
+      editorial surname is used in combination with strong judicial/custody context.
     Foreign-only articles without domestic nexus (e.g. Marseille minors, Nepal power grid) return False.
     """
     clean_text = text or ""
@@ -380,10 +498,15 @@ def has_tunisia_context(text: str, source_domain: str = None, source_id: str = N
     if any(_matches_keyword(sig, clean_text) for sig in TUNISIA_SIGNALS):
         return True
 
-    # Tier 2: Editorial & Civil Society Outlets with Domestic Entity Nexus
+    # Tier 2: Editorial & Civil Society Outlets with Domestic Entity Nexus or Contextual Aliases
     if domain in EDITORIAL_TUNISIA_DOMAINS:
         if any(_matches_keyword(entity, clean_text) for entity in DOMESTIC_ENTITY_NEXUS):
             return True
+        
+        # Contextual Surnames combined with strong custody/judicial context
+        if any(_matches_keyword(s, clean_text) for s in CONTROLLED_EDITORIAL_SURNAMES):
+            if any(_matches_keyword(c, clean_text) for c in CUSTODY_JUDICIAL_SIGNALS):
+                return True
 
     return False
 
@@ -422,7 +545,15 @@ def is_substantive_evidence(headline: str, summary: str = "", body: str = "", so
         if re.search(clean_pat, clean_h, flags=re.IGNORECASE) or re.search(pat, raw_h, flags=re.IGNORECASE):
             return False, "routine_admin_notice"
 
-    # 5. Length / Substantive Content Check (checked after patterns)
+    # 5. Generalized Academic / Laboratory Study Scope Filter (PubMed & Scientific Repositories)
+    # Academic laboratory/in-vitro assays without a verified monitored public-system/environmental impact nexus are out-of-scope.
+    is_academic_lab = any(re.search(p, combined, flags=re.IGNORECASE) for p in ACADEMIC_LAB_INDICATORS)
+    if is_academic_lab:
+        has_monitored_impact = any(re.search(p, combined, flags=re.IGNORECASE) for p in MONITORED_SYSTEM_IMPACT_SIGNALS)
+        if not has_monitored_impact:
+            return False, "routine_admin_notice"
+
+    # 6. Length / Substantive Content Check (checked after patterns)
     if len(raw_h) < 10 and not summary and not body:
         return False, "empty_or_too_short"
 
@@ -496,9 +627,9 @@ def classify_issue_advanced(text: str, headline: str = None, body: str = None) -
     # Disambiguation B: Prison conditions / detention deaths / legal custody -> 'rights'
     is_prison = any(_matches_keyword(w, clean_h) or _matches_keyword(w, clean_s) for w in [
         "prison", "prisons", "detenu", "detenus", "detenue", "detention", "conditions carcerales",
-        "mort en detention", "deces en prison",
+        "mort en detention", "deces en prison", "incarceration", "emprisonnement",
         "سجن", "سجناء", "معتقل", "معتقلين", "ايقاف", "إيقاف", "خلف القضبان", "الموت خلف القضبان",
-        "وفيات السجون", "الوفيات في السجون", "احتجاز", "تحتجز الدولة"
+        "وفيات السجون", "الوفيات في السجون", "احتجاز", "تحتجز الدولة", "حكمت بسجنه", "حكم بالسجن", "ملاحقة قضائية"
     ])
     if is_prison:
         return ClassificationResult(
@@ -597,7 +728,7 @@ def classify_issue_advanced(text: str, headline: str = None, body: str = None) -
     if len(sorted_scores) > 1:
         second_issue, second_score = sorted_scores[1]
         score_gap = top_score - second_score
-        if score_gap < 3 and second_score >= 6:
+        if score_gap < 3 and second_score >= 5:
             base_confidence = max(0.45, base_confidence - 0.25)
             reason = f"Primary '{top_issue}' (score: {top_score}) closely contested by '{second_issue}' (score: {second_score})"
         else:
