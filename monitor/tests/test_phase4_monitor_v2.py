@@ -350,14 +350,14 @@ class TestPhase4EvidenceMonitorV2(unittest.TestCase):
             # Insert an AUTO_ACCEPTED and a REVIEW_REQUIRED record
             conn.execute("""
                 INSERT INTO evidence (
-                    id, issue, sub_issue, location, latitude, longitude, headline, summary, claim,
+                    id, issue, sub_issue, location, location_scope, governorate, latitude, longitude, headline, summary, claim,
                     classification, status, event_date, published_at, collected_at, last_checked,
                     source_name, source_domain, source_type, source_url, source_language,
                     source_confidence, evidence_confidence, current_or_historical, content_hash,
                     secondary_topics, classification_confidence, classification_reason, ingestion_status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                "EV-AUTO-20260909-AUTO01", "water", "distribution", "Kasserine", 35.1676, 8.8365,
+                "EV-AUTO-20260909-AUTO01", "water", "distribution", "Kasserine", "GOVERNORATE", "Kasserine", 35.1676, 8.8365,
                 "SONEDE: Coupure d'eau potable a Kasserine", "Maintenance programmée sur le reseau principal.",
                 "SONEDE: Coupure d'eau potable a Kasserine", "FACT", "VERIFIED", "2026-08-15T08:00:00Z",
                 "2026-08-15T08:00:00Z", "2026-09-09T12:00:00Z", "2026-09-09T12:00:00Z",
@@ -367,14 +367,14 @@ class TestPhase4EvidenceMonitorV2(unittest.TestCase):
             ))
             conn.execute("""
                 INSERT INTO evidence (
-                    id, issue, sub_issue, location, latitude, longitude, headline, summary, claim,
+                    id, issue, sub_issue, location, location_scope, governorate, latitude, longitude, headline, summary, claim,
                     classification, status, event_date, published_at, collected_at, last_checked,
                     source_name, source_domain, source_type, source_url, source_language,
                     source_confidence, evidence_confidence, current_or_historical, content_hash,
                     secondary_topics, classification_confidence, classification_reason, ingestion_status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                "EV-AUTO-20260909-REV01", "rights", "justice", "Tunis", 36.8065, 10.1815,
+                "EV-AUTO-20260909-REV01", "rights", "justice", "Tunis", "GOVERNORATE", "Tunis", 36.8065, 10.1815,
                 "Débat sur la liberté d'expression", "Discussion autour des lois sur les médias.",
                 "Débat sur la liberté d'expression", "ANALYSIS", "UNDER REVIEW", "2026-08-16T08:00:00Z",
                 "2026-08-16T08:00:00Z", "2026-09-09T12:00:00Z", "2026-09-09T12:00:00Z",

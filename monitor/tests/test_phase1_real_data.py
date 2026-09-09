@@ -196,10 +196,10 @@ class TestPhase1RealDataArchitecture(unittest.TestCase):
     def test_11_map_contains_only_ev_auto_evidence(self):
         conn = sqlite3.connect(self.temp_db_path)
         conn.execute("""
-            INSERT INTO evidence (id, issue, headline, summary, location, latitude, longitude, published_at, collected_at, last_checked, source_name, source_domain, source_type, source_url, event_date, classification, status)
+            INSERT INTO evidence (id, issue, headline, summary, location, location_scope, governorate, latitude, longitude, published_at, collected_at, last_checked, source_name, source_domain, source_type, source_url, event_date, classification, status)
             VALUES 
-            ('EV-SEEDED-MAP', 'pollution', 'Seeded Map Point', 'Summary', 'Gabès', 33.88, 10.09, '2026-08-01', '2026-08-01', '2026-08-01', 'Seed', 'seed.tn', 'official', 'https://seed.tn', '2026-08-01', 'FACT', 'VERIFIED'),
-            ('EV-AUTO-MAP-01', 'pollution', 'Real Gabès Study', 'Summary', 'Gabès', 33.8815, 10.0982, '2026-08-02', '2026-08-02', '2026-08-02', 'PubMed', 'nih.gov', 'scientific', 'https://pubmed.ncbi.nlm.nih.gov/12345', '2026-08-02', 'FACT', 'VERIFIED')
+            ('EV-SEEDED-MAP', 'pollution', 'Seeded Map Point', 'Summary', 'Gabès', 'LOCAL', 'Gabès', 33.88, 10.09, '2026-08-01', '2026-08-01', '2026-08-01', 'Seed', 'seed.tn', 'official', 'https://seed.tn', '2026-08-01', 'FACT', 'VERIFIED'),
+            ('EV-AUTO-MAP-01', 'pollution', 'Real Gabès Study', 'Summary', 'Gabès', 'LOCAL', 'Gabès', 33.8815, 10.0982, '2026-08-02', '2026-08-02', '2026-08-02', 'PubMed', 'nih.gov', 'scientific', 'https://pubmed.ncbi.nlm.nih.gov/12345', '2026-08-02', 'FACT', 'VERIFIED')
         """)
         conn.commit()
         conn.close()
@@ -219,8 +219,8 @@ class TestPhase1RealDataArchitecture(unittest.TestCase):
     def test_12_13_map_coordinates_format(self):
         conn = sqlite3.connect(self.temp_db_path)
         conn.execute("""
-            INSERT INTO evidence (id, issue, headline, summary, location, latitude, longitude, published_at, collected_at, last_checked, source_name, source_domain, source_type, source_url, event_date, classification, status)
-            VALUES ('EV-AUTO-MAP-02', 'migration', 'Sfax Migration Incident', 'Summary', 'Sfax', 34.7406, 10.7603, '2026-08-05', '2026-08-05', '2026-08-05', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/sfax', '2026-08-05', 'FACT', 'VERIFIED')
+            INSERT INTO evidence (id, issue, headline, summary, location, location_scope, governorate, latitude, longitude, published_at, collected_at, last_checked, source_name, source_domain, source_type, source_url, event_date, classification, status)
+            VALUES ('EV-AUTO-MAP-02', 'migration', 'Sfax Migration Incident', 'Summary', 'Sfax', 'LOCAL', 'Sfax', 34.7406, 10.7603, '2026-08-05', '2026-08-05', '2026-08-05', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/sfax', '2026-08-05', 'FACT', 'VERIFIED')
         """)
         conn.commit()
         conn.close()

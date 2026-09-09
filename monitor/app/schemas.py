@@ -109,6 +109,8 @@ class MapResponseSchema(BaseModel):
     locations: List[LocationMapNodeSchema] = []
     features: List[Dict[str, Any]] = []
     national_summary: Dict[str, Any] = {}
+    unresolved_summary: Dict[str, Any] = {}
+    multi_governorate_summary: Dict[str, Any] = {}
 
 class TimelineEventSchema(BaseModel):
     id: str

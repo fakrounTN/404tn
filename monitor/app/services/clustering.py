@@ -80,11 +80,20 @@ def cluster_evidence_items(evidence_items: List[Dict[str, Any]]) -> List[Dict[st
     clusters: List[Dict[str, Any]] = []
 
     for item in evidence_items:
+        # Exclude non-localizable / unresolved / national items from regional event clustering
+        scope = item.get("location_scope")
+        if scope in ("UNRESOLVED", "NATIONAL", "MULTI_GOVERNORATE"):
+            continue
+        if item.get("latitude") is None and item.get("governorate") is None:
+            continue
+
         item_id = item.get("id", "")
         item_issue = (item.get("issue") or "general").lower()
         if item_issue == "energy":
             item_issue = "electricity"
-        item_gov = item.get("governorate") or item.get("location") or "Tunisia"
+        item_gov = item.get("governorate") or (item.get("location") if item.get("location") != "Tunisia" else None)
+        if not item_gov:
+            continue
         item_deleg = item.get("delegation")
         item_date = item.get("event_date") or item.get("published_at") or ""
         item_headline = item.get("headline") or item.get("title") or ""

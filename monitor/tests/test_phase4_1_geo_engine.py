@@ -486,8 +486,9 @@ class TestPhase41GeoEvidenceEngine(unittest.TestCase):
             self.assertEqual(res.status_code, 200)
             data = res.json()
 
-            # 1. National evidence in national_summary
-            self.assertEqual(data["national_summary"]["total_national_records"], 2, "National and unresolved items aggregated in national_summary")
+            # 1. National evidence in national_summary (strictly NATIONAL, not UNRESOLVED)
+            self.assertEqual(data["national_summary"]["total_national_records"], 1, "Only strictly NATIONAL items aggregated in national_summary")
+            self.assertEqual(data["unresolved_summary"]["total_unresolved_records"], 1, "UNRESOLVED item isolated in unresolved_summary")
 
             # 2. Unresolved evidence has no map point, total features = 3 clusters (Kasserine, Zarzis, Metlaoui)
             features = data["features"]
@@ -514,6 +515,159 @@ class TestPhase41GeoEvidenceEngine(unittest.TestCase):
             data_elec = res_elec.json()
             self.assertEqual(len(data_elec["features"]), 1, "Only Kasserine electricity feature returned")
             self.assertEqual(data_elec["features"][0]["properties"]["governorate"], "Kasserine")
+
+    # -------------------------------------------------------------------------
+    # PART 11: HOTFIX TESTS FOR UNRESOLVED ISOLATION & MIXED DATASET
+    # -------------------------------------------------------------------------
+    def test_hotfix_unresolved_87_records_isolation(self):
+        """
+        Simulate the exact production scenario with 87 UNRESOLVED records:
+        - location_scope = 'UNRESOLVED'
+        - governorate = NULL
+        - latitude = NULL, longitude = NULL
+        - location = 'Tunisia' (must NOT match Tunis governorate)
+        Verifies:
+        - total_national_records == 0
+        - total_unresolved_records == 87
+        - total_multi_governorate_records == 0
+        - 0 incident features
+        - all 24 governorates have evidence_records == 0
+        """
+        conn = sqlite3.connect(self.temp_db_path)
+        for i in range(1, 88):
+            conn.execute(f"""
+                INSERT INTO evidence (
+                    id, issue, headline, summary, location, location_scope, governorate,
+                    delegation, locality, location_confidence, location_method, latitude,
+                    longitude, published_at, collected_at, last_checked, source_name,
+                    source_domain, source_type, source_url, event_date, classification,
+                    status, evidence_confidence
+                ) VALUES (
+                    'EV-AUTO-UNR-{i:03d}', 'water', 'Unresolved water article {i}', 'Summary', 'Tunisia',
+                    'UNRESOLVED', NULL, NULL, NULL, 0.0, 'UNRESOLVED', NULL, NULL,
+                    '2026-08-01', '2026-08-01', '2026-08-01', 'TAP', 'tap.info.tn',
+                    'news_agency', 'https://tap.info.tn/{i}', '2026-08-01', 'FACT', 'VERIFIED', 0.9
+                )
+            """)
+        conn.commit()
+        conn.close()
+
+        with patch("monitor.app.database.DB_PATH", self.temp_db_path):
+            client = TestClient(app)
+
+            # Test incidents mode
+            res_incidents = client.get("/api/map?mode=incidents")
+            self.assertEqual(res_incidents.status_code, 200)
+            data_inc = res_incidents.json()
+
+            self.assertEqual(data_inc["national_summary"]["total_national_records"], 0, "UNRESOLVED must not count as NATIONAL")
+            self.assertEqual(data_inc["unresolved_summary"]["total_unresolved_records"], 87, "All 87 must be in unresolved_summary")
+            self.assertEqual(data_inc["multi_governorate_summary"]["total_multi_governorate_records"], 0)
+            self.assertEqual(len(data_inc["features"]), 0, "0 incident features when all records are unresolved")
+            self.assertEqual(len(data_inc["clusters"]), 0, "0 clusters when all records are unresolved")
+
+            # Check governorate statistics: All 24 must be 0
+            self.assertEqual(len(data_inc["governorates"]), 24)
+            for g in data_inc["governorates"]:
+                self.assertEqual(g["evidence_records"], 0, f"Governorate {g['slug']} must have 0 records")
+                self.assertEqual(g["unique_events"], 0, f"Governorate {g['slug']} must have 0 events")
+
+            # Check Tunis specifically (to ensure location='Tunisia' did not trigger substring match)
+            tunis_gov = next(g for g in data_inc["governorates"] if g["slug"] == "tunis")
+            self.assertEqual(tunis_gov["evidence_records"], 0, "Tunis must not match location='Tunisia'")
+
+            # Test governorates mode
+            res_gov = client.get("/api/map?mode=governorates")
+            self.assertEqual(res_gov.status_code, 200)
+            data_gov = res_gov.json()
+            self.assertEqual(data_gov["national_summary"]["total_national_records"], 0)
+            self.assertEqual(data_gov["unresolved_summary"]["total_unresolved_records"], 87)
+            self.assertEqual(len(data_gov["features"]), 24, "Governorates mode returns 24 boundary centroid features")
+            for feat in data_gov["features"]:
+                self.assertEqual(feat["properties"]["evidence_records"], 0)
+
+    def test_hotfix_mixed_dataset_partitioning(self):
+        """
+        Tests mixed dataset partitioning:
+        - 2 NATIONAL
+        - 3 UNRESOLVED
+        - 1 MULTI_GOVERNORATE
+        - 4 LOCAL (in Sfax: 3 covering same event, 1 covering another)
+        - 1 GOVERNORATE (in Kasserine)
+        """
+        conn = sqlite3.connect(self.temp_db_path)
+        conn.execute("""
+            INSERT INTO evidence (
+                id, issue, headline, summary, location, location_scope, governorate,
+                delegation, locality, location_confidence, location_method, latitude,
+                longitude, published_at, collected_at, last_checked, source_name,
+                source_domain, source_type, source_url, event_date, classification,
+                status, evidence_confidence
+            ) VALUES
+            -- 2 NATIONAL
+            ('EV-AUTO-MIX-NAT-01', 'water', 'Bilan national eau 1', 'desc', 'Tunisia', 'NATIONAL', NULL, NULL, NULL, 0.95, 'TAXONOMY', NULL, NULL, '2026-08-01', '2026-08-01', '2026-08-01', 'ONAGRI', 'onagri.tn', 'official', 'https://onagri.tn/1', '2026-08-01', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-NAT-02', 'electricity', 'Rapport national STEG', 'desc', 'Tunisia', 'NATIONAL', NULL, NULL, NULL, 0.95, 'TAXONOMY', NULL, NULL, '2026-08-02', '2026-08-02', '2026-08-02', 'STEG', 'steg.tn', 'official', 'https://steg.tn/1', '2026-08-02', 'FACT', 'VERIFIED', 0.9),
+
+            -- 3 UNRESOLVED
+            ('EV-AUTO-MIX-UNR-01', 'work', 'Unresolved labor piece', 'desc', 'Tunisia', 'UNRESOLVED', NULL, NULL, NULL, 0.0, 'UNRESOLVED', NULL, NULL, '2026-08-03', '2026-08-03', '2026-08-03', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/u1', '2026-08-03', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-UNR-02', 'rights', 'Unresolved governance note', 'desc', 'Tunisia', 'UNRESOLVED', NULL, NULL, NULL, 0.0, 'UNRESOLVED', NULL, NULL, '2026-08-03', '2026-08-03', '2026-08-03', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/u2', '2026-08-03', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-UNR-03', 'water', 'Unresolved dam report', 'desc', 'Tunisia', 'UNRESOLVED', NULL, NULL, NULL, 0.0, 'UNRESOLVED', NULL, NULL, '2026-08-03', '2026-08-03', '2026-08-03', 'Nawaat', 'nawaat.org', 'independent', 'https://nawaat.org/u3', '2026-08-03', 'FACT', 'VERIFIED', 0.9),
+
+            -- 1 MULTI_GOVERNORATE
+            ('EV-AUTO-MIX-MUL-01', 'electricity', 'Vague de coupures Centre-Sud', 'desc', 'Centre-Sud', 'MULTI_GOVERNORATE', NULL, NULL, NULL, 0.8, 'MULTI_MATCH', NULL, NULL, '2026-08-04', '2026-08-04', '2026-08-04', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/m1', '2026-08-04', 'FACT', 'VERIFIED', 0.9),
+
+            -- 4 LOCAL in Sfax (3 same event in Kerkennah, 1 separate in Sfax Ville)
+            ('EV-AUTO-MIX-SFX-01', 'migration', 'Naufrage Kerkennah source 1', 'desc', 'Kerkennah, Sfax', 'LOCAL', 'Sfax', 'Kerkennah', NULL, 0.95, 'EXPLICIT_LOCALITY', 34.7000, 11.2000, '2026-08-05', '2026-08-05', '2026-08-05', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/s1', '2026-08-05', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-SFX-02', 'migration', 'Naufrage Kerkennah source 2', 'desc', 'Kerkennah, Sfax', 'LOCAL', 'Sfax', 'Kerkennah', NULL, 0.95, 'EXPLICIT_LOCALITY', 34.7000, 11.2000, '2026-08-05', '2026-08-05', '2026-08-05', 'FTDES', 'ftdes.net', 'ngo', 'https://ftdes.net/s2', '2026-08-05', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-SFX-03', 'migration', 'Naufrage Kerkennah source 3', 'desc', 'Kerkennah, Sfax', 'LOCAL', 'Sfax', 'Kerkennah', NULL, 0.95, 'EXPLICIT_LOCALITY', 34.7000, 11.2000, '2026-08-05', '2026-08-05', '2026-08-05', 'Inkyfada', 'inkyfada.com', 'independent', 'https://inkyfada.com/s3', '2026-08-05', 'FACT', 'VERIFIED', 0.9),
+            ('EV-AUTO-MIX-SFX-04', 'pollution', 'Pollution port de Sfax', 'desc', 'Sfax Ville, Sfax', 'LOCAL', 'Sfax', 'Sfax Ville', NULL, 0.95, 'EXPLICIT_LOCALITY', 34.7400, 10.7600, '2026-08-05', '2026-08-05', '2026-08-05', 'Nawaat', 'nawaat.org', 'independent', 'https://nawaat.org/s4', '2026-08-05', 'FACT', 'VERIFIED', 0.9),
+
+            -- 1 GOVERNORATE in Kasserine
+            ('EV-AUTO-MIX-KAS-01', 'water', 'Coupure eau Kasserine', 'desc', 'Kasserine', 'GOVERNORATE', 'Kasserine', NULL, NULL, 0.9, 'GOVERNORATE_MATCH', 35.1676, 8.8365, '2026-08-06', '2026-08-06', '2026-08-06', 'TAP', 'tap.info.tn', 'news_agency', 'https://tap.info.tn/k1', '2026-08-06', 'FACT', 'VERIFIED', 0.9)
+        """)
+        conn.commit()
+        conn.close()
+
+        with patch("monitor.app.database.DB_PATH", self.temp_db_path):
+            client = TestClient(app)
+
+            res = client.get("/api/map?mode=incidents")
+            self.assertEqual(res.status_code, 200)
+            data = res.json()
+
+            # Summaries validation
+            self.assertEqual(data["national_summary"]["total_national_records"], 2)
+            self.assertEqual(data["national_summary"]["water_count"], 1)
+            self.assertEqual(data["national_summary"]["electricity_count"], 1)
+
+            self.assertEqual(data["unresolved_summary"]["total_unresolved_records"], 3)
+            self.assertEqual(data["unresolved_summary"]["work_count"], 1)
+            self.assertEqual(data["unresolved_summary"]["rights_count"], 1)
+            self.assertEqual(data["unresolved_summary"]["water_count"], 1)
+
+            self.assertEqual(data["multi_governorate_summary"]["total_multi_governorate_records"], 1)
+
+            # Features validation: 2 Sfax clusters (Kerkennah multi-source, Sfax Ville) + 1 Kasserine cluster = 3 features
+            self.assertEqual(len(data["features"]), 3)
+
+            # Sfax governorate stats
+            sfax_gov = next(g for g in data["governorates"] if g["slug"] == "sfax")
+            self.assertEqual(sfax_gov["evidence_records"], 4)
+            self.assertEqual(sfax_gov["unique_events"], 2)
+            self.assertEqual(sfax_gov["migration_count"], 3)
+            self.assertEqual(sfax_gov["pollution_count"], 1)
+            self.assertEqual(sfax_gov["sources_count"], 4)  # TAP, FTDES, Inkyfada, Nawaat
+
+            # Kasserine governorate stats
+            kas_gov = next(g for g in data["governorates"] if g["slug"] == "kasserine")
+            self.assertEqual(kas_gov["evidence_records"], 1)
+            self.assertEqual(kas_gov["unique_events"], 1)
+            self.assertEqual(kas_gov["water_count"], 1)
+
+            # Tunis governorate stats must be 0
+            tunis_gov = next(g for g in data["governorates"] if g["slug"] == "tunis")
+            self.assertEqual(tunis_gov["evidence_records"], 0)
+            self.assertEqual(tunis_gov["unique_events"], 0)
 
 
 if __name__ == "__main__":

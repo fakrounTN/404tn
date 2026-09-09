@@ -256,10 +256,31 @@ def get_map_nodes(
 
             filtered_evidence.append(r)
 
-        # 3. Perform Conservative Multi-Source Event Clustering
-        all_clusters = cluster_evidence_items(filtered_evidence)
+        # 3. Partition Evidence by Location Scope
+        national_items = [
+            it for it in filtered_evidence
+            if it.get("location_scope") == "NATIONAL"
+        ]
+        unresolved_items = [
+            it for it in filtered_evidence
+            if it.get("location_scope") in ("UNRESOLVED", None) or (it.get("location_scope") not in ("LOCAL", "GOVERNORATE", "MULTI_GOVERNORATE", "NATIONAL"))
+        ]
+        multi_gov_items = [
+            it for it in filtered_evidence
+            if it.get("location_scope") == "MULTI_GOVERNORATE"
+        ]
+        localizable_items = [
+            it for it in filtered_evidence
+            if it.get("location_scope") in ("LOCAL", "GOVERNORATE")
+            and it.get("latitude") is not None
+            and it.get("longitude") is not None
+            and it.get("governorate") is not None
+        ]
 
-        # 4. Compute 24 Governorate Statistics
+        # 4. Perform Conservative Multi-Source Event Clustering strictly on localizable items
+        local_clusters = cluster_evidence_items(localizable_items)
+
+        # 5. Compute 24 Governorate Statistics (from localizable evidence only)
         gov_stats_list: List[GovernorateStatsSchema] = []
         loc_nodes_list: List[LocationMapNodeSchema] = []
 
@@ -268,17 +289,14 @@ def get_map_nodes(
             g_slug = g["slug"]
             g_gov = g.get("governorate", g_name)
 
-            # Match items and clusters belonging to this governorate
+            # Match items and clusters strictly belonging to this governorate
             gov_items = [
-                item for item in filtered_evidence
-                if (item.get("governorate") and item.get("governorate").lower() == g_gov.lower()) or
-                   (item.get("location") and g_gov.lower() in item.get("location").lower()) or
-                   (item.get("location") and g_name.lower() in item.get("location").lower())
+                item for item in localizable_items
+                if item.get("governorate") and item.get("governorate").lower() == g_gov.lower()
             ]
             gov_clusters = [
-                c for c in all_clusters
-                if (c.get("governorate") and c.get("governorate").lower() == g_gov.lower()) or
-                   (c.get("location") and g_gov.lower() in c.get("location").lower())
+                c for c in local_clusters
+                if c.get("governorate") and c.get("governorate").lower() == g_gov.lower()
             ]
 
             sources_set = {item.get("source_name") for item in gov_items if item.get("source_name")}
@@ -334,12 +352,12 @@ def get_map_nodes(
                 freshness="UPDATED < 24H" if len(gov_items) > 0 else "HISTORICAL BASELINE"
             ))
 
-        # 5. Build GeoJSON Features based on Mode
+        # 6. Build GeoJSON Features based on Mode
         features: List[Dict[str, Any]] = []
 
         if mode in ("incidents", "density"):
             # GeoJSON Points for each geocoded cluster
-            for c in all_clusters:
+            for c in local_clusters:
                 if c.get("latitude") is not None and c.get("longitude") is not None:
                     feat_id = c["evidence_ids"][0] if len(c.get("evidence_ids", [])) == 1 else c["cluster_id"]
                     features.append({
@@ -382,11 +400,7 @@ def get_map_nodes(
                     "properties": g_stat.model_dump()
                 })
 
-        # 6. National Evidence Isolation Summary
-        national_items = [
-            it for it in filtered_evidence
-            if it.get("location_scope") == "NATIONAL" or it.get("governorate") is None or it.get("latitude") is None
-        ]
+        # 7. Isolated Summaries
         national_summary = {
             "total_national_records": len(national_items),
             "water_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "water"),
@@ -396,6 +410,21 @@ def get_map_nodes(
             "public_services_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "public_services"),
             "rights_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance")),
             "pollution_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+        }
+
+        unresolved_summary = {
+            "total_unresolved_records": len(unresolved_items),
+            "water_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "water"),
+            "electricity_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("electricity", "energy")),
+            "work_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("work", "economy")),
+            "migration_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "migration"),
+            "public_services_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "public_services"),
+            "rights_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance")),
+            "pollution_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+        }
+
+        multi_governorate_summary = {
+            "total_multi_governorate_records": len(multi_gov_items)
         }
 
         return MapResponseSchema(
@@ -408,10 +437,12 @@ def get_map_nodes(
             total_monitored_nodes=len(gov_stats_list),
             active_flagship_file="gabes",
             governorates=gov_stats_list,
-            clusters=[EventClusterSchema(**c) for c in all_clusters],
+            clusters=[EventClusterSchema(**c) for c in local_clusters],
             locations=loc_nodes_list,
             features=features,
-            national_summary=national_summary
+            national_summary=national_summary,
+            unresolved_summary=unresolved_summary,
+            multi_governorate_summary=multi_governorate_summary
         )
 
 @app.get("/api/evidence/review-queue", summary="Internal Review Queue for Borderline Candidates")
