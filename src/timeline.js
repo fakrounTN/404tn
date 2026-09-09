@@ -25,7 +25,7 @@ export async function initTimelineController() {
     }
 
     container.innerHTML = events.map(item => `
-      <div class="group relative p-6 bg-background-subtle border border-surface-800 hover:border-surface-600 transition-all flex flex-col justify-between cursor-pointer" data-evidence-id="${item.evidence_id || 'EV-WATER-01'}">
+      <div class="group relative p-6 bg-background-subtle border border-surface-800 hover:border-surface-600 transition-all flex flex-col justify-between cursor-pointer" data-evidence-id="${item.evidence_id || item.id}">
         <div>
           <div class="flex items-center justify-between gap-2 mb-3">
             <span class="text-xs font-mono text-crimson font-medium tracking-meta">${item.date}</span>

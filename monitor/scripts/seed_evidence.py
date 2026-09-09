@@ -1,4 +1,9 @@
 # monitor/scripts/seed_evidence.py
+# ==============================================================================
+# DEVELOPMENT/TEST DATA ONLY — NEVER RUN IN PRODUCTION
+# This script contains initial baseline/test fixtures and must NEVER be executed
+# during production startup or collection workflows.
+# ==============================================================================
 import os
 import json
 import sqlite3

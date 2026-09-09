@@ -1,36 +1,22 @@
 // 404TN Frontend API Client (src/api.js)
-// Connects to /api/* with graceful fallback to static snapshot
+// Zero synthetic fallback. Every factual item streams from verified API endpoints.
 
-const API_BASE_URL = window.location.hostname === "localhost" && window.location.port === "3000" 
-  ? "http://localhost:8000/api" 
-  : "/api";
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+  ? import.meta.env.VITE_API_URL
+  : (window.location.hostname === "localhost" && window.location.port === "3000" 
+      ? "http://localhost:8000/api" 
+      : "/api");
 
-const REQUEST_TIMEOUT_MS = 3500;
+const REQUEST_TIMEOUT_MS = 4000;
+let isLiveActive = false;
 
-let fallbackDataCache = null;
-let isSnapshotMode = false;
-
-async function loadFallbackData() {
-  if (fallbackDataCache) return fallbackDataCache;
-  try {
-    const res = await fetch("./src/data/fallback.json");
-    if (res.ok) {
-      fallbackDataCache = await res.json();
-      return fallbackDataCache;
-    }
-  } catch (err) {
-    console.warn("Could not load local fallback.json", err);
-  }
-  return null;
-}
-
-function updateSnapshotUIBadge(usingSnapshot) {
-  isSnapshotMode = usingSnapshot;
+function updateStatusUIBadge(isLive, isOffline = false) {
+  isLiveActive = isLive;
   const badge = document.getElementById("api-status-badge");
   if (badge) {
-    if (usingSnapshot) {
-      badge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-amber-800/60 bg-amber-950/40 text-amber-300 text-[10px] font-mono"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>DATA SNAPSHOT</span></span>`;
-    } else {
+    if (isOffline) {
+      badge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-amber-800/60 bg-amber-950/40 text-amber-300 text-[10px] font-mono"><span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>API OFFLINE · BASELINE ONLY</span></span>`;
+    } else if (isLive) {
       badge.innerHTML = `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 border border-surface-800 bg-surface-900 text-surface-400 text-[10px] font-mono"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>LIVE EVIDENCE MONITOR</span></span>`;
     }
   }
@@ -43,40 +29,70 @@ async function fetchWithTimeout(endpoint) {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, { signal: controller.signal });
     clearTimeout(timer);
     if (res.ok) {
-      updateSnapshotUIBadge(false);
-      return await res.json();
+      updateStatusUIBadge(true, false);
+      return { ok: true, status: res.status, data: await res.json() };
     }
-    throw new Error(`API returned ${res.status}`);
+    return { ok: false, status: res.status, data: null };
   } catch (err) {
     clearTimeout(timer);
-    console.info(`API endpoint ${endpoint} unavailable, engaging verified fallback snapshot:`, err.message);
-    updateSnapshotUIBadge(true);
-    return null;
+    updateStatusUIBadge(false, true);
+    return { ok: false, status: 0, error: err.message, data: null };
   }
 }
 
 export async function getMapData() {
-  const data = await fetchWithTimeout("/map");
-  if (data) return data;
-  const fallback = await loadFallbackData();
-  return fallback ? fallback.map : { locations: [] };
+  const res = await fetchWithTimeout("/map");
+  if (res.ok && res.data) return res.data;
+  return { type: "FeatureCollection", features: [], locations: [] };
 }
 
 export async function getEvidence(id) {
-  const data = await fetchWithTimeout(`/evidence/${id}`);
-  if (data) return data;
-  const fallback = await loadFallbackData();
-  if (fallback && fallback.evidence && fallback.evidence[id]) {
-    return fallback.evidence[id];
+  if (!id) return null;
+  const res = await fetchWithTimeout(`/evidence/${encodeURIComponent(id)}`);
+  if (res.ok && res.data) {
+    return res.data;
   }
+  if (res.status === 404) {
+    return {
+      error: "NOT_FOUND",
+      id: id,
+      headline: `Evidence Record Not Found: ${id}`,
+      summary: "This evidence identifier does not exist in the canonical 404TN factual database.",
+      classification: "UNAVAILABLE",
+      status: "NO DATA",
+      source_name: "404TN Archive",
+      source_url: null
+    };
+  }
+  return {
+    error: "OFFLINE",
+    id: id,
+    headline: "Live Evidence Service Offline",
+    summary: "Unable to retrieve evidence record from the live monitoring API. Please verify backend connectivity.",
+    classification: "OFFLINE",
+    status: "UNREACHABLE",
+    source_name: "Local Service Check",
+    source_url: null
+  };
+}
+
+export async function getIssues() {
+  const res = await fetchWithTimeout("/issues");
+  if (res.ok && res.data) return res.data;
+  return [];
+}
+
+export async function getIssueBySlug(slug) {
+  if (!slug) return null;
+  const res = await fetchWithTimeout(`/issues/${encodeURIComponent(slug)}`);
+  if (res.ok && res.data) return res.data;
   return null;
 }
 
 export async function getGabesDossier() {
-  const data = await fetchWithTimeout("/gabes");
-  if (data) return data;
-  const fallback = await loadFallbackData();
-  return fallback ? fallback.gabes : null;
+  const res = await fetchWithTimeout("/gabes");
+  if (res.ok && res.data) return res.data;
+  return null;
 }
 
 export async function getTimeline(month = "ALL", topic = "ALL") {
@@ -84,23 +100,25 @@ export async function getTimeline(month = "ALL", topic = "ALL") {
   if (month && month !== "ALL") query += `month=${encodeURIComponent(month)}&`;
   if (topic && topic !== "ALL") query += `topic=${encodeURIComponent(topic)}&`;
   
-  const data = await fetchWithTimeout(query);
-  if (data) return data;
-  return null; // Handled by timeline controller fallback
+  const res = await fetchWithTimeout(query);
+  if (res.ok && res.data) return res.data;
+  return [];
 }
 
 export async function getAccountability(category = "ALL") {
   let query = `/accountability`;
   if (category && category !== "ALL") query += `?category=${encodeURIComponent(category)}`;
-  const data = await fetchWithTimeout(query);
-  if (data) return data;
-  return null;
+  const res = await fetchWithTimeout(query);
+  if (res.ok && res.data) return res.data;
+  return [];
 }
 
 export async function getStats() {
-  return await fetchWithTimeout("/stats");
+  const res = await fetchWithTimeout("/stats");
+  if (res.ok && res.data) return res.data;
+  return null;
 }
 
-export function isUsingSnapshot() {
-  return isSnapshotMode;
+export function isLiveMonitoring() {
+  return isLiveActive;
 }

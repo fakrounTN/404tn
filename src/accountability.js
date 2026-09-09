@@ -46,7 +46,7 @@ export async function initAccountabilityController() {
 
     // Desktop Table
     tableBody.innerHTML = items.map(item => `
-      <tr class="border-b border-surface-800 hover:bg-surface-900/40 transition-colors group cursor-pointer" data-evidence-id="${item.latest_evidence_id || 'EV-WATER-01'}">
+      <tr class="border-b border-surface-800 hover:bg-surface-900/40 transition-colors group cursor-pointer" ${item.evidence_id || item.latest_evidence_id ? `data-evidence-id="${item.evidence_id || item.latest_evidence_id}"` : ''}>
         <td class="py-5 px-4 align-top w-1/5">
           <div class="font-sans font-semibold text-bone-100 text-sm group-hover:text-crimson transition-colors">${item.topic}</div>
           <div class="text-[10px] font-mono tracking-meta uppercase text-surface-400 mt-1">${item.category}</div>
@@ -70,7 +70,7 @@ export async function initAccountabilityController() {
     // Mobile Cards
     if (cardsContainer) {
       cardsContainer.innerHTML = items.map(item => `
-        <div class="p-5 bg-background-subtle border border-surface-800 space-y-4 cursor-pointer" data-evidence-id="${item.latest_evidence_id || 'EV-WATER-01'}">
+        <div class="p-5 bg-background-subtle border border-surface-800 space-y-4 cursor-pointer" ${item.evidence_id || item.latest_evidence_id ? `data-evidence-id="${item.evidence_id || item.latest_evidence_id}"` : ''}>
           <div class="flex items-start justify-between gap-2 border-b border-surface-800 pb-3">
             <div>
               <span class="text-[10px] font-mono uppercase tracking-meta text-surface-400">${item.category}</span>

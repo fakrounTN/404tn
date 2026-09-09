@@ -13,9 +13,15 @@ from monitor.app.database import get_db, init_db
 from monitor.app.collectors import get_collector
 from monitor.app.services.normalizer import canonicalize_url
 from monitor.app.services.dedupe import compute_content_hash, is_duplicate
-from monitor.app.services.classifier import classify_issue, classify_epistemic
+from monitor.app.services.classifier import classify_issue, classify_epistemic, has_tunisia_context
+from monitor.app.services.locations import extract_location
 from monitor.app.services.freshness import calculate_freshness
 from monitor.app.services.source_health import record_source_attempt
+
+MONITORED_TAXONOMY = {
+    "water", "electricity", "pollution", "gabes", "work", "economy",
+    "migration", "public_services", "rights", "institutions", "governance", "state_response"
+}
 
 def run_collection(
     selected_sources=None,
@@ -36,23 +42,24 @@ def run_collection(
     else:
         sources_to_run = [s for s in all_sources if s.get("enabled", True)]
 
-    print("==========================================================================================", flush=True)
-    print(f"               404TN EVIDENCE MONITOR - COLLECTOR RUN {'(DRY RUN)' if dry_run else ''}")
-    print("==========================================================================================", flush=True)
-    print(f"{'SOURCE':<18} {'STATUS':<8} {'HTTP':<6} {'DISCOVERED':<11} {'PARSED':<8} {'RELEVANT':<9} {'DUPES':<7} {'DURATION'}", flush=True)
-    print("-" * 90, flush=True)
+    print("==================================================================================================", flush=True)
+    print(f"                     404TN EVIDENCE MONITOR - COLLECTOR RUN {'(DRY RUN)' if dry_run else ''}")
+    print("==================================================================================================", flush=True)
+    print(f"{'SOURCE':<18} {'STATUS':<8} {'HTTP':<6} {'DISCOVERED':<11} {'PARSED':<8} {'RELEVANT':<9} {'REJECTED':<9} {'DUPES':<7} {'DURATION'}", flush=True)
+    print("-" * 100, flush=True)
 
     total_discovered = 0
     total_parsed = 0
     total_relevant = 0
+    total_rejected = 0
+    total_rejected_tax = 0
+    total_rejected_geo = 0
     total_dupes = 0
     total_stored = 0
 
     success_count = 0
     partial_count = 0
     failed_count = 0
-
-    summary_rows = []
 
     with get_db() as conn:
         for s in sources_to_run:
@@ -66,9 +73,11 @@ def run_collection(
                 collector = get_collector(s)
                 candidates, metrics = collector.collect()
 
-                # Process candidates through pipeline
                 relevant_candidates = []
                 dupes_count = 0
+                rejected_taxonomy_count = 0
+                rejected_non_tunisia_count = 0
+                rejected_count = 0
 
                 for cand in candidates:
                     cand.canonical_url = canonicalize_url(cand.url or cand.canonical_url)
@@ -82,25 +91,43 @@ def run_collection(
                         continue
 
                     # Classification
+                    full_text = f"{cand.headline} {cand.summary or ''} {cand.body or ''}"
                     if not no_classify:
-                        cand.issue = classify_issue(f"{cand.headline} {cand.summary or ''} {cand.body or ''}")
+                        cand.issue = classify_issue(full_text)
                         classification, status = classify_epistemic(cand.headline, cand.body or "", s.get("source_type", "news_agency"))
                         cand.classification = classification
                         cand.status = status
                     else:
                         cand.classification = "ANALYSIS"
                         cand.status = "UNDER REVIEW"
+                        cand.issue = "general"
 
                     # Freshness
                     cand.current_or_historical = "CURRENT"
 
-                    if cand.issue:
-                        relevant_candidates.append(cand)
+                    # TWO-STAGE RELEVANCE DECISION:
+                    # STAGE A: Must map to authoritative 404TN MONITORED_TAXONOMY
+                    # STAGE B: Must have credible Tunisia context
+                    is_taxonomy_match = bool(cand.issue and cand.issue in MONITORED_TAXONOMY)
+                    is_tunisia_context = has_tunisia_context(full_text, source_domain=s.get("domain"), source_id=source_id)
+
+                    if not is_taxonomy_match:
+                        rejected_taxonomy_count += 1
+                        rejected_count += 1
+                    elif not is_tunisia_context:
+                        rejected_non_tunisia_count += 1
+                        rejected_count += 1
                     else:
-                        # Even if no specific topic tag matches, retain if it's general news candidate
+                        loc_name, lat, lon = extract_location(full_text)
+                        cand.location = loc_name
+                        cand.lat = lat
+                        cand.lon = lon
                         relevant_candidates.append(cand)
 
                 metrics.relevant_candidates = len(relevant_candidates)
+                metrics.rejected_irrelevant = rejected_count
+                metrics.rejected_taxonomy = rejected_taxonomy_count
+                metrics.rejected_non_tunisia = rejected_non_tunisia_count
                 metrics.duplicates = dupes_count
 
                 # Store if not dry-run
@@ -118,7 +145,7 @@ def run_collection(
                                 tags, content_hash
                             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """, (
-                            ev_id, c.issue or "general", c.section, c.location or "Tunisia",
+                            ev_id, c.issue, c.section, c.location or "Tunisia",
                             c.lat, c.lon, c.headline, c.summary or c.headline, c.headline,
                             c.classification or "FACT", c.status or "REPORTED",
                             c.event_date or c.published_at, c.published_at or c.collected_at,
@@ -157,30 +184,35 @@ def run_collection(
                 total_discovered += metrics.items_discovered
                 total_parsed += metrics.items_parsed
                 total_relevant += metrics.relevant_candidates
+                total_rejected += metrics.rejected_irrelevant
+                total_rejected_tax += metrics.rejected_taxonomy
+                total_rejected_geo += metrics.rejected_non_tunisia
                 total_dupes += metrics.duplicates
 
                 http_display = str(metrics.http_status) if metrics.http_status else "N/A"
-                print(f"{source_name[:17]:<18} {status_label:<8} {http_display:<6} {metrics.items_discovered:<11} {metrics.items_parsed:<8} {metrics.relevant_candidates:<9} {metrics.duplicates:<7} {metrics.duration_ms:.0f}ms", flush=True)
+                print(f"{source_name[:17]:<18} {status_label:<8} {http_display:<6} {metrics.items_discovered:<11} {metrics.items_parsed:<8} {metrics.relevant_candidates:<9} {metrics.rejected_irrelevant:<9} {metrics.duplicates:<7} {metrics.duration_ms:.0f}ms", flush=True)
 
                 if verbose and relevant_candidates:
                     for cand in relevant_candidates[:3]:
-                        print(f"   -> [{cand.issue or 'GENERAL'}] ({cand.classification}) {cand.headline[:65]}")
+                        print(f"   -> [{cand.issue}] ({cand.classification}) [Loc: {cand.location} ({cand.lat},{cand.lon})] {cand.headline[:55]}")
 
             except Exception as exc:
                 failed_count += 1
-                print(f"{source_name[:17]:<18} {'FAIL':<8} {'ERR':<6} {0:<11} {0:<8} {0:<9} {0:<7} {str(exc)[:20]}")
+                print(f"{source_name[:17]:<18} {'FAIL':<8} {'ERR':<6} {0:<11} {0:<8} {0:<9} {0:<9} {0:<7} {str(exc)[:20]}")
 
-    print("=" * 90, flush=True)
-    print(f"TOTAL SOURCES:    {len(sources_to_run)}")
-    print(f"SUCCESS:          {success_count}", flush=True)
-    print(f"PARTIAL:          {partial_count}", flush=True)
-    print(f"FAILED:           {failed_count}", flush=True)
-    print("-" * 30, flush=True)
-    print(f"TOTAL DISCOVERED: {total_discovered}", flush=True)
-    print(f"TOTAL PARSED:     {total_parsed}", flush=True)
-    print(f"TOTAL RELEVANT:   {total_relevant}", flush=True)
-    print(f"TOTAL DUPLICATES: {total_dupes}", flush=True)
-    print(f"DATABASE WRITES:  {0 if dry_run or no_store else total_stored}", flush=True)
+    print("=" * 100, flush=True)
+    print(f"TOTAL SOURCES:       {len(sources_to_run)}")
+    print(f"SUCCESS:             {success_count}", flush=True)
+    print(f"PARTIAL:             {partial_count}", flush=True)
+    print(f"FAILED:              {failed_count}", flush=True)
+    print("-" * 35, flush=True)
+    print(f"TOTAL DISCOVERED:    {total_discovered}", flush=True)
+    print(f"TOTAL PARSED:        {total_parsed}", flush=True)
+    print(f"TOTAL RELEVANT:      {total_relevant}", flush=True)
+    print(f"REJECTED (TAXONOMY): {total_rejected_tax}", flush=True)
+    print(f"REJECTED (NON-TN):   {total_rejected_geo}", flush=True)
+    print(f"TOTAL DUPLICATES:    {total_dupes}", flush=True)
+    print(f"DATABASE WRITES:     {0 if dry_run or no_store else total_stored}", flush=True)
     print(f"{'DRY RUN COMPLETE' if dry_run else 'COLLECTION RUN COMPLETE'}", flush=True)
 
 if __name__ == "__main__":

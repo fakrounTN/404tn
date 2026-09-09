@@ -3,7 +3,7 @@ import { initGeospatialMonitor } from './map.js';
 import { initEvidenceDrawer, openEvidenceDrawer } from './evidence-drawer.js';
 import { initTimelineController } from './timeline.js';
 import { initAccountabilityController } from './accountability.js';
-import { getGabesDossier, getStats } from './api.js';
+import { getGabesDossier, getStats, getIssueBySlug, getIssues } from './api.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   initHeader();
@@ -94,177 +94,79 @@ function initMobileMenu() {
 }
 
 /* ==========================================================================
-   3. THE SIX FILES DATA & DOSSIER MODAL
+   3. THE SIX FILES EDITORIAL METADATA & DYNAMIC DOSSIER MODAL
    ========================================================================== */
-const FILES_DATA = {
+const FILE_EDITORIAL_METADATA = {
   water: {
     id: "01",
+    slug: "water",
     title: "Water: Cuts, Restrictions, Infrastructure & Regional Inequality",
     category: "RESOURCE COLLAPSE",
-    status: "CRITICAL SYSTEMIC DEFICIT",
-    summary: "In Summer 2026, Tunisia faces its seventh consecutive year of drought compounded by aging hydraulic distribution infrastructure losing over 32% of potable water to leakages. SONEDE rationing quotas have extended from nocturnal cuts to multi-day disruptions in central and southern governorates, while agricultural irrigation remains severely restricted.",
-    keyMetrics: [
-      { label: "National Dam Reserve", value: "21.4%", note: "Lowest recorded level since modern reservoir tracking began", evidence_id: "EV-WATER-01" },
-      { label: "Distribution Network Loss", value: "32.8%", note: "Aging cast-iron and asbestos-cement distribution pipes", evidence_id: "EV-WATER-01" },
-      { label: "Unserved Rural Population", value: "320,000+", note: "Relying on unregulated private tankers or untreated springs", evidence_id: "EV-WATER-01" },
-      { label: "Daily Rationing Window", value: "9h - 18h", note: "Extended nocturnal pressure reduction across 18 governorates", evidence_id: "EV-WATER-01" }
-    ],
+    summary: "Investigation into hydraulic distribution infrastructure strain, reservoir levels, and SONEDE rationing across governorates.",
     accountableInstitutions: [
       "SONEDE (National Water Distribution Utility)",
       "Ministry of Agriculture, Hydraulic Resources and Maritime Fisheries",
-      "Presidency of the Republic (National Water Crisis Committee)"
-    ],
-    documentedEvents: [
-      { date: "June 2026", desc: "SONEDE issues circular extending emergency water-saving decree prohibiting tap water for car washing, green spaces, and non-essential uses." },
-      { date: "July 2026", desc: "Protests in Sbeitla, Kasserine, and Fernana over multi-day dry taps during 44°C heatwave conditions." },
-      { date: "August 2026", desc: "Official presidential statement attributes water interruptions to deliberate sabotage by political adversaries; technical audits highlight pump failures and low head pressure." }
-    ],
-    evidenceSources: [
-      "SONEDE Technical Bulletin No. 44 (Water balance Q2 2026)",
-      "ONAGRI Dam Volume Saturation Index (August 2026)",
-      "FTDES (Tunisian Forum for Economic and Social Rights) Water Map & Protest Registry"
+      "National Observatory of Agriculture (ONAGRI)"
     ]
   },
   electricity: {
     id: "02",
+    slug: "electricity",
     title: "Electricity: Outages, Network Load & Service Reliability",
     category: "ENERGY SECURITY",
-    status: "LOAD-SHEDDING RISK HIGH",
-    summary: "Record summer heatwaves pushed national electricity demand to 4,825 MW, exceeding domestic natural gas generation capacity. Reliance on imported Algerian gas and debt burdens at STEG have constrained preventive maintenance on combined-cycle turbines in Sousse and Radès.",
-    keyMetrics: [
-      { label: "Peak National Grid Demand", value: "4,825 MW", note: "Exceeding reliable baseline generation threshold", evidence_id: "EV-ENERGY-01" },
-      { label: "Natural Gas Import Share", value: "54%", note: "Heavy fiscal exposure to international energy contracts", evidence_id: "EV-ENERGY-01" },
-      { label: "Unplanned Outage Frequency", value: "+42%", note: "YoY increase during July-August peak thermal hours", evidence_id: "EV-ENERGY-01" },
-      { label: "Renewable Grid Share", value: "4.1%", note: "Delayed private-public solar concessions (TuNur / STEG)", evidence_id: "EV-ENERGY-01" }
-    ],
+    summary: "Documentation of national grid peak load, natural gas generation capacity, and STEG service disruptions.",
     accountableInstitutions: [
       "STEG (Tunisian Company of Electricity and Gas)",
       "Ministry of Industry, Mines and Energy",
-      "Central Bank of Tunisia (BCT - Energy Import Letter of Credits)"
-    ],
-    documentedEvents: [
-      { date: "June 2026", desc: "STEG initiates coordinated 45-minute rotating load shedding in southern industrial parks." },
-      { date: "July 2026", desc: "Transformer explosion at Sfax substation leaves 140,000 residents without air conditioning during 46°C peak." },
-      { date: "August 2026", desc: "Emergency gas deliveries negotiated with Sonatrach under bilateral presidential protocols." }
-    ],
-    evidenceSources: [
-      "STEG Annual Operational Dispatch Log",
-      "Observatoire National de l'Énergie et des Mines Monthly Energy Statistics",
-      "Sfax Chamber of Commerce Industrial Loss Impact Survey"
+      "Observatoire National de l'Énergie et des Mines"
     ]
   },
   work: {
     id: "03",
+    slug: "work",
     title: "Work: Unemployment, Wages & Economic Pressure",
     category: "ECONOMIC STAGNATION",
-    status: "STRUCTURAL DECLINE",
-    summary: "Official unemployment stands at 16.2%, but reaches 38.6% among university graduates and 44% for women in interior governorates. Double-digit cumulative food inflation over 2024-2026 has eroded real purchasing power, while civil service hiring freezes remain in place to meet fiscal deficit targets.",
-    keyMetrics: [
-      { label: "Graduate Unemployment", value: "38.6%", note: "Disproportionately high in Kairouan, Sidi Bouzid, and Gafsa", evidence_id: "EV-WORK-01" },
-      { label: "Informal Economy Share", value: "41.5%", note: "Percent of non-agricultural labor force without social security", evidence_id: "EV-WORK-01" },
-      { label: "Cumulative Food Price Rise", value: "+34.2%", note: "2023-2026 essential basket (cooking oil, sugar, coffee, dairy)", evidence_id: "EV-WORK-01" },
-      { label: "Minimum Wage (SMIG 48h)", value: "492 TND", note: "Equivalent to ~$160/month, lagging median living costs", evidence_id: "EV-WORK-01" }
-    ],
+    summary: "Analysis of official labor force data, graduate unemployment disparities, food inflation, and purchasing power.",
     accountableInstitutions: [
-      "Ministry of Social Affairs",
-      "Ministry of Economy and Planning",
       "INS (National Institute of Statistics)",
-      "National Reconciliation Commission (Al-Sulh Al-Jazā'ī)"
-    ],
-    documentedEvents: [
-      { date: "May 2026", desc: "Law graduates and doctorates stage sit-in in front of Ministry of Education protesting Law 38 non-application." },
-      { date: "July 2026", desc: "Price caps on poultry and produce lead to temporary retail shortages and vendor strikes." },
-      { date: "August 2026", desc: "Audit of state-owned enterprises (ETAP, Tunisair, Transtu) reports frozen recruitment and pension arrears." }
-    ],
-    evidenceSources: [
-      "INS Quarterly Labor Force Survey (Q2 2026)",
-      "UGTT Department of Studies Economic Bulletin",
-      "World Bank Tunisia Economic Monitor (Summer 2026 Edition)"
+      "Ministry of Social Affairs",
+      "Ministry of Economy and Planning"
     ]
   },
   migration: {
     id: "04",
+    slug: "migration",
     title: "Migration: Tunisians Leaving, African Migration & Border Policy",
     category: "HUMAN MOBILITY",
-    status: "HUMANITARIAN PRESSURE",
-    summary: "Tunisia remains simultaneously a primary departure hub for Tunisian youth seeking European asylum/labor and a high-risk transit country for Sub-Saharan African migrants. Bilateral agreements with the EU and Italy have intensified maritime interceptions by the National Guard, resulting in contentious inland encampments around El Amra and Jbeniana.",
-    keyMetrics: [
-      { label: "Interceptions at Sea", value: "34,200+", note: "Documented by Maritime National Guard Jan-August 2026", evidence_id: "EV-MIGRATION-01" },
-      { label: "Tunisian Nationals Arrived in Italy", value: "11,800", note: "Young adults, families, and unaccompanied minors (UNHCR)", evidence_id: "EV-MIGRATION-01" },
-      { label: "Displaced Persons in Olive Groves", value: "9,500+", note: "Informal encampments in El Amra/Jbeniana rural zones", evidence_id: "EV-MIGRATION-01" },
-      { label: "Search & Rescue Fatalities", value: "612", note: "Documented shipwrecks off Kerkennah and Zarzis coasts", evidence_id: "EV-MIGRATION-01" }
-    ],
+    summary: "Monitoring of maritime departures, interceptions at sea by the National Guard, and regional border management.",
     accountableInstitutions: [
-      "Ministry of Interior (National Guard & Border Police)",
+      "Ministry of Interior (National Guard & Maritime Units)",
       "Ministry of Foreign Affairs, Migration and Tunisians Abroad",
-      "European Commission / Italian Ministry of Interior"
-    ],
-    documentedEvents: [
-      { date: "June 2026", desc: "Security sweeps in Sfax center redirect asylum seekers to rural olive groves with restricted NGO aid access." },
-      { date: "July 2026", desc: "Joint European-Tunisian border management delegation visits Tabarka and Zarzis radar installations." },
-      { date: "August 2026", desc: "Independent documentation of return pushbacks and water scarcity in southern buffer zones." }
-    ],
-    evidenceSources: [
-      "FTDES Migration Incident Monitor (Monthly Reports)",
-      "UNHCR Mediterranean Situational Updates",
-      "IOM Missing Migrants Project Central Mediterranean Registry"
+      "FTDES (Tunisian Forum for Economic and Social Rights)"
     ]
   },
   publicServices: {
     id: "05",
-    title: "Public Services: Healthcare, Transport & Municipal Breakdown",
+    slug: "public-services",
+    title: "Public Services: Healthcare, Transport & Municipal Infrastructure",
     category: "CIVIC INFRASTRUCTURE",
-    status: "ACUTE FUNCTIONAL STRAIN",
-    summary: "Following the dissolution of elected municipal councils in 2023, local governance under appointed special delegations has struggled with waste management and sanitation. Public hospitals face shortages of anesthetics, antibiotics, and oncology treatments, while the national transport fleet operates at 35% nominal availability.",
-    keyMetrics: [
-      { label: "Operational Metro/Bus Fleet", value: "34.5%", note: "Transtu rolling stock available in Greater Tunis", evidence_id: "EV-WATER-01" },
-      { label: "Essential Medicine Stockouts", value: "240+ drugs", note: "Central Pharmacy (PCT) import supplier arrears", evidence_id: "EV-WATER-01" },
-      { label: "Municipal Waste Treatment Deficit", value: "52%", note: "Unregulated open-air dumping across interior governorates", evidence_id: "EV-WATER-01" },
-      { label: "Doctor Emigration Rate", value: "680/year", note: "Young medical residents leaving for France and Germany", evidence_id: "EV-WATER-01" }
-    ],
+    summary: "Documentation of hospital equipment and medicine availability, public transit fleets (Transtu, SNCFT), and municipal sanitation.",
     accountableInstitutions: [
       "Ministry of Health & Pharmacie Centrale de Tunisie (PCT)",
       "Ministry of Transport (Transtu & SNCFT)",
-      "Ministry of Interior (Special Delegations / Local Municipalities)"
-    ],
-    documentedEvents: [
-      { date: "June 2026", desc: "Medical residents strike across university hospitals in Sousse, Monastir, and Tunis over equipment shortages." },
-      { date: "July 2026", desc: "SNCFT halts suburban southern railway line for 4 days due to unmaintained catenary wire failures." },
-      { date: "August 2026", desc: "Sfax waste crisis resurfaces with illegal landfill burning near Thyna archaeological reserve." }
-    ],
-    evidenceSources: [
-      "Tunisian Medical Council (Conseil National de l'Ordre des Médecins) Annual Registry",
-      "Transtu Internal Fleet Availability Audit",
-      "Cour des Comptes (Court of Audit) Municipal Administration Report"
+      "Ministry of Environment (ANPE)"
     ]
   },
   institutions: {
     id: "06",
-    title: "Rights & Institutions: Hyper-Presidency & Legal Frameworks",
+    slug: "rights-institutions",
+    title: "Rights & Institutions: Governance & Accountability",
     category: "GOVERNANCE & ACCOUNTABILITY",
-    status: "CONSOLIDATED CONCENTRATION",
-    summary: "Under the 2022 Constitution, executive authority is concentrated in the presidency with reduced parliamentary oversight. Decree 54 on cybercrime has been increasingly used to detain journalists, political commentators, and lawyers, while the Supreme Judicial Council remains under temporary executive appointment.",
-    keyMetrics: [
-      { label: "Decree 54 Prosecutions", value: "70+ cases", note: "Targeting journalists, lawyers, political figures, and bloggers", evidence_id: "EV-INSTITUTIONS-01" },
-      { label: "Dissolved Constitutional Bodies", value: "5 of 6", note: "Including Anti-Corruption Authority (INLUCC) and elected CSM", evidence_id: "EV-INSTITUTIONS-01" },
-      { label: "Journalists in Detention / Trial", value: "14", note: "Documented by SNJT (National Union of Tunisian Journalists)", evidence_id: "EV-INSTITUTIONS-01" },
-      { label: "Independent Electoral Commission", value: "Executive-appointed", note: "ISIE members directly appointed by presidential decree", evidence_id: "EV-INSTITUTIONS-01" }
-    ],
+    summary: "Monitoring institutional checks and balances, Decree 54 legal proceedings, press freedom, and judicial independence.",
     accountableInstitutions: [
       "Presidency of the Republic (Carthage)",
       "Ministry of Justice",
-      "ISIE (Independent High Authority for Elections)",
-      "Ministry of Communication Technologies"
-    ],
-    documentedEvents: [
-      { date: "May 2026", desc: "Bar Association national strike following police raid on Tunis Bar House and arrest of defense counsel." },
-      { date: "July 2026", desc: "Civil society draft law introduces strict foreign funding registration requirements under Ministry oversight." },
-      { date: "August 2026", desc: "State media directives mandate balance of official presidency bulletins in prime-time slots." }
-    ],
-    evidenceSources: [
-      "Official Gazette of the Republic of Tunisia (JORT Decrees)",
-      "SNJT Press Freedom Observatory Reports",
-      "Amnesty International / Human Rights Watch Tunisia Documentation"
+      "SNJT (National Union of Tunisian Journalists)"
     ]
   }
 };
@@ -276,27 +178,26 @@ function initFilesDossierModal() {
 
   if (!modal) return;
 
-  const openDossier = (key) => {
-    const data = FILES_DATA[key];
-    if (!data) return;
+  const openDossier = async (key) => {
+    const meta = FILE_EDITORIAL_METADATA[key] || {
+      id: "00",
+      title: key.toUpperCase(),
+      category: "INVESTIGATIVE DOSSIER",
+      summary: "Live investigative dossier querying canonical evidence archive.",
+      accountableInstitutions: []
+    };
 
-    document.getElementById("modal-file-num").textContent = `FILE ${data.id}`;
-    document.getElementById("modal-file-category").textContent = data.category;
-    document.getElementById("modal-file-title").textContent = data.title;
-    document.getElementById("modal-file-status").textContent = data.status;
-    document.getElementById("modal-file-summary").textContent = data.summary;
+    document.getElementById("modal-file-num").textContent = `FILE ${meta.id}`;
+    document.getElementById("modal-file-category").textContent = meta.category;
+    document.getElementById("modal-file-title").textContent = meta.title;
+    document.getElementById("modal-file-status").textContent = "QUERYING LIVE ARCHIVE...";
+    document.getElementById("modal-file-summary").textContent = meta.summary;
 
     const metricsContainer = document.getElementById("modal-file-metrics");
-    metricsContainer.innerHTML = data.keyMetrics.map(m => `
-      <div class="p-4 bg-background-subtle border border-surface-800 cursor-pointer hover:border-surface-600 transition-colors" data-evidence-id="${m.evidence_id || 'EV-WATER-01'}">
-        <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">${m.label}</div>
-        <div class="text-2xl font-editorial font-semibold text-bone-100 my-1 text-crimson">${m.value}</div>
-        <div class="text-xs text-surface-400 leading-relaxed font-light">${m.note}</div>
-      </div>
-    `).join("");
+    metricsContainer.innerHTML = `<div class="col-span-full py-4 text-xs font-mono text-surface-500">Querying verified issue metrics...</div>`;
 
     const instContainer = document.getElementById("modal-file-institutions");
-    instContainer.innerHTML = data.accountableInstitutions.map(i => `
+    instContainer.innerHTML = meta.accountableInstitutions.map(i => `
       <li class="flex items-start text-xs text-surface-300 gap-2">
         <span class="text-crimson font-mono select-none">■</span>
         <span>${i}</span>
@@ -304,24 +205,82 @@ function initFilesDossierModal() {
     `).join("");
 
     const eventsContainer = document.getElementById("modal-file-events");
-    eventsContainer.innerHTML = data.documentedEvents.map(e => `
-      <div class="relative pl-5 pb-4 border-l border-surface-800 last:border-l-0">
-        <span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-crimson"></span>
-        <div class="text-xs font-mono text-crimson uppercase font-medium">${e.date}</div>
-        <p class="text-xs text-surface-300 mt-1 leading-relaxed font-light">${e.desc}</p>
-      </div>
-    `).join("");
+    eventsContainer.innerHTML = `<div class="py-4 text-xs font-mono text-surface-500">Querying real evidence records...</div>`;
 
     const sourcesContainer = document.getElementById("modal-file-sources");
-    sourcesContainer.innerHTML = data.evidenceSources.map(s => `
-      <li class="flex items-start text-xs font-mono text-surface-400 gap-2 bg-surface-900/60 p-2.5 border border-surface-800">
-        <span class="text-sand select-none font-semibold">SRC:</span>
-        <span class="text-surface-300">${s}</span>
-      </li>
-    `).join("");
+    sourcesContainer.innerHTML = "";
 
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
+
+    const liveDossier = await getIssueBySlug(meta.slug || key);
+    if (!liveDossier) {
+      document.getElementById("modal-file-status").textContent = "ARCHIVE OFFLINE";
+      metricsContainer.innerHTML = `
+        <div class="col-span-full p-4 bg-background-subtle border border-surface-800">
+          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">MONITORED METRIC STATUS</div>
+          <div class="text-lg font-editorial font-semibold text-surface-400 my-1">NO CURRENT VERIFIED METRIC</div>
+          <div class="text-xs text-surface-500 leading-relaxed font-light">Unable to query live telemetry from API. Verified baseline indicators require active connection.</div>
+        </div>
+      `;
+      eventsContainer.innerHTML = `<div class="text-xs font-mono text-surface-400">Live evidence stream unreachable.</div>`;
+      return;
+    }
+
+    document.getElementById("modal-file-status").textContent = `${liveDossier.status} · ${liveDossier.evidence_count} VERIFIED RECORDS`;
+
+    // Render Metrics: Look for actual sourced metrics in evidence records
+    const recordsWithMetrics = (liveDossier.evidence_records || []).filter(r => r.metric_value);
+    if (recordsWithMetrics.length > 0) {
+      metricsContainer.innerHTML = recordsWithMetrics.slice(0, 4).map(m => `
+        <div class="p-4 bg-background-subtle border border-surface-800 cursor-pointer hover:border-surface-600 transition-colors" data-evidence-id="${m.id}">
+          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">${m.source_name || 'OFFICIAL REPORT'}</div>
+          <div class="text-2xl font-editorial font-semibold text-bone-100 my-1 text-crimson">${m.metric_value} ${m.metric_unit || ''}</div>
+          <div class="text-xs text-surface-400 leading-relaxed font-light truncate">${m.headline}</div>
+        </div>
+      `).join("");
+    } else {
+      metricsContainer.innerHTML = `
+        <div class="col-span-full p-4 bg-background-subtle border border-surface-800">
+          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">MONITORED METRIC STATUS</div>
+          <div class="text-lg font-editorial font-semibold text-bone-100 my-1 text-surface-400">NO CURRENT VERIFIED METRIC</div>
+          <div class="text-xs text-surface-500 leading-relaxed font-light">Zero unverified numbers displayed. Real collected factual items stream continuously in the evidence list below.</div>
+        </div>
+      `;
+    }
+
+    // Render Real Documented Evidence Records
+    const evRecords = liveDossier.evidence_records || [];
+    if (evRecords.length > 0) {
+      eventsContainer.innerHTML = evRecords.slice(0, 5).map(e => `
+        <div class="relative pl-5 pb-4 border-l border-surface-800 last:border-l-0 cursor-pointer group" data-evidence-id="${e.id}">
+          <span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-crimson group-hover:scale-125 transition-transform"></span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono text-crimson uppercase font-medium">${e.event_date || e.published_at || 'CURRENT'}</span>
+            <span class="text-[10px] font-mono px-1.5 py-0.2 bg-surface-900 text-surface-400 border border-surface-800">${e.classification}</span>
+          </div>
+          <p class="text-xs text-surface-200 mt-1 leading-relaxed font-sans group-hover:text-crimson transition-colors">${e.headline}</p>
+          <div class="text-[10px] font-mono text-surface-500 mt-1">SRC: ${e.source_name || 'VERIFIED SOURCE'}</div>
+        </div>
+      `).join("");
+
+      // Collect unique sources
+      const uniqueSources = {};
+      evRecords.forEach(e => {
+        if (e.source_name) {
+          uniqueSources[e.source_name] = e.source_url || '#';
+        }
+      });
+      sourcesContainer.innerHTML = Object.entries(uniqueSources).map(([name, url]) => `
+        <li class="flex items-start text-xs font-mono text-surface-400 gap-2 bg-surface-900/60 p-2.5 border border-surface-800">
+          <span class="text-sand select-none font-semibold">SRC:</span>
+          <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-surface-300 hover:text-crimson transition-colors truncate">${name}</a>
+        </li>
+      `).join("");
+    } else {
+      eventsContainer.innerHTML = `<div class="text-xs font-mono text-surface-400">No active evidence records for this category in current monitoring window.</div>`;
+      sourcesContainer.innerHTML = `<li class="text-xs font-mono text-surface-500">No verified sources active.</li>`;
+    }
   };
 
   const closeModal = () => {
@@ -357,7 +316,7 @@ async function loadGabesData() {
   if (!container || !gabes.metrics) return;
 
   container.innerHTML = gabes.metrics.map(m => `
-    <div class="p-4 bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors cursor-pointer group" data-evidence-id="${m.evidence_id}">
+    <div class="p-4 bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group">
       <div class="flex items-center justify-between">
         <span class="text-surface-500 uppercase block text-[10px] font-mono">${m.label}</span>
         <span class="text-[9px] font-mono uppercase px-1.5 py-0.2 bg-background border border-surface-800 ${m.status === 'HISTORICAL BASELINE' ? 'text-amber-400' : (m.status === 'NO CURRENT DATA' ? 'text-surface-400' : 'text-crimson')}">${m.status}</span>
@@ -368,7 +327,7 @@ async function loadGabesData() {
       <div class="text-[10px] text-surface-400 block mt-0.5 font-light">${m.subtext}</div>
       <div class="text-[9px] text-surface-500 font-mono mt-2 pt-2 border-t border-surface-800/60 flex items-center justify-between">
         <span>PERIOD: ${m.source_period}</span>
-        <span class="text-sand group-hover:translate-x-1 transition-transform">INSPECT ↗</span>
+        <span class="text-sand text-[9px] uppercase tracking-wider">${m.type ? m.type.replace(/_/g, ' ') : 'CONTEXT'}</span>
       </div>
     </div>
   `).join("");
@@ -393,7 +352,7 @@ async function loadStatsData() {
 const PRESIDENCY_DATA = {
   "2019": {
     year: "2019",
-    phase: "THE PROMISE",
+    phase: "THE PROMISE · HISTORICAL CONTEXT",
     subtitle: "Grassroots Mandate & Anti-Establishment Surge",
     narrative: "Elected with 72.7% in the second round of presidential elections. Running as an austere constitutional law professor without a political party or campaign financing, Kais Saied drew vast youth support based on promises of clean governance, direct local representation (Al-Chaab Yourid), and unyielding anti-corruption.",
     keyActions: [
@@ -405,7 +364,7 @@ const PRESIDENCY_DATA = {
   },
   "2021": {
     year: "2021",
-    phase: "THE RUPTURE",
+    phase: "THE RUPTURE · HISTORICAL CONTEXT",
     subtitle: "July 25 & Article 80 Emergency Measures",
     narrative: "Amid a devastating COVID-19 healthcare crisis, economic paralysis, and nationwide street demonstrations, President Saied invoked Article 80 of the 2014 Constitution on July 25. He dismissed Prime Minister Hichem Mechichi, froze parliament with military support, and assumed full executive power. On September 22, Presidential Decree 117 formalized rule by decree.",
     keyActions: [
@@ -417,7 +376,7 @@ const PRESIDENCY_DATA = {
   },
   "2022": {
     year: "2022",
-    phase: "THE NEW POLITICAL SYSTEM",
+    phase: "THE NEW SYSTEM · HISTORICAL CONTEXT",
     subtitle: "New Constitution & Hyper-Presidency Framework",
     narrative: "Following an electronic national consultation, a new Constitution was drafted and submitted to referendum on July 25, 2022 (approved with 30.5% turnout). It established a pure presidential system without parliamentary confidence mechanisms or presidential impeachment. In September 2022, Decree 54 on cybercrime was enacted.",
     keyActions: [
@@ -429,7 +388,7 @@ const PRESIDENCY_DATA = {
   },
   "2024": {
     year: "2024",
-    phase: "CONSOLIDATION",
+    phase: "CONSOLIDATION · HISTORICAL CONTEXT",
     subtitle: "Re-Election & Administrative Centralization",
     narrative: "Presidential elections organized under the supervision of the restructured ISIE electoral commission. Multiple prominent opposition figures, former ministers, and party leaders faced detention, legal disqualification, or criminal sentences prior to the ballot. President Saied secured a renewed mandate.",
     keyActions: [
@@ -441,7 +400,7 @@ const PRESIDENCY_DATA = {
   },
   "2026": {
     year: "2026",
-    phase: "THE RESULTS",
+    phase: "THE RESULTS · 404TN EDITORIAL ANALYSIS",
     subtitle: "Direct Responsibility Tested by Compounding Crises",
     narrative: "Five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN documents how this centralized governance model performs when confronted with the compounding infrastructural stress of water shortages, energy load shedding, inflation, and environmental degradation in Gabès.",
     keyActions: [

@@ -46,6 +46,9 @@ class DiscoveryMetrics:
     items_parsed: int = 0
     parse_failures: int = 0
     relevant_candidates: int = 0
+    rejected_irrelevant: int = 0
+    rejected_taxonomy: int = 0
+    rejected_non_tunisia: int = 0
     duplicates: int = 0
     duration_ms: float = 0.0
     last_error: Optional[str] = None

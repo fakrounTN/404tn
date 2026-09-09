@@ -1,11 +1,9 @@
 import { getCartoRasterTiles } from './config.js';
 // 404TN Geospatial Intelligence Map (src/map.js & assets/js/tunisia-map.js)
-// Professional MapLibre GL JS Map with 24 Governorates & Evidence Density Heatmap
+// Professional MapLibre GL JS Map with 24 Governorates & Real Evidence Density Heatmap
 
 import * as maplibregl from 'maplibre-gl';
 import { openEvidenceDrawer } from './evidence-drawer.js';
-import localGovernoratesGeoJson from './assets/data/tunisia-governorates.json';
-import localMapFallback from './data/map-fallback.json';
 
 const TUNISIA_BOUNDS = [
   [7.4, 30.1], // Southwest coordinates [lng, lat]
@@ -334,10 +332,8 @@ function renderCityLabels() {
     }
 
     el.addEventListener('click', () => {
-      if (city.isFlagship) {
-        openEvidenceDrawer('EV-GABES-01');
-      } else {
-        openEvidenceDrawer(city.slug === 'sfax' ? 'EV-MIGRATION-01' : (city.slug === 'tunis' ? 'EV-INSTITUTIONS-01' : 'EV-WATER-01'));
+      if (mapInstance) {
+        mapInstance.flyTo({ center: [city.lng, city.lat], zoom: 7.5, speed: 1.2 });
       }
     });
 

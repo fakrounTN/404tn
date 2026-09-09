@@ -60,9 +60,32 @@ export async function openEvidenceDrawer(evidenceId) {
 
   const data = await getEvidence(evidenceId);
 
-  if (!data) {
-    if (titleEl) titleEl.textContent = `Evidence Record ${evidenceId}`;
-    if (statementEl) statementEl.textContent = "Verified evidence document is currently under cryptographic archival review.";
+  if (!data || data.error) {
+    if (titleEl) titleEl.textContent = data ? data.headline : `Evidence Record ${evidenceId}`;
+    if (idEl) idEl.textContent = evidenceId;
+    if (classEl) {
+      classEl.textContent = data && data.classification ? data.classification : "UNAVAILABLE";
+      classEl.className = "px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider font-bold bg-surface-800 text-surface-400";
+    }
+    if (statusEl) {
+      statusEl.textContent = data && data.status ? data.status : "NO DATA";
+      statusEl.className = "px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-surface-900 text-surface-400 border border-surface-700";
+    }
+    if (freshnessEl) freshnessEl.textContent = "STATUS: NO LIVE DATA";
+    if (statementEl) statementEl.textContent = data ? data.summary : "Evidence record is not currently available in the canonical factual database.";
+    if (claimEl) claimEl.textContent = "None recorded";
+    if (sourceNameEl) sourceNameEl.textContent = data && data.source_name ? data.source_name : "404TN Archive";
+    if (sourceTypeEl) sourceTypeEl.textContent = "SYSTEM";
+    if (sourceUrlEl) {
+      sourceUrlEl.removeAttribute("href");
+      sourceUrlEl.textContent = "No external source link";
+    }
+    if (pubDateEl) pubDateEl.textContent = "N/A";
+    if (eventDateEl) eventDateEl.textContent = "N/A";
+    if (metricEl) metricEl.textContent = "NO CURRENT VERIFIED METRIC";
+    if (entityEl) entityEl.textContent = "N/A";
+    if (outcomeEl) outcomeEl.textContent = "N/A";
+    if (confEl) confEl.textContent = "N/A";
     return;
   }
 

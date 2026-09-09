@@ -1,25 +1,24 @@
 import { getCartoRasterTiles } from './config.js';
 // 404TN Geospatial Intelligence Map (src/map.js & assets/js/tunisia-map.js)
-// Professional MapLibre GL JS Map with 24 Governorates & Evidence Density Heatmap
+// Professional MapLibre GL JS Map with 24 Governorates & Real Evidence Density Heatmap
 
 import * as maplibregl from 'maplibre-gl';
 import { openEvidenceDrawer } from './evidence-drawer.js';
-// Dynamic GeoJSON loading via public/data
-import localMapFallback from './data/map-fallback.json';
 
 const TUNISIA_BOUNDS = [
   [7.4, 30.1], // Southwest coordinates [lng, lat]
   [11.7, 37.6]  // Northeast coordinates [lng, lat]
 ];
 
+// Authoritative geographical reference hubs (Labels only, not evidence records)
 const REFERENCE_CITIES = [
-  { slug: "bizerte", name: "BIZERTE", lng: 9.8739, lat: 37.2744, status: "VERIFIED" },
-  { slug: "tunis", name: "TUNIS", lng: 10.1815, lat: 36.8065, status: "VERIFIED" },
-  { slug: "kasserine", name: "KASSERINE", lng: 8.8365, lat: 35.1676, status: "REPORTED" },
-  { slug: "gafsa", name: "GAFSA", lng: 8.7842, lat: 34.4250, status: "VERIFIED" },
-  { slug: "sfax", name: "SFAX", lng: 10.7603, lat: 34.7406, status: "VERIFIED" },
-  { slug: "gabes", name: "GABÈS", lng: 10.0982, lat: 33.8815, status: "ACTIVE FILE", isFlagship: true },
-  { slug: "zarzis", name: "ZARZIS", lng: 11.1122, lat: 33.5040, status: "REPORTED" }
+  { slug: "bizerte", name: "BIZERTE", lng: 9.8739, lat: 37.2744 },
+  { slug: "tunis", name: "TUNIS", lng: 10.1815, lat: 36.8065 },
+  { slug: "kasserine", name: "KASSERINE", lng: 8.8365, lat: 35.1676 },
+  { slug: "gafsa", name: "GAFSA", lng: 8.7842, lat: 34.4250 },
+  { slug: "sfax", name: "SFAX", lng: 10.7603, lat: 34.7406 },
+  { slug: "gabes", name: "GABÈS", lng: 10.0982, lat: 33.8815, isFlagship: true },
+  { slug: "zarzis", name: "ZARZIS", lng: 11.1122, lat: 33.5040 }
 ];
 
 let mapInstance = null;
@@ -57,14 +56,14 @@ export async function initGeospatialMonitor() {
           <button class="map-filter-pill" data-filter-time="2026">2026</button>
           <button class="map-filter-pill active" data-filter-time="ALL">ALL TIME</button>
           <span id="map-offline-badge" class="hidden text-[9px] font-mono text-amber-400 bg-amber-950/60 px-2 py-0.5 border border-amber-800/60 ml-auto">
-            API OFFLINE · VERIFIED SNAPSHOT
+            API OFFLINE · BASE MAP ONLY
           </span>
         </div>
       </div>
 
       <!-- No Data Alert overlay -->
       <div id="map-no-data-notice" class="hidden absolute top-20 left-1/2 -translate-x-1/2 z-20 bg-background/90 border border-surface-700 px-3 py-1 text-[10px] font-mono text-surface-400">
-        NO CURRENT EVIDENCE FOR SELECTED FILTERS
+        NO CURRENT GEOCODED EVIDENCE FOR SELECTED FILTERS
       </div>
 
       <!-- Evidence Density Legend -->
@@ -81,13 +80,13 @@ export async function initGeospatialMonitor() {
     </div>
   `;
 
-  // Fetch Governorates GeoJSON & Evidence Data in parallel
+  // Fetch Governorates GeoJSON & Live Evidence Data in parallel
   const [governoratesGeoJson, evidenceGeoJson] = await Promise.all([
     fetchGovernoratesGeoJSON(),
     fetchEvidenceGeoJSON()
   ]);
 
-  allEvidenceFeatures = evidenceGeoJson.features || [];
+  allEvidenceFeatures = (evidenceGeoJson && evidenceGeoJson.features) ? evidenceGeoJson.features : [];
 
   // Initialize MapLibre GL
   mapInstance = new maplibregl.Map({
@@ -135,11 +134,18 @@ export async function initGeospatialMonitor() {
   mapInstance.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
   mapInstance.on('load', () => {
-    setupGovernorateLayers(governoratesGeoJson);
-    setupHeatmapAndEvidenceLayers(evidenceGeoJson);
+    if (governoratesGeoJson) {
+      setupGovernorateLayers(governoratesGeoJson);
+    }
+    setupHeatmapAndEvidenceLayers({ type: "FeatureCollection", features: allEvidenceFeatures });
     renderCityLabels();
     setupFilterListeners();
     setupInteraction();
+
+    if (allEvidenceFeatures.length === 0) {
+      const notice = document.getElementById("map-no-data-notice");
+      if (notice) notice.classList.remove("hidden");
+    }
   });
 
   // Responsive resize
@@ -179,20 +185,18 @@ async function fetchEvidenceGeoJSON() {
     const res = await fetch(apiUrl);
     if (res.ok) {
       const data = await res.json();
-      if (data.features && data.features.length > 0) {
-        return data;
-      }
+      return data;
     }
   } catch (e) {
-    console.info("Live API unavailable, using bundled verified map snapshot:", e.message);
+    console.info("Live API unavailable, rendering reference basemap without markers:", e.message);
   }
 
-  // Fallback to bundled verified snapshot
+  // Set offline indicator; NEVER return synthetic evidence points
   isApiOffline = true;
   const badge = document.getElementById("map-offline-badge");
   if (badge) badge.classList.remove("hidden");
 
-  return localMapFallback;
+  return { type: "FeatureCollection", features: [], locations: [] };
 }
 
 /* ==========================================================================
@@ -321,7 +325,7 @@ function setupHeatmapAndEvidenceLayers(evidenceData) {
 }
 
 /* ==========================================================================
-   CITY LABELS & GABÈS ACTIVE RADAR
+   CITY LABELS (Geographical Reference Points)
    ========================================================================== */
 function renderCityLabels() {
   REFERENCE_CITIES.forEach(city => {
@@ -349,10 +353,8 @@ function renderCityLabels() {
     }
 
     el.addEventListener('click', () => {
-      if (city.isFlagship) {
-        openEvidenceDrawer('EV-GABES-01');
-      } else {
-        openEvidenceDrawer(city.slug === 'sfax' ? 'EV-MIGRATION-01' : (city.slug === 'tunis' ? 'EV-INSTITUTIONS-01' : 'EV-WATER-01'));
+      if (mapInstance) {
+        mapInstance.flyTo({ center: [city.lng, city.lat], zoom: 7.5, speed: 1.2 });
       }
     });
 
@@ -462,11 +464,9 @@ function applyMapFilters() {
     // Time matching
     let matchTime = true;
     if (activeTimeFilter !== "ALL") {
-      const tb = p.time_bucket || "2026";
-      if (activeTimeFilter === "24H") matchTime = tb === "24H";
-      else if (activeTimeFilter === "7D") matchTime = tb === "24H" || tb === "7D";
-      else if (activeTimeFilter === "30D") matchTime = tb === "24H" || tb === "7D" || tb === "30D";
-      else if (activeTimeFilter === "2026") matchTime = true;
+      const d = p.date || "";
+      if (activeTimeFilter === "2026") matchTime = d.startsWith("2026");
+      // Other buckets can match if date is present
     }
 
     return matchIssue && matchTime;
