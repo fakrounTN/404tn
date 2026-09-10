@@ -46,7 +46,7 @@
 <body class="bg-background text-bone-100 font-sans selection:bg-crimson selection:text-white relative overflow-x-hidden min-h-screen flex flex-col">
 
   <!-- SKIP TO MAIN CONTENT -->
-  <a href="#hero" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-crimson focus:text-white font-mono text-xs uppercase tracking-meta">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-crimson focus:text-white font-mono text-xs uppercase tracking-meta">
     Skip to main investigative content
   </a>
 
@@ -58,7 +58,7 @@
       
       <!-- Wordmark -->
       <div class="flex items-center gap-3">
-        <a href="#hero" class="group flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-crimson">
+        <a href="/" class="group flex items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-crimson">
           <span class="font-sans font-bold text-xl tracking-tight text-bone-100 group-hover:text-white transition-colors">
             <span class="text-crimson font-black">404</span>TN
           </span>
@@ -71,14 +71,14 @@
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-7 text-xs font-mono tracking-meta uppercase text-surface-400" aria-label="Main Navigation">
-        <a href="#summer-2026" class="nav-link hover:text-bone-100 transition-colors py-1">Summer 2026</a>
-        <a href="#the-files" class="nav-link hover:text-bone-100 transition-colors py-1">Issues</a>
-        <a href="#geospatial-monitor" class="nav-link hover:text-bone-100 transition-colors py-1">Geospatial</a>
-        <a href="#gabes" class="nav-link hover:text-bone-100 transition-colors py-1">Gabès</a>
-        <a href="#state-response" class="nav-link hover:text-bone-100 transition-colors py-1">State Response</a>
-        <a href="#presidency" class="nav-link hover:text-bone-100 transition-colors py-1">Presidency</a>
-        <a href="#timeline" class="nav-link hover:text-bone-100 transition-colors py-1">Timeline</a>
-        <a href="#methodology" class="nav-link hover:text-bone-100 transition-colors py-1">Evidence</a>
+        <a href="/summer-2026" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/summer-2026">Summer 2026</a>
+        <a href="/the-files" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/the-files">Issues</a>
+        <a href="/geospatial-monitor" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/geospatial-monitor">Geospatial</a>
+        <a href="/gabes" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/gabes">Gabès</a>
+        <a href="/state-response" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/state-response">State Response</a>
+        <a href="/presidency" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/presidency">Presidency</a>
+        <a href="/timeline" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/timeline">Timeline</a>
+        <a href="/methodology" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/methodology">Evidence</a>
       </nav>
 
       <!-- Right utility -->
@@ -103,15 +103,15 @@
         <button id="mobile-menu-close" class="text-surface-400 hover:text-bone-100 p-1 font-mono text-sm">[✕]</button>
       </div>
       <nav class="flex flex-col gap-4 mt-6 text-sm font-mono tracking-meta uppercase text-surface-300">
-        <a href="#summer-2026" class="hover:text-crimson py-1">Summer 2026</a>
-        <a href="#the-files" class="hover:text-crimson py-1">The Six Files</a>
-        <a href="#geospatial-monitor" class="hover:text-crimson py-1">Geospatial Monitor</a>
-        <a href="#gabes" class="hover:text-crimson py-1">Gabès Investigation</a>
-        <a href="#state-response" class="hover:text-crimson py-1">State Response</a>
-        <a href="#presidency" class="hover:text-crimson py-1">Kais Saied / Presidency</a>
-        <a href="#timeline" class="hover:text-crimson py-1">Summer 2026 Timeline</a>
-        <a href="#methodology" class="hover:text-crimson py-1">Evidence & Sources</a>
-        <a href="#statement" class="hover:text-crimson py-1">Mission & Statement</a>
+        <a href="/summer-2026" class="hover:text-crimson py-1" data-route="/summer-2026">Summer 2026</a>
+        <a href="/the-files" class="hover:text-crimson py-1" data-route="/the-files">The Six Files</a>
+        <a href="/geospatial-monitor" class="hover:text-crimson py-1" data-route="/geospatial-monitor">Geospatial Monitor</a>
+        <a href="/gabes" class="hover:text-crimson py-1" data-route="/gabes">Gabès Investigation</a>
+        <a href="/state-response" class="hover:text-crimson py-1" data-route="/state-response">State Response</a>
+        <a href="/presidency" class="hover:text-crimson py-1" data-route="/presidency">Kais Saied / Presidency</a>
+        <a href="/timeline" class="hover:text-crimson py-1" data-route="/timeline">Summer 2026 Timeline</a>
+        <a href="/methodology" class="hover:text-crimson py-1" data-route="/methodology">Evidence & Sources</a>
+        <a href="/statement" class="hover:text-crimson py-1" data-route="/statement">Mission & Statement</a>
       </nav>
     </div>
     <div class="pt-6 border-t border-surface-800 text-xs font-mono text-surface-500">
@@ -120,6 +120,7 @@
   </div>
 
   <main id="main-content" class="flex-grow">
+    <div id="content-views">
 
     <!-- =========================================================================
          2. HERO SECTION
@@ -153,11 +154,11 @@
             </div>
 
             <div class="pt-4 flex flex-wrap items-center gap-4">
-              <a href="#summer-2026" class="px-6 py-3.5 bg-crimson hover:bg-crimson-light text-white text-xs font-mono tracking-meta uppercase font-semibold transition-colors duration-150 inline-flex items-center gap-2">
+              <a href="/summer-2026" class="px-6 py-3.5 bg-crimson hover:bg-crimson-light text-white text-xs font-mono tracking-meta uppercase font-semibold transition-colors duration-150 inline-flex items-center gap-2">
                 <span>Explore Summer 2026</span>
                 <span class="text-sm">↓</span>
               </a>
-              <a href="#methodology" class="px-6 py-3.5 bg-transparent hover:bg-surface-800 text-bone-100 border border-surface-700 hover:border-surface-600 text-xs font-mono tracking-meta uppercase transition-colors duration-150">
+              <a href="/methodology" class="px-6 py-3.5 bg-transparent hover:bg-surface-800 text-bone-100 border border-surface-700 hover:border-surface-600 text-xs font-mono tracking-meta uppercase transition-colors duration-150">
                 View the evidence
               </a>
             </div>
@@ -206,7 +207,7 @@
               </div>
               <div class="pt-3 border-t border-surface-800 flex items-center justify-between text-[10px] font-mono text-surface-500">
                 <span>PROVENANCE: 100% SOURCED</span>
-                <a href="#geospatial-monitor" class="text-crimson hover:underline">OPEN MAP ↗</a>
+                <a href="/geospatial-monitor" class="text-crimson hover:underline">OPEN MAP ↗</a>
               </div>
             </div>
           </div>
@@ -390,7 +391,7 @@
             </div>
 
             <!-- Active Flagship File Card -->
-            <a href="#gabes" class="block p-5 bg-background border border-crimson/40 space-y-3 cursor-pointer group">
+            <a href="/gabes" class="block p-5 bg-background border border-crimson/40 space-y-3 cursor-pointer group">
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-mono uppercase tracking-meta text-crimson font-bold">FLAGSHIP ACTIVE FILE</span>
                 <span class="text-[9px] font-mono px-1.5 py-0.5 bg-crimson/20 text-crimson border border-crimson/40">33.88°N 10.10°E</span>
@@ -468,7 +469,7 @@
             </div>
 
             <div class="pt-2">
-              <a href="#the-files" class="px-6 py-3 bg-surface-900 hover:bg-surface-800 border border-crimson/50 text-crimson hover:text-white text-xs font-mono uppercase tracking-meta transition-colors inline-flex items-center gap-2">
+              <a href="/the-files" class="px-6 py-3 bg-surface-900 hover:bg-surface-800 border border-crimson/50 text-crimson hover:text-white text-xs font-mono uppercase tracking-meta transition-colors inline-flex items-center gap-2">
                 <span>Explore The Files Archive</span>
                 <span>↗</span>
               </a>
@@ -795,7 +796,7 @@
         </div>
 
         <div class="pt-6 flex flex-wrap justify-center gap-4">
-          <a href="#the-files" class="px-8 py-3.5 bg-crimson hover:bg-crimson-light text-white text-xs font-mono uppercase tracking-meta font-semibold transition-colors">
+          <a href="/the-files" class="px-8 py-3.5 bg-crimson hover:bg-crimson-light text-white text-xs font-mono uppercase tracking-meta font-semibold transition-colors">
             Explore the archive
           </a>
           <button data-open-securedrop class="px-8 py-3.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 text-xs font-mono uppercase tracking-meta transition-colors">
@@ -803,6 +804,32 @@
           </button>
         </div>
 
+      </div>
+    </section>
+    </div><!-- /#content-views -->
+
+    <!-- =========================================================================
+         11b. NOT FOUND / 404 VIEW
+         ========================================================================= -->
+    <section id="not-found-view" class="hidden min-h-[70vh] flex flex-col items-center justify-center py-24 px-4 text-center">
+      <div class="max-w-xl w-full p-8 bg-surface-900 border border-surface-800 border-t-2 border-t-crimson shadow-2xl space-y-4">
+        <div class="inline-block text-[11px] font-mono uppercase tracking-widest text-crimson bg-crimson/10 border border-crimson/30 px-3 py-1">
+          HTTP 404 — RECORD UNAVAILABLE
+        </div>
+        <h1 class="font-editorial text-3xl font-bold text-bone-100">
+          Document Not Found or Restricted
+        </h1>
+        <p class="text-sm font-sans text-surface-400 font-light leading-relaxed">
+          The requested investigative record, dossier route, or resource identifier does not exist or has been archived in the 404TN repository baseline.
+        </p>
+        <div class="pt-4">
+          <a href="/" class="px-6 py-3 bg-surface-800 hover:bg-crimson border border-surface-700 hover:border-crimson-light text-bone-100 hover:text-white text-xs font-mono uppercase tracking-meta transition-colors inline-block">
+            Return to Primary Monitor
+          </a>
+        </div>
+        <div class="pt-6 border-t border-surface-800/80 text-[10px] font-mono text-surface-500">
+          404TN INDEPENDENT INVESTIGATIVE PLATFORM &bull; TUNISIA 2026
+        </div>
       </div>
     </section>
 
@@ -826,10 +853,10 @@
         <div class="md:col-span-4 space-y-2">
           <span class="text-[10px] uppercase text-surface-400 tracking-meta block mb-2">DIRECTORY</span>
           <div class="grid grid-cols-2 gap-2 text-surface-300">
-            <a href="#summer-2026" class="hover:text-crimson transition-colors">About Project</a>
-            <a href="#methodology" class="hover:text-crimson transition-colors">Methodology</a>
-            <a href="#methodology" class="hover:text-crimson transition-colors">Sources Registry</a>
-            <a href="#methodology" class="hover:text-crimson transition-colors">Corrections Policy</a>
+            <a href="/summer-2026" class="hover:text-crimson transition-colors">About Project</a>
+            <a href="/methodology" class="hover:text-crimson transition-colors">Methodology</a>
+            <a href="/evidence" class="hover:text-crimson transition-colors">Sources Registry</a>
+            <a href="/methodology" class="hover:text-crimson transition-colors">Corrections Policy</a>
             <button data-open-securedrop class="text-left hover:text-crimson transition-colors">Secure Drop</button>
             <button id="lang-ar-footer-btn" class="text-left text-sand hover:underline">النسخة العربية</button>
           </div>

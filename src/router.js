@@ -1,0 +1,243 @@
+// src/router.js
+// 404TN Clean Browser-History Router (No Hash Routing)
+
+export const ROUTE_MAP = {
+  '/': { sectionId: 'hero', navRoute: '/' },
+  '/summer-2026': { sectionId: 'summer-2026', navRoute: '/summer-2026' },
+  '/the-files': { sectionId: 'the-files', navRoute: '/the-files' },
+  '/geospatial-monitor': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor' },
+  '/geospatial': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor' },
+  '/gabes': { sectionId: 'gabes', navRoute: '/gabes' },
+  '/state-response': { sectionId: 'state-response', navRoute: '/state-response' },
+  '/presidency': { sectionId: 'presidency', navRoute: '/presidency' },
+  '/timeline': { sectionId: 'timeline', navRoute: '/timeline' },
+  '/evidence': { sectionId: 'methodology', navRoute: '/methodology' },
+  '/methodology': { sectionId: 'methodology', navRoute: '/methodology' },
+  '/statement': { sectionId: 'statement', navRoute: '/statement' },
+
+  // Issue routes
+  '/issues/water': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'water' },
+  '/issues/electricity': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'electricity' },
+  '/issues/work': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'work' },
+  '/issues/migration': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'migration' },
+  '/issues/public-services': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'publicServices' },
+  '/issues/rights': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/rights-institutions': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/pollution': { sectionId: 'gabes', navRoute: '/gabes' }
+};
+
+export const LEGACY_HASH_MAP = {
+  '#hero': '/',
+  '#summer-2026': '/summer-2026',
+  '#the-files': '/the-files',
+  '#geospatial-monitor': '/geospatial-monitor',
+  '#geospatial': '/geospatial-monitor',
+  '#gabes': '/gabes',
+  '#state-response': '/state-response',
+  '#presidency': '/presidency',
+  '#timeline': '/timeline',
+  '#evidence': '/evidence',
+  '#methodology': '/methodology',
+  '#statement': '/statement'
+};
+
+let onIssueRouteHandler = null;
+
+export function setIssueRouteHandler(handler) {
+  onIssueRouteHandler = handler;
+}
+
+export function resolveRoute(pathname, hash = '') {
+  // Normalize pathname: remove trailing slash (except root)
+  const cleanPath = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+  // Check for legacy hash redirect
+  if (hash && LEGACY_HASH_MAP[hash]) {
+    const targetPath = LEGACY_HASH_MAP[hash];
+    return {
+      type: 'LEGACY_REDIRECT',
+      targetPath,
+      routeConfig: ROUTE_MAP[targetPath]
+    };
+  }
+
+  // Exact route match
+  if (ROUTE_MAP[cleanPath]) {
+    return {
+      type: 'MATCH',
+      cleanPath,
+      hash,
+      routeConfig: ROUTE_MAP[cleanPath]
+    };
+  }
+
+  // Unknown route
+  return {
+    type: 'NOT_FOUND',
+    cleanPath,
+    hash
+  };
+}
+
+export function updateActiveNavLinks(activeNavRoute) {
+  const desktopNavLinks = document.querySelectorAll('#main-header .nav-link');
+  const mobileNavLinks = document.querySelectorAll('#mobile-menu-drawer nav a');
+
+  const updateList = (links, activeClassList, inactiveClassList) => {
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      const dataRoute = link.getAttribute('data-route') || href;
+
+      const isActive = activeNavRoute && (
+        (dataRoute === activeNavRoute) ||
+        (activeNavRoute === '/evidence' && dataRoute === '/methodology') ||
+        (activeNavRoute === '/methodology' && dataRoute === '/methodology') ||
+        (activeNavRoute.startsWith('/issues/') && dataRoute === '/the-files')
+      );
+
+      if (isActive) {
+        inactiveClassList.forEach(c => link.classList.remove(c));
+        activeClassList.forEach(c => link.classList.add(c));
+      } else {
+        activeClassList.forEach(c => link.classList.remove(c));
+        inactiveClassList.forEach(c => link.classList.add(c));
+      }
+    });
+  };
+
+  updateList(desktopNavLinks, ['text-bone-100', 'font-medium'], ['text-surface-400', 'font-normal']);
+  updateList(mobileNavLinks, ['text-crimson', 'font-medium'], ['text-surface-300', 'font-normal']);
+}
+
+export function showNotFoundView(show = true) {
+  const notFoundEl = document.getElementById('not-found-view');
+  const contentViewsEl = document.getElementById('content-views');
+  if (!notFoundEl || !contentViewsEl) return;
+
+  if (show) {
+    notFoundEl.classList.remove('hidden');
+    contentViewsEl.classList.add('hidden');
+    document.title = '404 — Record Unavailable | 404TN';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  } else {
+    notFoundEl.classList.add('hidden');
+    contentViewsEl.classList.remove('hidden');
+    document.title = '404TN — Tunisia 2026: Investigative Documentation & Evidence Platform';
+  }
+}
+
+export function scrollToTarget(sectionId, hash) {
+  if (hash && hash !== '#' && !LEGACY_HASH_MAP[hash]) {
+    const targetAnchor = document.querySelector(hash);
+    if (targetAnchor) {
+      const headerOffset = 70;
+      const elementPosition = targetAnchor.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      return;
+    }
+  }
+
+  if (sectionId === 'hero' || !sectionId) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  const el = document.getElementById(sectionId);
+  if (el) {
+    const headerOffset = 70;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+  }
+}
+
+export function handleNavigation(pathWithHash, pushState = true) {
+  const url = new URL(pathWithHash, window.location.origin);
+  const pathname = url.pathname;
+  const hash = url.hash;
+
+  const resolution = resolveRoute(pathname, hash);
+
+  if (resolution.type === 'LEGACY_REDIRECT') {
+    window.history.replaceState(null, '', resolution.targetPath);
+    showNotFoundView(false);
+    updateActiveNavLinks(resolution.routeConfig.navRoute);
+    scrollToTarget(resolution.routeConfig.sectionId, null);
+    if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
+      onIssueRouteHandler(resolution.routeConfig.issueKey);
+    }
+    return;
+  }
+
+  if (resolution.type === 'NOT_FOUND') {
+    if (pushState && (window.location.pathname + window.location.hash !== pathWithHash)) {
+      window.history.pushState(null, '', pathWithHash);
+    }
+    showNotFoundView(true);
+    updateActiveNavLinks(null);
+    return;
+  }
+
+  // MATCH
+  if (pushState && (window.location.pathname + window.location.hash !== pathWithHash)) {
+    window.history.pushState(null, '', pathWithHash);
+  }
+
+  showNotFoundView(false);
+  updateActiveNavLinks(resolution.routeConfig.navRoute);
+  scrollToTarget(resolution.routeConfig.sectionId, hash);
+
+  if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
+    onIssueRouteHandler(resolution.routeConfig.issueKey);
+  }
+}
+
+export function initRouter() {
+  // Global click listener for internal route navigation
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    if (!href) return;
+
+    // Ignore external links, mailto, tel, downloads, target="_blank"
+    if (
+      link.target === '_blank' ||
+      link.hasAttribute('download') ||
+      href.startsWith('mailto:') ||
+      href.startsWith('tel:') ||
+      href.startsWith('http://') ||
+      href.startsWith('https://')
+    ) {
+      return;
+    }
+
+    // Skip accessibility anchor (#main-content) or subsection hash anchor
+    if (href.startsWith('#')) {
+      if (LEGACY_HASH_MAP[href]) {
+        e.preventDefault();
+        handleNavigation(LEGACY_HASH_MAP[href], true);
+        return;
+      }
+      // Allowed subsection anchor jump
+      return;
+    }
+
+    // Internal clean route navigation
+    if (href.startsWith('/')) {
+      e.preventDefault();
+      handleNavigation(href, true);
+    }
+  });
+
+  // Handle browser Back / Forward navigation
+  window.addEventListener('popstate', () => {
+    handleNavigation(window.location.pathname + window.location.hash, false);
+  });
+
+  // Initial navigation on DOM load
+  const initialPath = window.location.pathname + window.location.hash;
+  handleNavigation(initialPath, false);
+}

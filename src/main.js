@@ -5,6 +5,7 @@ import { initTimelineController } from './timeline.js';
 import { initAccountabilityController } from './accountability.js';
 import { getGabesDossier, getStats, getIssueBySlug, getIssues } from './api.js';
 import { escapeHtml, stripHtml } from './utils.js';
+import { initRouter, setIssueRouteHandler, updateActiveNavLinks } from './router.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   initHeader();
@@ -17,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initAccountabilityController();
   initSecureDropModal();
   initLanguageSelector();
+  initRouter();
   loadGabesData();
   loadStatsData();
 });
@@ -26,8 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    ========================================================================== */
 function initHeader() {
   const header = document.getElementById("main-header");
-  const navLinks = document.querySelectorAll(".nav-link");
-  const sections = document.querySelectorAll("section[id]");
+  const sections = document.querySelectorAll("#content-views section[id], section[id]");
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 30) {
@@ -47,14 +48,10 @@ function initHeader() {
       }
     });
 
-    navLinks.forEach((link) => {
-      link.classList.remove("text-bone-100", "text-crimson");
-      link.classList.add("text-surface-400");
-      if (link.getAttribute("href") === "#" + current) {
-        link.classList.remove("text-surface-400");
-        link.classList.add("text-bone-100");
-      }
-    });
+    if (current) {
+      const currentRoute = current === "hero" ? "/" : "/" + current;
+      updateActiveNavLinks(currentRoute);
+    }
   }, { passive: true });
 }
 
@@ -288,6 +285,11 @@ function initFilesDossierModal() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
   };
+
+  // Register route handler for deep issue routes (e.g. /issues/water)
+  setIssueRouteHandler((key) => {
+    openDossier(key);
+  });
 
   triggerRows.forEach(row => {
     row.addEventListener("click", () => {
