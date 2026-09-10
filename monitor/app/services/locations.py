@@ -20,6 +20,8 @@ class ResolvedLocation:
     location_confidence: float      # 0.0 to 1.0
     location_method: str            # "EXPLICIT_LOCALITY" | "DELEGATION_MATCH" | "GOVERNORATE_MATCH" | "NATIONAL_CONTEXT" | "UNRESOLVED"
     reason: str
+    matched_phrase: Optional[str] = None
+    evidence_context: Optional[str] = None
 
 def load_locations() -> Dict[str, Dict[str, Any]]:
     loc_path = os.path.join(CONFIG_DIR, "locations.yaml")
@@ -528,12 +530,24 @@ GOVERNORATE_DEFINITIONS = [
     }
 ]
 
-# Generic national indicators that establish national context without local governorate assignment
+# Substantive national indicators that establish countrywide scope.
+# Note: Mentioning Tunisia, a ministry, or an institution alone is NOT sufficient.
 NATIONAL_PATTERNS = [
-    r"\b(tunisia|tunisie|tunisian|tunisienne|tunisiens|tunisiennes|تونس|التونسي|التونسية|التونسيين|التونسيات)\b",
-    r"\b(national|nationale|nationaux|nationales|national\s+scale|countrywide|territoire\s+national|a\s+l\'echelle\s+nationale)\b",
-    r"\b(وطني|وطنية|على\s+المستوى\s+الوطني|على\s+نطاق\s+البلاد|التراب\s+الوطني|كامل\s+التراب|الجمهورية\s+التونسية)\b",
-    r"\b(barrages\s+tunisiens|reservoirs\s+nationaux|reseau\s+national|production\s+nationale|سدود\s+تونس|الإنتاج\s+الوطني|السوق\s+الوطنية)\b"
+    # 1. Explicit nationwide scale phrases
+    r"\b(a\s+l['’]echelle\s+nationale|sur\s+tout\s+le\s+territoire|sur\s+l['’]ensemble\s+du\s+territoire|territoire\s+national|countrywide|nationwide|dans\s+tout\s+le\s+pays|a\s+travers\s+le\s+pays)\b",
+    r"\b(على\s+المستوى\s+الوطني|على\s+نطاق\s+وطني|على\s+كامل\s+التراب|التراب\s+الوطني|كامل\s+تراب\s+الجمهورية|في\s+كامل\s+البلاد|على\s+نطاق\s+البلاد)\b",
+
+    # 2. National strategies, plans, policies, legislation, decrees
+    r"\b(strategie\s+nationale|plan\s+national|politique\s+nationale|programme\s+national|campagne\s+nationale|decret\s+presidentiel|decret\s+gouvernemental|journal\s+officiel|jort|accord\s+cadre\s+national|convention\s+collective\s+nationale)\b",
+    r"\b(الاستراتيجية\s+الوطنية|استراتيجية\s+وطنية|المخطط\s+الوطني|الخطة\s+الوطنية|السياسة\s+الوطنية|برنامج\s+وطني|البرنامج\s+الوطني|حملة\s+وطنية|الرائد\s+الرسمي|مرسوم\s+رئاسي|امر\s+رئاسي|اتفاق\s+اطاري\s+وطني)\b",
+
+    # 3. National aggregates, statistics, inventories, balance sheets, networks
+    r"\b(bilan\s+national|taux\s+national|moyenne\s+nationale|production\s+nationale|consommation\s+nationale|capacite\s+nationale|reserves?\s+nationales?|barrages\s+nationaux|barrages\s+tunisiens|reseau\s+national|indices?\s+nationa(?:l|ux)|statistiques?\s+nationales?|enquete\s+nationale|rapport\s+national|chomage\s+national|emploi\s+national|recolte\s+nationale|pluviometrie\s+nationale)\b",
+    r"\b(الحصيلة\s+الوطنية|التقرير\s+الوطني|المعدل\s+الوطني|النسبة\s+الوطنية|الإنتاج\s+الوطني|الانتاج\s+الوطني|الاستهلاك\s+الوطني|مخزون\s+السدود|سدود\s+تونس|الشبكة\s+الوطنية|مؤشرات\s+وطنية|المؤشر\s+الوطني|احصائيات\s+وطنية|مسح\s+وطني|البطالة\s+الوطنية|المحصول\s+الوطني)\b",
+
+    # 4. Qualified substantive national topics
+    r"\b(secteur\s+national|economie\s+nationale|croissance\s+nationale|inflation\s+nationale|greve\s+generale\s+nationale|deuil\s+national|urgence\s+nationale)\b",
+    r"\b(القطاع\s+الوطني|الاقتصاد\s+الوطني|النمو\s+الوطني|التضخم\s+الوطني|اضراب\s+عام\s+وطني|حداد\s+وطني|طوارئ\s+وطنية)\b"
 ]
 
 def normalize_text(text: str) -> str:
@@ -546,9 +560,11 @@ def normalize_text(text: str) -> str:
     cleaned = re.sub(r"[إأآا]", "ا", cleaned)
     cleaned = re.sub(r"ة", "ه", cleaned)
     cleaned = re.sub(r"ى", "ي", cleaned)
+    # Normalize dialectal Tunisian gaf/veh variants (ڤ, ڨ) to qaf (ق)
+    cleaned = re.sub(r"[ڤڨ]", "ق", cleaned)
     # Strip common single-letter attached Arabic prepositions (bi-, wa-, fa-, li-, ka-) when attached to regional names
     cleaned = re.sub(
-        r"(^|\s)[بوكلف](?=(?:تطاوين|توزر|سوسه|صفاقس|مدنين|قابس|قفصه|نابل|بنزرت|باجه|جندوبه|الكاف|كاف|سليانه|القيروان|قيروان|القصرين|قصرين|قبلي|زغوان|منوبه|اريانه|بن\s+عروس|المهديه|مهديه|المنستير|منستير|سيدي\s+بوزيد|جرجيس|جربه|متلوي|رديف|الرديف|عمره|العماره|العمره|جبنيانه|قرقنه|سبيطله|ماطر|غار\s+الدماء|طبرقه|عين\s+دراهم))",
+        r"(^|\s)[بوكلف](?=(?:تطاوين|توزر|سوسه|صفاقس|مدنين|قابس|قفصه|نابل|بنزرت|باجه|جندوبه|الكاف|كاف|سليانه|القيروان|قيروان|القصرين|قصرين|قبلي|زغوان|منوبه|اريانه|بن\s+عروس|المهديه|مهديه|المنستير|منستير|سيدي\s+بوزيد|جرجيس|جربه|متلوي|رديف|الرديف|عمره|العماره|العمره|جبنيانه|قرقنه|سبيطله|ماطر|غار\s+الدماء|طبرقه|عين\s+دراهم|بن\s+قردان|بنقردان))",
         r"\1",
         cleaned
     )
@@ -605,6 +621,8 @@ def resolve_location_advanced(
     # Track matched delegations and governorates
     matched_delegations: List[Dict[str, Any]] = []
     matched_governorates: Set[str] = set()
+    gov_matched_phrases: Dict[str, str] = {}
+    gov_matched_contexts: Dict[str, str] = {}
     gov_meta_map: Dict[str, Dict[str, Any]] = {}
 
     for gov_def in GOVERNORATE_DEFINITIONS:
@@ -616,22 +634,42 @@ def resolve_location_advanced(
         for deleg in gov_def.get("delegations", []):
             for pat in deleg["patterns"]:
                 n_pat = normalize_text(pat)
-                if re.search(n_pat, norm_lead, flags=re.IGNORECASE) or re.search(n_pat, norm_full, flags=re.IGNORECASE):
+                m_lead = re.search(n_pat, norm_lead, flags=re.IGNORECASE)
+                m_full = re.search(n_pat, norm_full, flags=re.IGNORECASE)
+                if m_lead or m_full:
+                    m = m_lead or m_full
+                    # snippet extraction
+                    s_idx = max(0, m.start() - 30)
+                    e_idx = min(len(full_text), m.end() + 30)
+                    ctx = full_text[s_idx:e_idx].strip()
                     matched_delegations.append({
                         "gov_slug": gov_slug,
                         "gov_name": gov_name,
                         "delegation_name": deleg["name"],
                         "coords": deleg["coords"],
-                        "in_lead": bool(re.search(n_pat, norm_lead, flags=re.IGNORECASE))
+                        "in_lead": bool(m_lead),
+                        "matched_phrase": m.group(0),
+                        "evidence_context": ctx
                     })
                     matched_governorates.add(gov_slug)
+                    gov_matched_phrases[gov_slug] = m.group(0)
+                    gov_matched_contexts[gov_slug] = ctx
                     break
 
         # 2. Check governorate patterns
         for pat in gov_def["gov_patterns"]:
             n_pat = normalize_text(pat)
-            if re.search(n_pat, norm_lead, flags=re.IGNORECASE) or re.search(n_pat, norm_full, flags=re.IGNORECASE):
+            m_lead = re.search(n_pat, norm_lead, flags=re.IGNORECASE)
+            m_full = re.search(n_pat, norm_full, flags=re.IGNORECASE)
+            if m_lead or m_full:
+                m = m_lead or m_full
+                s_idx = max(0, m.start() - 30)
+                e_idx = min(len(full_text), m.end() + 30)
+                ctx = full_text[s_idx:e_idx].strip()
                 matched_governorates.add(gov_slug)
+                if gov_slug not in gov_matched_phrases:
+                    gov_matched_phrases[gov_slug] = m.group(0)
+                    gov_matched_contexts[gov_slug] = ctx
                 break
 
     # PRIORITY 1: Exactly one delegation / explicit locality matched
@@ -656,10 +694,13 @@ def resolve_location_advanced(
                 longitude=lon,
                 location_confidence=0.95,
                 location_method="EXPLICIT_LOCALITY" if chosen["delegation_name"] in ["Chatt Essalam", "Kerkennah", "El Amra", "Zarzis", "Metlaoui"] else "DELEGATION_MATCH",
-                reason=f"Matched delegation '{chosen['delegation_name']}' in governorate {gov_name}"
+                reason=f"Matched delegation '{chosen['delegation_name']}' in governorate {gov_name}",
+                matched_phrase=chosen["matched_phrase"],
+                evidence_context=chosen["evidence_context"]
             )
         elif len(gov_slugs_in_delegs) > 1:
             # Multiple governorates mentioned via delegations
+            all_phrases = [d["matched_phrase"] for d in matched_delegations]
             return ResolvedLocation(
                 canonical_name="Multi-Governorate",
                 scope="MULTI_GOVERNORATE",
@@ -670,7 +711,9 @@ def resolve_location_advanced(
                 longitude=None,
                 location_confidence=0.75,
                 location_method="MULTI_GOVERNORATE",
-                reason=f"Multiple delegations across governorates: {', '.join(gov_slugs_in_delegs)}"
+                reason=f"Multiple delegations across governorates: {', '.join(gov_slugs_in_delegs)}",
+                matched_phrase=", ".join(all_phrases),
+                evidence_context=chosen["evidence_context"]
             )
 
     # PRIORITY 2: Exactly one governorate matched
@@ -689,12 +732,16 @@ def resolve_location_advanced(
             longitude=lon,
             location_confidence=0.90,
             location_method="GOVERNORATE_MATCH",
-            reason=f"Matched governorate name/aliases for {gov_name}"
+            reason=f"Matched governorate name/aliases for {gov_name}",
+            matched_phrase=gov_matched_phrases.get(gov_slug, gov_name),
+            evidence_context=gov_matched_contexts.get(gov_slug, full_text[:100])
         )
 
     # PRIORITY 3: Multiple distinct governorates matched
     if len(matched_governorates) > 1:
         gov_names = [gov_meta_map[s]["governorate"] for s in matched_governorates]
+        all_phrases = [gov_matched_phrases.get(s, s) for s in matched_governorates]
+        first_ctx = next(iter(gov_matched_contexts.values()), full_text[:100])
         return ResolvedLocation(
             canonical_name="Multi-Governorate",
             scope="MULTI_GOVERNORATE",
@@ -705,24 +752,33 @@ def resolve_location_advanced(
             longitude=None,
             location_confidence=0.75,
             location_method="MULTI_GOVERNORATE",
-            reason=f"Multiple governorates mentioned: {', '.join(gov_names)}"
+            reason=f"Multiple governorates mentioned: {', '.join(gov_names)}",
+            matched_phrase=", ".join(all_phrases),
+            evidence_context=first_ctx
         )
 
     # PRIORITY 4: National context match (e.g. national dam statistics, central government policy)
-    is_national = any(re.search(normalize_text(pat), norm_full, flags=re.IGNORECASE) for pat in NATIONAL_PATTERNS)
-    if is_national:
-        return ResolvedLocation(
-            canonical_name="Tunisia",
-            scope="NATIONAL",
-            governorate=None,
-            delegation=None,
-            locality=None,
-            latitude=None,
-            longitude=None,
-            location_confidence=0.90,
-            location_method="NATIONAL_CONTEXT",
-            reason="National scope without specific regional or governorate anchor"
-        )
+    for pat in NATIONAL_PATTERNS:
+        n_pat = normalize_text(pat)
+        m = re.search(n_pat, norm_full, flags=re.IGNORECASE)
+        if m:
+            s_idx = max(0, m.start() - 30)
+            e_idx = min(len(full_text), m.end() + 30)
+            ctx = full_text[s_idx:e_idx].strip()
+            return ResolvedLocation(
+                canonical_name="Tunisia",
+                scope="NATIONAL",
+                governorate=None,
+                delegation=None,
+                locality=None,
+                latitude=None,
+                longitude=None,
+                location_confidence=0.90,
+                location_method="NATIONAL_CONTEXT",
+                reason="National scope without specific regional or governorate anchor",
+                matched_phrase=m.group(0),
+                evidence_context=ctx
+            )
 
     # PRIORITY 5: Unresolved
     return ResolvedLocation(
@@ -735,7 +791,9 @@ def resolve_location_advanced(
         longitude=None,
         location_confidence=0.0,
         location_method="UNRESOLVED",
-        reason="No authoritative geographic signals detected"
+        reason="No authoritative geographic signals detected",
+        matched_phrase=None,
+        evidence_context=None
     )
 
 def extract_location(text: str) -> Tuple[str, Optional[float], Optional[float]]:

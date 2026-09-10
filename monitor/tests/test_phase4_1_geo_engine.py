@@ -143,7 +143,7 @@ class TestPhase41GeoEvidenceEngine(unittest.TestCase):
             "TUNIS (TAP) - Le taux de remplissage des barrages atteint 21% à l'échelle nationale",
             "ONAGRI: Bilan national de la récolte céréalière 2026 en Tunisie",
             "INS: Le taux de chômage national s'établit à 16% au deuxième trimestre",
-            "Communiqué du Ministère de l'Agriculture: mesures d'urgence face à la sécheresse en Tunisie",
+            "Communiqué du Ministère de l'Agriculture: plan national d'urgence face à la sécheresse",
         ]
 
         for text in national_samples:
@@ -152,6 +152,62 @@ class TestPhase41GeoEvidenceEngine(unittest.TestCase):
             self.assertIsNone(resolved.latitude, f"National text {text} must not have latitude")
             self.assertIsNone(resolved.longitude, f"National text {text} must not have longitude")
             self.assertIsNone(resolved.governorate, f"National text {text} must not have governorate")
+
+    def test_national_precedence_and_institutional_context_contrasts(self):
+        """
+        Verifies that:
+        1. Explicit local event geography ALWAYS overrides mentions of ministries or national institutions.
+        2. Substantive nationwide phrases result in NATIONAL.
+        3. Mentioning an institution or ministry alone without nationwide substance results in UNRESOLVED, not NATIONAL.
+        """
+        # 1. Local event + Ministry/Institution -> Local/Governorate (NOT National)
+        res1 = resolve_location_advanced("Le ministère enquête sur une pollution à Gabès")
+        self.assertEqual(res1.governorate, "Gabès")
+        self.assertIn(res1.scope, ["LOCAL", "GOVERNORATE"])
+        self.assertIsNotNone(res1.latitude)
+
+        res2 = resolve_location_advanced("STEG annonce une panne d'électricité à Sousse")
+        self.assertEqual(res2.governorate, "Sousse")
+        self.assertEqual(res2.scope, "GOVERNORATE")
+        self.assertIsNotNone(res2.latitude)
+
+        res3 = resolve_location_advanced("SONEDE: coupure d'eau potable à Sbeitla")
+        self.assertEqual(res3.governorate, "Kasserine")
+        self.assertEqual(res3.delegation, "Sbeitla")
+        self.assertEqual(res3.scope, "LOCAL")
+
+        res4 = resolve_location_advanced("Accident mortel de la circulation à Sfax")
+        self.assertEqual(res4.governorate, "Sfax")
+        self.assertEqual(res4.scope, "GOVERNORATE")
+
+        # 2. Substantive nationwide scope -> NATIONAL (No coordinates)
+        res5 = resolve_location_advanced("Le ministère publie la stratégie nationale de lutte contre la pollution")
+        self.assertEqual(res5.scope, "NATIONAL")
+        self.assertIsNone(res5.latitude)
+        self.assertIsNone(res5.governorate)
+
+        res6 = resolve_location_advanced("STEG publie le bilan national de production électrique")
+        self.assertEqual(res6.scope, "NATIONAL")
+        self.assertIsNone(res6.latitude)
+        self.assertIsNone(res6.governorate)
+
+        res7 = resolve_location_advanced("Bilan national du taux de remplissage des barrages à l'échelle nationale")
+        self.assertEqual(res7.scope, "NATIONAL")
+        self.assertIsNone(res7.latitude)
+
+        # 3. Mentioning ministry or institution or Tunis dateline alone -> UNRESOLVED (No coordinates, 0.0 conf)
+        res8 = resolve_location_advanced("Audition d'experts au ministère sur le code de procédure")
+        self.assertEqual(res8.scope, "UNRESOLVED")
+        self.assertEqual(res8.location_confidence, 0.0)
+        self.assertIsNone(res8.latitude)
+
+        res9 = resolve_location_advanced("Présidence de la République: audience avec une délégation étrangère")
+        self.assertEqual(res9.scope, "UNRESOLVED")
+        self.assertEqual(res9.location_confidence, 0.0)
+
+        res10 = resolve_location_advanced("TUNIS (TAP) - Débat régulier entre universitaires et économistes")
+        self.assertEqual(res10.scope, "UNRESOLVED")
+        self.assertEqual(res10.location_confidence, 0.0)
 
     def test_event_clustering_merging_and_separation(self):
         evidence_items = [
