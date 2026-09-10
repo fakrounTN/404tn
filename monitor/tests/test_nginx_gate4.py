@@ -37,7 +37,13 @@ class TestNginxGate4Config(unittest.TestCase):
 
     def test_trailing_slash_normalization_regex(self):
         """Test trailing slash normalization regex logic against various URI patterns."""
-        self.assertIn("rewrite ^/(.+)/$ /$1 permanent;", self.nginx_conf)
+        self.assertIn("rewrite ^/(.+)/$ https://404tn.com/$1 permanent;", self.nginx_conf)
+
+        # Must NOT contain internal port leaks or HTTP schemes in redirect
+        self.assertNotIn("rewrite ^/(.+)/$ http://", self.nginx_conf)
+        self.assertNotIn(":8080", self.nginx_conf.split("rewrite")[1].split("\n")[0])
+        self.assertNotIn("localhost", self.nginx_conf.split("rewrite")[1].split("\n")[0])
+        self.assertNotIn("127.0.0.1", self.nginx_conf.split("rewrite")[1].split("\n")[0])
 
         pattern = re.compile(r"^/(.+)/$")
 

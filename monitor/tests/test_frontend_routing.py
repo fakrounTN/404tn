@@ -146,7 +146,7 @@ class TestFrontendRouting(unittest.TestCase):
     def test_nginx_gate4_prerender_routing(self):
         """Confirm Nginx configuration contains Gate 4 true-404 and prerender route serving."""
         self.assertIn("try_files $uri/index.html $uri =404;", self.nginx_conf)
-        self.assertIn("rewrite ^/(.+)/$ /$1 permanent;", self.nginx_conf)
+        self.assertIn("rewrite ^/(.+)/$ https://404tn.com/$1 permanent;", self.nginx_conf)
         self.assertIn("error_page 404 /404.html;", self.nginx_conf)
         self.assertIn('location /api/ {', self.nginx_conf)
         self.assertNotIn("try_files $uri $uri/ /index.html;", self.nginx_conf)
