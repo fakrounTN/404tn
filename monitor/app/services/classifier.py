@@ -85,7 +85,10 @@ ROUTINE_ADMIN_PATTERNS = [
     r"إعلام بالمؤتمر", r"اعلام بالمؤتمر",
     r"المؤتمر الوطني الرابع للمنتدى", r"المؤتمر الوطني للمنتدى",
     r"المؤتمر الوطني للنقابة", r"المؤتمر الانتخابي",
+    r"مؤتمر النقابة", r"المؤتمر.*للنقابة", r"المؤتمر.*للمهنة", r"مؤتمر المهنة",
+    r"بلاغ.*المؤتمر", r"بلاغ المؤتمر",
     r"congres national du ftdes", r"congres national de l['’]ugtt", r"congres du snjt",
+    r"congres.*(?:snjt|ugtt|ftdes|syndicat|profession)",
     r"assemblee generale ordinaire", r"assemblee generale elective",
     r"الجلسة العامة العادية", r"الجلسة العامة الانتخابية"
 ]

@@ -5,6 +5,7 @@ import tempfile
 import sqlite3
 import json
 import time
+from datetime import datetime, timezone
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 
@@ -290,6 +291,7 @@ class TestPhase4EvidenceMonitorV2(unittest.TestCase):
             create_tables(conn)
 
             # Insert sample AUTO_ACCEPTED and REVIEW_REQUIRED records
+            now_iso = datetime.now(timezone.utc).isoformat()
             conn.execute("""
                 INSERT INTO evidence (
                     id, issue, headline, summary, classification, status, published_at, collected_at,
@@ -298,7 +300,7 @@ class TestPhase4EvidenceMonitorV2(unittest.TestCase):
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 "EV-AUTO-20260909-REP01", "water", "Coupure d'eau a Sfax", "Panne majeure SONEDE",
-                "FACT", "VERIFIED", "2026-09-09", "2026-09-09T10:00:00Z", "2026-09-09T10:00:00Z",
+                "FACT", "VERIFIED", "2026-09-09", now_iso, now_iso,
                 "TAP", "tap.info.tn", "news_agency", "https://tap.info.tn/fr/sfax", "AUTO_ACCEPTED",
                 0.92, "Primary strong keyword match 'coupure d\\'eau'"
             ))
@@ -310,7 +312,7 @@ class TestPhase4EvidenceMonitorV2(unittest.TestCase):
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 "EV-AUTO-20260909-REP02", "public_services", "Crise du transport a Tunis", "Retards et pannes",
-                "FACT", "REPORTED", "2026-09-09", "2026-09-09T11:00:00Z", "2026-09-09T11:00:00Z",
+                "FACT", "REPORTED", "2026-09-09", now_iso, now_iso,
                 "Nawaat", "nawaat.org", "independent_media", "https://nawaat.org/transport", "REVIEW_REQUIRED",
                 0.60, "Borderline confidence score (0.60); flagged for review"
             ))
