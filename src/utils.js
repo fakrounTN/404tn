@@ -58,3 +58,39 @@ export function extractUniqueImages(html, directUrl = null) {
   }
   return urls;
 }
+
+/**
+ * Authoritative Collector V2 Canonical Topic Labels
+ */
+export const CANONICAL_TOPIC_LABELS = {
+  water: 'WATER',
+  electricity: 'ELECTRICITY',
+  gas_energy: 'ENERGY',
+  food_security: 'FOOD SECURITY',
+  prices_cost_of_living: 'COST OF LIVING',
+  work_unemployment: 'WORK',
+  migration: 'MIGRATION',
+  health: 'HEALTH',
+  public_services: 'PUBLIC SERVICES',
+  pollution_environment: 'ENVIRONMENT',
+  rights_freedoms: 'RIGHTS',
+  justice_law: 'JUSTICE',
+  media_press_freedom: 'PRESS FREEDOM',
+  governance_institutions: 'GOVERNANCE',
+  economy_public_finance: 'ECONOMY',
+  corruption_accountability: 'ACCOUNTABILITY',
+  protests_social_movements: 'PROTESTS',
+  security_policing: 'SECURITY',
+  education: 'EDUCATION',
+  agriculture: 'AGRICULTURE',
+  housing_infrastructure: 'INFRASTRUCTURE'
+};
+
+/**
+ * Resolves an issue key to its clean presentation label without fallback to governance.
+ */
+export function formatTopicLabel(issue) {
+  if (!issue) return 'OTHER';
+  const clean = String(issue).toLowerCase().trim();
+  return CANONICAL_TOPIC_LABELS[clean] || 'OTHER';
+}

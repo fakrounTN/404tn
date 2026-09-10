@@ -141,6 +141,7 @@ class TimelineEventSchema(BaseModel):
     status: str
     evidence_count: int = 1
     evidence_id: Optional[str] = None
+    issue: Optional[str] = None
 
 class AccountabilityRecordSchema(BaseModel):
     id: str

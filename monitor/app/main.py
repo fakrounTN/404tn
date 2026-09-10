@@ -110,20 +110,98 @@ MONTH_NAMES = {
     "09": "SEPTEMBER", "10": "OCTOBER", "11": "NOVEMBER", "12": "DECEMBER"
 }
 
-TOPIC_MAP = {
+# Authoritative Collector V2 Canonical Topic Display Mappings
+CANONICAL_TOPIC_DISPLAY_MAP = {
     "water": "WATER",
-    "electricity": "ENERGY",
-    "energy": "ENERGY",
-    "pollution": "GABÈS",
-    "gabes": "GABÈS",
-    "work": "ECONOMY",
-    "economy": "ECONOMY",
+    "electricity": "ELECTRICITY",
+    "gas_energy": "ENERGY",
+    "food_security": "FOOD SECURITY",
+    "prices_cost_of_living": "COST OF LIVING",
+    "work_unemployment": "WORK",
     "migration": "MIGRATION",
-    "rights": "GOVERNANCE",
+    "health": "HEALTH",
+    "public_services": "PUBLIC SERVICES",
+    "pollution_environment": "ENVIRONMENT",
+    "rights_freedoms": "RIGHTS",
+    "justice_law": "JUSTICE",
+    "media_press_freedom": "PRESS FREEDOM",
+    "governance_institutions": "GOVERNANCE",
+    "economy_public_finance": "ECONOMY",
+    "corruption_accountability": "ACCOUNTABILITY",
+    "protests_social_movements": "PROTESTS",
+    "security_policing": "SECURITY",
+    "education": "EDUCATION",
+    "agriculture": "AGRICULTURE",
+    "housing_infrastructure": "INFRASTRUCTURE",
+}
+
+LEGACY_TOPIC_FALLBACK = {
+    "energy": "ENERGY",
+    "pollution": "ENVIRONMENT",
+    "gabes": "ENVIRONMENT",
+    "work": "WORK",
+    "economy": "ECONOMY",
+    "rights": "RIGHTS",
     "institutions": "GOVERNANCE",
     "governance": "GOVERNANCE",
-    "public_services": "GOVERNANCE",
-    "state_response": "GOVERNANCE"
+    "public_service": "PUBLIC SERVICES",
+    "public-services": "PUBLIC SERVICES",
+    "cost_of_living": "COST OF LIVING",
+    "food": "FOOD SECURITY",
+    "press": "PRESS FREEDOM",
+    "state_response": "GOVERNANCE",
+}
+
+def resolve_topic_display(issue: Optional[str]) -> str:
+    if not issue:
+        return "OTHER"
+    clean = issue.strip().lower()
+    if clean in CANONICAL_TOPIC_DISPLAY_MAP:
+        return CANONICAL_TOPIC_DISPLAY_MAP[clean]
+    if clean in LEGACY_TOPIC_FALLBACK:
+        return LEGACY_TOPIC_FALLBACK[clean]
+    return "OTHER"
+
+TOPIC_MAP = {**LEGACY_TOPIC_FALLBACK, **CANONICAL_TOPIC_DISPLAY_MAP}
+
+MAP_ISSUE_GROUPS = {
+    # Direct canonical keys
+    "water": ["water"],
+    "electricity": ["electricity", "energy"],
+    "energy": ["electricity", "energy"],
+    "gas_energy": ["gas_energy"],
+    "pollution_environment": ["pollution_environment", "pollution", "gabes"],
+    "work_unemployment": ["work_unemployment", "work"],
+    "migration": ["migration"],
+    "public_services": ["public_services", "public-services", "public_service"],
+    "rights_freedoms": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
+    "justice_law": ["justice_law"],
+    "media_press_freedom": ["media_press_freedom"],
+    "governance_institutions": ["governance_institutions"],
+    "economy_public_finance": ["economy_public_finance"],
+    "food_security": ["food_security"],
+    "prices_cost_of_living": ["prices_cost_of_living"],
+    "corruption_accountability": ["corruption_accountability"],
+    "protests_social_movements": ["protests_social_movements"],
+    "security_policing": ["security_policing"],
+    "education": ["education"],
+    "agriculture": ["agriculture"],
+    "housing_infrastructure": ["housing_infrastructure"],
+    "health": ["health"],
+
+    # Presentation / UI Filter Aliases
+    "pollution": ["pollution_environment", "pollution", "gabes"],
+    "gabes": ["pollution_environment", "pollution", "gabes"],
+    "environment": ["pollution_environment", "pollution", "gabes"],
+    "work": ["work_unemployment", "work"],
+    "economy": ["economy_public_finance"],
+    "public services": ["public_services", "public-services", "public_service"],
+    "public-services": ["public_services", "public-services", "public_service"],
+    "rights": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
+    "rights & institutions": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
+    "rights_institutions": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
+    "rights-institutions": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
+    "governance": ["governance_institutions"]
 }
 
 @app.get("/api/health", summary="Service Health & Integrity Status")
@@ -227,24 +305,9 @@ def get_map_nodes(
             # Issue filter
             if issue and issue.upper() != "ALL":
                 iss_filter = issue.strip().lower()
-                if iss_filter == "energy":
-                    iss_filter = "electricity"
+                matched_issues = MAP_ISSUE_GROUPS.get(iss_filter, [iss_filter])
                 rec_issue = (r.get("issue") or "general").lower()
-                if rec_issue == "energy":
-                    rec_issue = "electricity"
-                if iss_filter == "water" and rec_issue != "water":
-                    continue
-                elif iss_filter == "electricity" and rec_issue != "electricity":
-                    continue
-                elif iss_filter in ("work", "economy") and rec_issue not in ("work", "economy"):
-                    continue
-                elif iss_filter == "migration" and rec_issue != "migration":
-                    continue
-                elif iss_filter in ("public services", "public_services") and rec_issue != "public_services":
-                    continue
-                elif iss_filter in ("rights", "institutions", "rights & institutions") and rec_issue not in ("rights", "institutions", "governance"):
-                    continue
-                elif iss_filter in ("pollution", "gabes", "pollution / gabes") and rec_issue not in ("pollution", "gabes"):
+                if rec_issue not in matched_issues:
                     continue
 
             # Governorate filter
@@ -301,14 +364,14 @@ def get_map_nodes(
 
             sources_set = {item.get("source_name") for item in gov_items if item.get("source_name")}
 
-            # Compute per-issue counts for governorate
+            # Compute per-issue counts for governorate (Strict canonical + legacy DB aliases)
             water_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "water")
             elec_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("electricity", "energy"))
-            work_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("work", "economy"))
+            work_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("work_unemployment", "work"))
             mig_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "migration")
-            ps_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() == "public_services")
-            rights_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance"))
-            pol_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+            ps_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("public_services", "public-services", "public_service"))
+            rights_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("rights_freedoms", "rights", "rights-institutions", "institutions"))
+            pol_cnt = sum(1 for it in gov_items if (it.get("issue") or "").lower() in ("pollution_environment", "pollution", "gabes"))
 
             latest_dt = max([it.get("event_date") or it.get("published_at") or "" for it in gov_items], default=None)
 
@@ -400,27 +463,27 @@ def get_map_nodes(
                     "properties": g_stat.model_dump()
                 })
 
-        # 7. Isolated Summaries
+        # 7. Isolated Summaries (Strict canonical + legacy DB aliases)
         national_summary = {
             "total_national_records": len(national_items),
             "water_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "water"),
             "electricity_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("electricity", "energy")),
-            "work_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("work", "economy")),
+            "work_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("work_unemployment", "work")),
             "migration_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "migration"),
-            "public_services_count": sum(1 for it in national_items if (it.get("issue") or "").lower() == "public_services"),
-            "rights_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance")),
-            "pollution_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+            "public_services_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("public_services", "public-services", "public_service")),
+            "rights_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("rights_freedoms", "rights", "rights-institutions", "institutions")),
+            "pollution_count": sum(1 for it in national_items if (it.get("issue") or "").lower() in ("pollution_environment", "pollution", "gabes"))
         }
 
         unresolved_summary = {
             "total_unresolved_records": len(unresolved_items),
             "water_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "water"),
             "electricity_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("electricity", "energy")),
-            "work_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("work", "economy")),
+            "work_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("work_unemployment", "work")),
             "migration_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "migration"),
-            "public_services_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() == "public_services"),
-            "rights_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("rights", "institutions", "governance")),
-            "pollution_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("pollution", "gabes"))
+            "public_services_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("public_services", "public-services", "public_service")),
+            "rights_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("rights_freedoms", "rights", "rights-institutions", "institutions")),
+            "pollution_count": sum(1 for it in unresolved_items if (it.get("issue") or "").lower() in ("pollution_environment", "pollution", "gabes"))
         }
 
         multi_governorate_summary = {
@@ -467,6 +530,11 @@ def get_evidence_detail(evidence_id: str):
         if not row:
             raise HTTPException(status_code=404, detail=f"Evidence record {evidence_id} not found")
         
+        # Public API rule: Do not expose REVIEW_REQUIRED or REJECTED evidence publicly
+        ingestion_st = row["ingestion_status"] if "ingestion_status" in row.keys() and row["ingestion_status"] else "AUTO_ACCEPTED"
+        if ingestion_st not in ("AUTO_ACCEPTED", None):
+            raise HTTPException(status_code=404, detail=f"Evidence record {evidence_id} not found")
+
         tags_list = json.loads(row["tags"]) if row["tags"] else []
         sec_topics = json.loads(row["secondary_topics"]) if "secondary_topics" in row.keys() and row["secondary_topics"] else []
         freshness_label = calculate_freshness(row["published_at"], row["current_or_historical"])
@@ -509,10 +577,30 @@ def get_evidence_detail(evidence_id: str):
             freshness=freshness_label
         )
 
+def topic_matches_filter(event_issue: str, event_topic: str, filter_val: str) -> bool:
+    fv = filter_val.strip().upper()
+    if not fv or fv == "ALL":
+        return True
+    if event_topic.upper() == fv:
+        return True
+    if event_issue.upper() == fv or event_issue.lower() == filter_val.strip().lower():
+        return True
+    if fv in ("GABÈS", "GABES", "ENVIRONMENT", "ENVIRONMENT & POLLUTION", "POLLUTION") and (event_topic in ("ENVIRONMENT", "GABÈS") or event_issue in ("pollution_environment", "pollution", "gabes")):
+        return True
+    if fv in ("ENERGY", "ENERGY / STEG", "ELECTRICITY") and (event_topic in ("ENERGY", "ELECTRICITY") or event_issue in ("gas_energy", "electricity", "energy")):
+        return True
+    if fv in ("ECONOMY", "ECONOMY & LABOR", "WORK") and (event_topic in ("ECONOMY", "WORK", "COST OF LIVING", "FOOD SECURITY") or event_issue in ("economy_public_finance", "work_unemployment", "prices_cost_of_living", "food_security", "agriculture", "work", "economy")):
+        return True
+    if fv in ("GOVERNANCE", "GOVERNANCE & RIGHTS", "RIGHTS", "RIGHTS & INSTITUTIONS") and (event_topic in ("GOVERNANCE", "RIGHTS", "JUSTICE", "PRESS FREEDOM", "ACCOUNTABILITY", "SECURITY", "PROTESTS") or event_issue in ("governance_institutions", "rights_freedoms", "justice_law", "media_press_freedom", "corruption_accountability", "security_policing", "protests_social_movements", "rights", "institutions", "governance")):
+        return True
+    if fv in ("PUBLIC SERVICES", "PUBLIC_SERVICES", "PUBLIC SERVICE") and (event_topic in ("PUBLIC SERVICES", "HEALTH", "EDUCATION", "INFRASTRUCTURE") or event_issue in ("public_services", "health", "education", "housing_infrastructure", "public-services", "public_service")):
+        return True
+    return False
+
 @app.get("/api/timeline", response_model=List[TimelineEventSchema], summary="Summer 2026 Chronology Stream")
 def get_timeline_events(
     month: Optional[str] = Query(None, description="JUNE | JULY | AUGUST | SEPTEMBER"),
-    topic: Optional[str] = Query(None, description="WATER | ENERGY | GABÈS | ECONOMY | MIGRATION | GOVERNANCE")
+    topic: Optional[str] = Query(None, description="WATER | ENERGY | ENVIRONMENT | ECONOMY | MIGRATION | GOVERNANCE | ...")
 ):
     """Generates timeline chronology stream dynamically from canonical EV-AUTO-* evidence."""
     with get_db() as conn:
@@ -533,14 +621,14 @@ def get_timeline_events(
             month_num = date_str[5:7] if len(date_str) >= 7 else "08"
             event_month = MONTH_NAMES.get(month_num, "SUMMER")
 
-            # Determine Topic
-            issue_val = (r["issue"] or "governance").lower()
-            event_topic = TOPIC_MAP.get(issue_val, "GOVERNANCE")
+            # Determine Canonical Topic Display
+            issue_val = (r["issue"] or "").strip().lower()
+            event_topic = resolve_topic_display(issue_val)
 
             # Filter conditions
             if month and month.upper() != "ALL" and event_month.upper() != month.upper():
                 continue
-            if topic and topic.upper() != "ALL" and event_topic.upper() != topic.upper():
+            if topic and not topic_matches_filter(issue_val, event_topic, topic):
                 continue
 
             events.append(TimelineEventSchema(
@@ -556,7 +644,8 @@ def get_timeline_events(
                 classification=r["classification"] or "FACT",
                 status=r["status"] or "REPORTED",
                 evidence_count=1,
-                evidence_id=r["id"]
+                evidence_id=r["id"],
+                issue=issue_val or "other"
             ))
 
         return events
@@ -600,7 +689,7 @@ def get_gabes_dossier():
         cursor = conn.cursor()
         cursor.execute("""
             SELECT * FROM evidence
-            WHERE (issue = 'gabes' OR location = 'Gabès' OR headline LIKE '%Gabès%' OR headline LIKE '%Gabes%')
+            WHERE (issue IN ('pollution_environment', 'gabes', 'pollution') OR location = 'Gabès' OR headline LIKE '%Gabès%' OR headline LIKE '%Gabes%')
             AND id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)
             ORDER BY COALESCE(event_date, published_at) DESC
         """)
@@ -676,7 +765,7 @@ ISSUE_DEFINITIONS = [
         "aliases": ["electricity", "energy"],
         "title": "Electricity",
         "category": "ENERGY SECURITY",
-        "description": "Outages, network peak load pressure, gas import dependency and service reliability.",
+        "description": "Outages, network peak load pressure, and STEG service reliability.",
         "status": "LOAD-SHEDDING RISK",
         "issues": ["electricity", "energy"],
         "accountable_institutions": [
@@ -688,16 +777,16 @@ ISSUE_DEFINITIONS = [
     {
         "id": "03",
         "slug": "work",
-        "aliases": ["work", "economy"],
-        "title": "Work & Economy",
+        "aliases": ["work", "work_unemployment"],
+        "title": "Work",
         "category": "ECONOMIC STAGNATION",
-        "description": "Unemployment, food inflation, purchasing power erosion and public sector recruitment.",
+        "description": "Unemployment, youth joblessness, and labor market pressure.",
         "status": "STRUCTURAL DECLINE",
-        "issues": ["work", "economy"],
+        "issues": ["work_unemployment", "work"],
         "accountable_institutions": [
             "INS (National Institute of Statistics)",
             "Ministry of Social Affairs",
-            "Central Bank of Tunisia (BCT)"
+            "Ministry of Employment and Vocational Training"
         ]
     },
     {
@@ -721,9 +810,9 @@ ISSUE_DEFINITIONS = [
         "aliases": ["public-services", "publicServices", "public_services"],
         "title": "Public Services",
         "category": "CIVIC INFRASTRUCTURE",
-        "description": "Healthcare stockouts, suburban rail/bus transport availability and municipal sanitation.",
+        "description": "Municipal infrastructure, sanitation, and public administration reliability.",
         "status": "FUNCTIONAL STRAIN",
-        "issues": ["public_services", "public-services"],
+        "issues": ["public_services", "public-services", "public_service"],
         "accountable_institutions": [
             "Ministry of Health & Pharmacie Centrale (PCT)",
             "Ministry of Transport (Transtu & SNCFT)",
@@ -733,12 +822,12 @@ ISSUE_DEFINITIONS = [
     {
         "id": "06",
         "slug": "rights-institutions",
-        "aliases": ["rights-institutions", "institutions", "rights", "governance"],
+        "aliases": ["rights", "rights-institutions", "institutions", "rights_freedoms"],
         "title": "Rights & Institutions",
         "category": "GOVERNANCE & ACCOUNTABILITY",
-        "description": "Constitutional balance of power, Decree 54 proceedings, press freedom and justice.",
+        "description": "Fundamental freedoms, constitutional checks and balances, and civic rights.",
         "status": "CONSOLIDATED CONCENTRATION",
-        "issues": ["rights", "institutions", "governance", "state_response"],
+        "issues": ["rights_freedoms", "rights", "rights-institutions", "institutions"],
         "accountable_institutions": [
             "Presidency of the Republic (Carthage)",
             "Ministry of Justice",
@@ -788,12 +877,42 @@ def get_issue_by_slug(slug: str):
     clean_slug = slug.strip().lower()
     match_def = None
     for d in ISSUE_DEFINITIONS:
-        if clean_slug == d["slug"].lower() or clean_slug in [a.lower() for a in d["aliases"]]:
+        if clean_slug == d["slug"].lower() or clean_slug in [a.lower() for a in d.get("aliases", [])]:
             match_def = d
             break
 
+    if not match_def and clean_slug in ("pollution", "pollution_environment"):
+        match_def = {
+            "id": "07",
+            "slug": "pollution",
+            "aliases": ["pollution", "pollution_environment"],
+            "title": "Pollution & Environment",
+            "category": "ENVIRONMENTAL CRISIS",
+            "description": "Industrial chemical emissions, phosphogypsum discharge, air quality and coastal pollution.",
+            "status": "CHRONIC CONTAMINATION",
+            "issues": ["pollution_environment", "pollution", "gabes"],
+            "accountable_institutions": [
+                "Groupe Chimique Tunisien (GCT)",
+                "Ministry of Environment (ANPE)",
+                "Ministry of Health"
+            ]
+        }
+
     if not match_def:
-        raise HTTPException(status_code=404, detail=f"Issue dossier '{slug}' not found")
+        if clean_slug in CANONICAL_TOPIC_DISPLAY_MAP:
+            display_title = CANONICAL_TOPIC_DISPLAY_MAP[clean_slug].title()
+            match_def = {
+                "id": "V2",
+                "slug": clean_slug,
+                "title": display_title,
+                "category": "INVESTIGATIVE DOSSIER",
+                "description": f"Verified primary evidence for {display_title}.",
+                "status": "MONITORED",
+                "issues": [clean_slug],
+                "accountable_institutions": []
+            }
+        else:
+            raise HTTPException(status_code=404, detail=f"Issue dossier '{slug}' not found")
 
     with get_db() as conn:
         cursor = conn.cursor()
@@ -820,7 +939,8 @@ def get_issue_by_slug(slug: str):
                 "metric_period": e["metric_period"],
                 "source_name": e["source_name"],
                 "source_url": e["source_url"],
-                "location": e["location"]
+                "location": e["location"],
+                "issue": e["issue"]
             }
             for e in ev_rows
         ]
@@ -832,7 +952,7 @@ def get_issue_by_slug(slug: str):
             "category": match_def["category"],
             "description": match_def["description"],
             "status": match_def["status"],
-            "accountable_institutions": match_def["accountable_institutions"],
+            "accountable_institutions": match_def.get("accountable_institutions", []),
             "evidence_count": len(evidence_list),
             "evidence_records": evidence_list
         }

@@ -157,7 +157,7 @@ const FILE_EDITORIAL_METADATA = {
   },
   institutions: {
     id: "06",
-    slug: "rights-institutions",
+    slug: "rights",
     title: "Rights & Institutions: Governance & Accountability",
     category: "GOVERNANCE & ACCOUNTABILITY",
     summary: "Monitoring institutional checks and balances, Decree 54 legal proceedings, press freedom, and judicial independence.",
@@ -165,6 +165,18 @@ const FILE_EDITORIAL_METADATA = {
       "Presidency of the Republic (Carthage)",
       "Ministry of Justice",
       "SNJT (National Union of Tunisian Journalists)"
+    ]
+  },
+  pollution: {
+    id: "07",
+    slug: "gabes",
+    title: "Pollution: Industrial Emissions, Chemical Waste & Environmental Contamination",
+    category: "ENVIRONMENTAL CRISIS",
+    summary: "Documentation of industrial chemical emissions, coastal phosphogypsum discharge, air quality deficits, and environmental contamination across Tunisian regions.",
+    accountableInstitutions: [
+      "Ministry of Environment (ANPE)",
+      "Groupe Chimique Tunisien (GCT)",
+      "Ministry of Industry, Mines and Energy"
     ]
   }
 };

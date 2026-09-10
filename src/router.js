@@ -1,5 +1,6 @@
 // src/router.js
 // 404TN Clean Browser-History Router (No Hash Routing)
+import { SEO_REGISTRY } from './seo-registry.js';
 
 export const ROUTE_MAP = {
   '/': { sectionId: 'hero', navRoute: '/' },
@@ -23,7 +24,7 @@ export const ROUTE_MAP = {
   '/issues/public-services': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'publicServices' },
   '/issues/rights': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
   '/issues/rights-institutions': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
-  '/issues/pollution': { sectionId: 'gabes', navRoute: '/gabes' }
+  '/issues/pollution': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'pollution' }
 };
 
 export const LEGACY_HASH_MAP = {
@@ -152,6 +153,56 @@ export function scrollToTarget(sectionId, hash) {
   }
 }
 
+function setMetaTag(attrName, attrValue, content) {
+  if (!content) return;
+  let el = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attrName, attrValue);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
+}
+
+export function updateHeadMetadata(pathname) {
+  const cleanPath = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const entry = SEO_REGISTRY[cleanPath];
+
+  if (!entry) {
+    document.title = '404 — Record Unavailable | 404TN';
+    setMetaTag('name', 'robots', 'noindex, nofollow');
+    return;
+  }
+
+  // Document Title
+  document.title = entry.title;
+
+  // Meta Description
+  setMetaTag('name', 'description', entry.description);
+
+  // Meta Robots
+  setMetaTag('name', 'robots', entry.robots);
+
+  // Canonical Link
+  let canonicalEl = document.querySelector('link[rel="canonical"]');
+  if (!canonicalEl) {
+    canonicalEl = document.createElement('link');
+    canonicalEl.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalEl);
+  }
+  canonicalEl.setAttribute('href', entry.canonical);
+
+  // Open Graph
+  setMetaTag('property', 'og:title', entry.title);
+  setMetaTag('property', 'og:description', entry.description);
+  setMetaTag('property', 'og:url', entry.canonical);
+  setMetaTag('property', 'og:type', entry.pageType || 'website');
+
+  // Twitter Cards
+  setMetaTag('name', 'twitter:title', entry.title);
+  setMetaTag('name', 'twitter:description', entry.description);
+}
+
 export function handleNavigation(pathWithHash, pushState = true) {
   const url = new URL(pathWithHash, window.location.origin);
   const pathname = url.pathname;
@@ -162,6 +213,7 @@ export function handleNavigation(pathWithHash, pushState = true) {
   if (resolution.type === 'LEGACY_REDIRECT') {
     window.history.replaceState(null, '', resolution.targetPath);
     showNotFoundView(false);
+    updateHeadMetadata(resolution.targetPath);
     updateActiveNavLinks(resolution.routeConfig.navRoute);
     scrollToTarget(resolution.routeConfig.sectionId, null);
     if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
@@ -175,6 +227,7 @@ export function handleNavigation(pathWithHash, pushState = true) {
       window.history.pushState(null, '', pathWithHash);
     }
     showNotFoundView(true);
+    updateHeadMetadata('/404');
     updateActiveNavLinks(null);
     return;
   }
@@ -185,6 +238,7 @@ export function handleNavigation(pathWithHash, pushState = true) {
   }
 
   showNotFoundView(false);
+  updateHeadMetadata(resolution.cleanPath);
   updateActiveNavLinks(resolution.routeConfig.navRoute);
   scrollToTarget(resolution.routeConfig.sectionId, hash);
 
