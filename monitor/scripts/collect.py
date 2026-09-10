@@ -26,7 +26,9 @@ from monitor.app.services.normalizer import (
     canonicalize_url, sanitize_text, normalize_headline,
     evaluate_content_quality, ContentQualityReport
 )
-from monitor.app.services.dedupe import compute_content_hash, is_duplicate
+from monitor.app.services.dedupe import (
+    compute_content_hash, is_duplicate, is_duplicate_detailed, is_duplicate_layered
+)
 from monitor.app.services.classifier import (
     classify_issue_advanced, classify_epistemic, has_tunisia_context,
     is_substantive_evidence, determine_ingestion_status
@@ -116,6 +118,40 @@ def perform_database_backup(db_path: str = DB_PATH, backups_dir: str = BACKUP_DI
 
     return backup_path
 
+def export_audit_json(audit_data: Dict[str, Any], output_path: str, overwrite: bool = False) -> str:
+    """
+    Safely and atomically writes candidate audit data to a JSON file.
+    Rules:
+    - If output_path exists and overwrite is False, raises FileExistsError.
+    - Writes to a temporary file in the target directory with .tmp.<uuid> extension.
+    - Flushes and fsyncs the file before closing.
+    - Atomically replaces the target file using os.replace.
+    """
+    abs_path = os.path.abspath(output_path)
+    parent_dir = os.path.dirname(abs_path)
+    if parent_dir:
+        os.makedirs(parent_dir, exist_ok=True)
+
+    if os.path.exists(abs_path) and not overwrite:
+        raise FileExistsError(f"Audit output file already exists: {abs_path}. Use --overwrite-audit to replace.")
+
+    tmp_path = f"{abs_path}.tmp.{uuid.uuid4().hex}"
+    try:
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(audit_data, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, abs_path)
+    except Exception:
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+        raise
+
+    return abs_path
+
 GLOBAL_MAX_DISCOVERED = 500
 GLOBAL_MAX_FETCHED = 200
 INTER_REQUEST_DELAY = 1.0
@@ -176,8 +212,15 @@ def run_collection(
     verbose=False,
     no_classify=False,
     no_store=False,
-    db_path=None
+    db_path=None,
+    audit_json: Optional[str] = None,
+    overwrite_audit: bool = False
 ) -> Dict[str, Any]:
+    if audit_json and not dry_run:
+        raise ValueError("Audit export (--audit-json) is only valid in dry-run mode (--dry-run).")
+    if audit_json and os.path.exists(os.path.abspath(audit_json)) and not overwrite_audit:
+        raise FileExistsError(f"Audit output file already exists: {os.path.abspath(audit_json)}. Use --overwrite-audit to replace.")
+
     target_db = db_path or DB_PATH
     init_db(target_db)
 
@@ -248,6 +291,8 @@ def run_collection(
         partial_count = 0
         failed_count = 0
         source_errors: Dict[str, str] = {}
+        source_results: List[Dict[str, Any]] = []
+        candidate_records: List[Dict[str, Any]] = []
 
         with get_db(target_db) as conn:
             for s in sources_to_run:
@@ -299,6 +344,7 @@ def run_collection(
                     dupes_count = 0
 
                     for cand in candidates:
+                        raw_text_len = len(cand.headline or "") + len(cand.summary or "") + len(cand.body or "")
                         # 1. NORMALIZATION LAYER
                         cand.headline = normalize_headline(cand.headline)
                         cand.summary = sanitize_text(cand.summary or "")
@@ -310,12 +356,103 @@ def run_collection(
                         # Provenance validation: valid scheme and non-empty URL
                         if not cand.canonical_url or not cand.canonical_url.startswith("http"):
                             rejected_count += 1
+                            candidate_records.append({
+                                "run_id": run_id,
+                                "source_id": source_id,
+                                "source_name": source_name,
+                                "headline": cand.headline,
+                                "published_at": cand.published_at,
+                                "discovery_provider": cand.raw_metadata.get("discovery_provider"),
+                                "discovery_query": cand.raw_metadata.get("discovery_query"),
+                                "discovery_url": cand.raw_metadata.get("discovery_url"),
+                                "source_domain": s.get("domain") or cand.source_domain,
+                                "source_tier": cand.raw_metadata.get("source_tier", s.get("source_tier", "TIER_2")),
+                                "source_url": cand.url or cand.canonical_url,
+                                "canonical_url": cand.canonical_url,
+                                "language": cand.language,
+                                "raw_length": raw_text_len,
+                                "clean_text_length": len(cand.headline or ""),
+                                "boilerplate_ratio": 0.0,
+                                "content_quality": "EMPTY",
+                                "extraction_method": cand.raw_metadata.get("extraction_method", "RSS_SUMMARY"),
+                                "primary_issue": None,
+                                "sub_issue": None,
+                                "secondary_issues": [],
+                                "topics": [],
+                                "entities": [],
+                                "classification": "ANALYSIS",
+                                "status": "UNDER REVIEW",
+                                "classification_confidence": 0.0,
+                                "ingestion_decision": "REJECTED",
+                                "decision_reason": "Invalid or missing canonical URL",
+                                "location_scope": None,
+                                "governorate": None,
+                                "delegation": None,
+                                "locality": None,
+                                "latitude": None,
+                                "longitude": None,
+                                "location_confidence": None,
+                                "location_method": None,
+                                "is_duplicate": False,
+                                "duplicate_layer": None,
+                                "duplicate_of": None,
+                                "clean_summary": cand.summary[:500] if cand.summary else (cand.body[:500] if cand.body else None)
+                            })
                             continue
 
-                        # Deduplication
-                        already_exists = is_duplicate(cand.canonical_url, cand_hash, cand.headline, conn)
-                        if already_exists:
+                        # Deduplication with explicit keyword arguments and structured match metadata
+                        is_dup, dup_layer, dup_of = is_duplicate_detailed(
+                            canonical_url=cand.canonical_url,
+                            content_hash=cand_hash,
+                            headline=cand.headline,
+                            source_domain=s.get("domain") or cand.source_domain,
+                            source_native_id=cand.raw_metadata.get("source_native_id"),
+                            conn=conn
+                        )
+                        if is_dup:
                             dupes_count += 1
+                            candidate_records.append({
+                                "run_id": run_id,
+                                "source_id": source_id,
+                                "source_name": source_name,
+                                "headline": cand.headline,
+                                "published_at": cand.published_at,
+                                "discovery_provider": cand.raw_metadata.get("discovery_provider"),
+                                "discovery_query": cand.raw_metadata.get("discovery_query"),
+                                "discovery_url": cand.raw_metadata.get("discovery_url"),
+                                "source_domain": s.get("domain") or cand.source_domain,
+                                "source_tier": cand.raw_metadata.get("source_tier", s.get("source_tier", "TIER_2")),
+                                "source_url": cand.url or cand.canonical_url,
+                                "canonical_url": cand.canonical_url,
+                                "language": cand.language,
+                                "raw_length": raw_text_len,
+                                "clean_text_length": len(cand.headline or "") + len(cand.summary or "") + len(cand.body or ""),
+                                "boilerplate_ratio": None,
+                                "content_quality": None,
+                                "extraction_method": cand.raw_metadata.get("extraction_method", "RSS_SUMMARY"),
+                                "primary_issue": cand.issue or None,
+                                "sub_issue": cand.section or None,
+                                "secondary_issues": None,
+                                "topics": None,
+                                "entities": None,
+                                "classification": None,
+                                "status": None,
+                                "classification_confidence": None,
+                                "ingestion_decision": "DUPLICATE",
+                                "decision_reason": f"Duplicate candidate detected ({dup_layer or 'MATCH'})",
+                                "location_scope": None,
+                                "governorate": None,
+                                "delegation": None,
+                                "locality": None,
+                                "latitude": None,
+                                "longitude": None,
+                                "location_confidence": None,
+                                "location_method": None,
+                                "is_duplicate": True,
+                                "duplicate_layer": dup_layer,
+                                "duplicate_of": dup_of,
+                                "clean_summary": cand.summary[:500] if cand.summary else (cand.body[:500] if cand.body else None)
+                            })
                             continue
 
                         # 2. CONTENT QUALITY SCORING
@@ -453,6 +590,49 @@ def run_collection(
                                 rejected_taxonomy_count += 1
                             if not is_tunisia_context:
                                 rejected_non_tunisia_count += 1
+
+                        candidate_records.append({
+                            "run_id": run_id,
+                            "source_id": source_id,
+                            "source_name": source_name,
+                            "headline": cand.headline,
+                            "published_at": cand.published_at,
+                            "discovery_provider": cand.raw_metadata.get("discovery_provider"),
+                            "discovery_query": cand.raw_metadata.get("discovery_query"),
+                            "discovery_url": cand.raw_metadata.get("discovery_url"),
+                            "source_domain": s.get("domain") or cand.source_domain,
+                            "source_tier": cand.raw_metadata.get("source_tier", s.get("source_tier", "TIER_2")),
+                            "source_url": cand.url or cand.canonical_url,
+                            "canonical_url": cand.canonical_url,
+                            "language": cand.language,
+                            "raw_length": raw_text_len,
+                            "clean_text_length": cand.raw_metadata.get("clean_text_length", len(full_text.strip())),
+                            "boilerplate_ratio": cand.raw_metadata.get("boilerplate_ratio", 0.0),
+                            "content_quality": cand.raw_metadata.get("content_quality", "EMPTY"),
+                            "extraction_method": cand.raw_metadata.get("extraction_method", "RSS_SUMMARY"),
+                            "primary_issue": cand.issue,
+                            "sub_issue": cand.section,
+                            "secondary_issues": cand.raw_metadata.get("secondary_issues", []),
+                            "topics": cand.raw_metadata.get("topics", []),
+                            "entities": cand.raw_metadata.get("entities", []),
+                            "classification": cand.classification,
+                            "status": cand.status,
+                            "classification_confidence": cand.raw_metadata.get("classification_confidence", 0.0),
+                            "ingestion_decision": ingestion_state,
+                            "decision_reason": state_reason,
+                            "location_scope": cand.raw_metadata.get("location_scope"),
+                            "governorate": cand.raw_metadata.get("governorate"),
+                            "delegation": cand.raw_metadata.get("delegation"),
+                            "locality": cand.raw_metadata.get("locality"),
+                            "latitude": cand.lat,
+                            "longitude": cand.lon,
+                            "location_confidence": cand.raw_metadata.get("location_confidence"),
+                            "location_method": cand.raw_metadata.get("location_method"),
+                            "is_duplicate": False,
+                            "duplicate_layer": None,
+                            "duplicate_of": None,
+                            "clean_summary": cand.summary[:500] if cand.summary else (cand.body[:500] if cand.body else None)
+                        })
 
                     src_parsed = metrics.items_parsed
                     src_relevant = len(accepted_candidates) + len(review_candidates)
@@ -605,6 +785,24 @@ def run_collection(
                 total_rejected_geo += rejected_non_tunisia_count if 'rejected_non_tunisia_count' in locals() else 0
                 total_dupes += src_dupes
 
+                source_results.append({
+                    "source_id": source_id,
+                    "source_name": source_name,
+                    "status": status_label,
+                    "http_status": src_http_status,
+                    "discovered": src_discovered,
+                    "fetched": src_fetched,
+                    "parsed": src_parsed,
+                    "relevant": src_relevant,
+                    "duplicate": src_dupes,
+                    "accepted": src_accepted,
+                    "review_required": src_review,
+                    "rejected": src_rejected,
+                    "quality_low": src_q_low,
+                    "duration_ms": src_duration,
+                    "error": src_error
+                })
+
                 http_display = str(src_http_status) if src_http_status else "N/A"
                 print(f"{source_name[:17]:<18} {status_label:<8} {http_display:<6} {src_discovered:<11} {src_parsed:<8} {src_accepted:<9} {src_review:<8} {src_rejected:<9} {src_duration:.0f}ms", flush=True)
 
@@ -671,6 +869,38 @@ def run_collection(
                 ))
                 conn.commit()
 
+        # Construct Audit Export Payload if requested
+        if audit_json:
+            errors_list = [{"source_id": k, "error": v} for k, v in source_errors.items()]
+            audit_payload = {
+                "run_id": run_id,
+                "mode": run_mode,
+                "started_at": run_started_at,
+                "completed_at": run_completed_at,
+                "status": overall_status,
+                "sources_attempted": len(sources_to_run),
+                "sources_successful": success_count,
+                "sources_failed": failed_count,
+                "items_discovered": total_discovered,
+                "items_fetched": total_fetched,
+                "items_parsed": total_parsed,
+                "items_relevant": total_accepted + total_review,
+                "items_duplicate": total_dupes,
+                "items_accepted": total_accepted,
+                "items_review_required": total_review,
+                "items_rejected": total_rejected,
+                "quality_good": total_q_good,
+                "quality_partial": total_q_partial,
+                "quality_low": total_q_low,
+                "quality_empty": total_q_empty,
+                "source_results": source_results,
+                "candidate_records": candidate_records,
+                "errors": errors_list
+            }
+            export_audit_json(audit_payload, audit_json, overwrite=overwrite_audit)
+            if verbose:
+                print(f"[AUDIT] Exported candidate audit ({len(candidate_records)} records) to: {audit_json}")
+
         # SECTION J: STRUCTURED RUN REPORT
         print("=" * 105, flush=True)
         print("                            404TN COLLECTOR RUN TERMINAL REPORT")
@@ -706,7 +936,7 @@ def run_collection(
         print(f"  Empty:             {total_q_empty}")
         print("=" * 105, flush=True)
 
-        return {
+        run_res = {
             "run_id": run_id,
             "mode": run_mode,
             "status": overall_status,
@@ -725,6 +955,9 @@ def run_collection(
             "items_duplicates": total_dupes,
             "database_writes": 0 if dry_run or no_store else total_stored
         }
+        if audit_json:
+            run_res["audit_file"] = os.path.abspath(audit_json)
+        return run_res
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="404TN Evidence Monitor V2 Collector Pipeline")
@@ -734,7 +967,12 @@ if __name__ == "__main__":
     parser.add_argument("--verbose", action="store_true", help="Print verbose candidate headlines")
     parser.add_argument("--no-classify", action="store_true", help="Skip epistemic and issue classification")
     parser.add_argument("--no-store", action="store_true", help="Skip database storage")
+    parser.add_argument("--audit-json", type=str, help="Export candidate audit report to JSON file (only valid with --dry-run)")
+    parser.add_argument("--overwrite-audit", action="store_true", help="Allow overwriting existing audit JSON file")
     args = parser.parse_args()
+
+    if args.audit_json and not args.dry_run:
+        parser.error("--audit-json is only valid with --dry-run")
 
     run_collection(
         selected_sources=args.source,
@@ -742,5 +980,7 @@ if __name__ == "__main__":
         limit=args.limit,
         verbose=args.verbose,
         no_classify=args.no_classify,
-        no_store=args.no_store
+        no_store=args.no_store,
+        audit_json=args.audit_json,
+        overwrite_audit=args.overwrite_audit
     )
