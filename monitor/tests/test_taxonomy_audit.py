@@ -169,5 +169,35 @@ class TestTaxonomyAudit(unittest.TestCase):
         self.assertEqual(res.primary_issue, "governance_institutions")
         self.assertEqual(res.classification, "CLAIM")
 
+    def test_commercial_banks_outstanding_credit_classified_as_banking_monetary(self):
+        """Commercial banks outstanding credit classified under economy_public_finance / banking_monetary."""
+        hl = "Tunisia: Commercial banks outstanding credit up 2.1% at end-July"
+        res = classify_multi_axis(text=hl, headline=hl, source_type="news_agency")
+        self.assertEqual(res.primary_issue, "economy_public_finance")
+        self.assertEqual(res.sub_issue, "banking_monetary")
+        self.assertEqual(res.classification, "FACT")
+
+    def test_bank_lending_outstanding_loans_classified_as_banking_monetary(self):
+        """Bank lending and outstanding loans classified under economy_public_finance / banking_monetary."""
+        hl = "Tunisia: Bank lending and outstanding loans to private sector expand"
+        res = classify_multi_axis(text=hl, headline=hl, source_type="news_agency")
+        self.assertEqual(res.primary_issue, "economy_public_finance")
+        self.assertEqual(res.sub_issue, "banking_monetary")
+
+    def test_central_bank_foreign_currency_assets_import_days_classified_as_foreign_reserves(self):
+        """Foreign currency assets and import days classified under economy_public_finance / foreign_reserves."""
+        hl = "Tunisia: Central Bank foreign currency assets down to 112 import days"
+        res = classify_multi_axis(text=hl, headline=hl, source_type="news_agency")
+        self.assertEqual(res.primary_issue, "economy_public_finance")
+        self.assertEqual(res.sub_issue, "foreign_reserves")
+        self.assertEqual(res.classification, "FACT")
+
+    def test_foreign_exchange_reserves_classified_as_foreign_reserves(self):
+        """Foreign exchange reserves and import cover classified under economy_public_finance / foreign_reserves."""
+        hl = "BCT: Foreign exchange reserves cover 115 days of imports"
+        res = classify_multi_axis(text=hl, headline=hl, source_type="news_agency")
+        self.assertEqual(res.primary_issue, "economy_public_finance")
+        self.assertEqual(res.sub_issue, "foreign_reserves")
+
 if __name__ == "__main__":
     unittest.main()
