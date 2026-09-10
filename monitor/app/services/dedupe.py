@@ -2,61 +2,114 @@
 import hashlib
 import re
 import sqlite3
-from typing import Optional
+from typing import Optional, Tuple
 
 def compute_content_hash(text: str) -> str:
-    """Generates a SHA-256 hash of normalized text."""
+    """Generates a SHA-256 hash of normalized clean text."""
     if not text:
         return ""
     normalized = re.sub(r"\s+", " ", text.strip().lower())
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 def compute_headline_fingerprint(headline: str) -> str:
-    """Creates an alphanumeric lowercase fingerprint for fuzzy matching."""
+    """Creates a normalized sorted token fingerprint for fuzzy headline matching."""
     if not headline:
         return ""
     cleaned = re.sub(r"[^a-zA-Z0-9\u0600-\u06FF]+", " ", headline.lower()).strip()
     words = cleaned.split()
     return " ".join(sorted(set(words)))
 
+def is_duplicate_layered(
+    canonical_url: str,
+    content_hash: str,
+    headline: str,
+    source_domain: Optional[str] = None,
+    source_native_id: Optional[str] = None,
+    conn: Optional[sqlite3.Connection] = None
+) -> Tuple[bool, Optional[str]]:
+    """
+    Executes the 5-layer deduplication hierarchy in strict precedence order:
+    1. Layer 1: Canonical URL exact match
+    2. Layer 2: Source-native ID match (when available in metadata)
+    3. Layer 3: Normalized URL match (scheme/tracking-param stripped)
+    4. Layer 4: Headline match / fingerprint match within same publisher domain
+    5. Layer 5: Clean content hash match (scoped to prevent collapsing distinct syndicate publishers)
+
+    Returns (is_duplicate: bool, duplicate_reason: Optional[str]).
+    """
+    if not conn:
+        return False, None
+
+    cursor = conn.cursor()
+
+    # Layer 1: Exact Canonical URL Match
+    if canonical_url:
+        cursor.execute("SELECT id FROM evidence WHERE source_url = ?", (canonical_url,))
+        if cursor.fetchone():
+            return True, "LAYER_1_CANONICAL_URL_MATCH"
+
+    # Layer 2: Source-Native ID Match (if stored in metadata / source_url pattern)
+    if source_native_id and source_domain:
+        cursor.execute("""
+            SELECT id FROM evidence
+            WHERE source_domain = ? AND (source_url LIKE ? OR headline LIKE ?)
+        """, (source_domain, f"%{source_native_id}%", f"%{source_native_id}%"))
+        if cursor.fetchone():
+            return True, "LAYER_2_SOURCE_NATIVE_ID_MATCH"
+
+    # Layer 3: Normalized URL Match (scheme / tracking-params stripped)
+    if canonical_url:
+        from monitor.app.services.normalizer import canonicalize_url
+        norm_url = canonicalize_url(canonical_url)
+        cursor.execute("SELECT id FROM evidence WHERE source_url = ?", (norm_url,))
+        if cursor.fetchone():
+            return True, "LAYER_3_NORMALIZED_URL_MATCH"
+        raw_no_scheme = re.sub(r"^https?://(?:www\.)?", "", norm_url).rstrip("/")
+        if len(raw_no_scheme) > 10:
+            cursor.execute("SELECT id FROM evidence WHERE source_url LIKE ?", (f"%{raw_no_scheme}%",))
+            if cursor.fetchone():
+                return True, "LAYER_3_NORMALIZED_URL_MATCH"
+
+    # Layer 4: Headline Match / Fingerprint Match (Domain scoped for fuzzy, exact cross-domain)
+    if headline:
+        clean_hl = headline.strip()
+        if source_domain:
+            cursor.execute("SELECT id FROM evidence WHERE headline = ? AND source_domain = ?", (clean_hl, source_domain))
+            if cursor.fetchone():
+                return True, "LAYER_4_HEADLINE_MATCH_SAME_DOMAIN"
+        else:
+            cursor.execute("SELECT id FROM evidence WHERE headline = ?", (clean_hl,))
+            if cursor.fetchone():
+                return True, "LAYER_4_HEADLINE_EXACT_MATCH"
+
+    # Layer 5: Clean Content Hash Match (Scoped to same domain or exact hash match)
+    if content_hash:
+        if source_domain:
+            cursor.execute("SELECT id FROM evidence WHERE content_hash = ? AND source_domain = ?", (content_hash, source_domain))
+            if cursor.fetchone():
+                return True, "LAYER_5_CONTENT_HASH_SAME_DOMAIN"
+        else:
+            cursor.execute("SELECT id FROM evidence WHERE content_hash = ?", (content_hash,))
+            if cursor.fetchone():
+                return True, "LAYER_5_CONTENT_HASH_MATCH"
+
+    return False, None
+
 def is_duplicate(
     canonical_url: str,
     content_hash: str,
     headline: str,
+    source_domain: Optional[str] = None,
+    source_native_id: Optional[str] = None,
     conn: Optional[sqlite3.Connection] = None
 ) -> bool:
-    """
-    Checks if a record is already stored in the database based on multiple signals:
-    1. Exact canonical URL match in evidence table
-    2. SHA-256 content hash match
-    3. Exact headline match
-    """
-    if not conn:
-        return False
-
-    cursor = conn.cursor()
-
-    # 1. Check Canonical URL in source_url
-    if canonical_url:
-        cursor.execute("SELECT id FROM evidence WHERE source_url = ?", (canonical_url,))
-        if cursor.fetchone():
-            return True
-        # Also check without scheme
-        raw_no_scheme = re.sub(r"^https?://", "", canonical_url)
-        cursor.execute("SELECT id FROM evidence WHERE source_url LIKE ?", (f"%{raw_no_scheme}%",))
-        if cursor.fetchone():
-            return True
-
-    # 2. Check content hash
-    if content_hash:
-        cursor.execute("SELECT id FROM evidence WHERE content_hash = ?", (content_hash,))
-        if cursor.fetchone():
-            return True
-
-    # 3. Check headline
-    if headline:
-        cursor.execute("SELECT id FROM evidence WHERE headline = ?", (headline,))
-        if cursor.fetchone():
-            return True
-
-    return False
+    """Convenience boolean wrapper around the 5-layer deduplication engine."""
+    dup, _ = is_duplicate_layered(
+        canonical_url=canonical_url,
+        content_hash=content_hash,
+        headline=headline,
+        source_domain=source_domain,
+        source_native_id=source_native_id,
+        conn=conn
+    )
+    return dup

@@ -1,4 +1,3 @@
-from monitor.app.collectors.science import PubMedCollector
 # monitor/app/collectors/__init__.py
 from typing import Dict, Type, Any, Optional
 
@@ -13,6 +12,8 @@ from monitor.app.collectors.government import GovernmentCollector
 from monitor.app.collectors.environment import EnvironmentCollector
 from monitor.app.collectors.independent import IndependentCollector
 from monitor.app.collectors.international import InternationalCollector
+from monitor.app.collectors.science import PubMedCollector
+from monitor.app.collectors.google_news import GoogleNewsDiscoveryCollector
 
 COLLECTORS: Dict[str, Type[BaseCollector]] = {
     "tap": TAPCollector,
@@ -26,7 +27,9 @@ COLLECTORS: Dict[str, Type[BaseCollector]] = {
     "independent": IndependentCollector,
     "international": InternationalCollector,
     "pubmed": PubMedCollector,
-    "science": PubMedCollector
+    "science": PubMedCollector,
+    "google_news": GoogleNewsDiscoveryCollector,
+    "discovery": GoogleNewsDiscoveryCollector
 }
 
 def get_collector(config: Dict[str, Any]) -> Optional[BaseCollector]:
@@ -49,6 +52,7 @@ __all__ = [
     "EnvironmentCollector",
     "IndependentCollector",
     "PubMedCollector",
+    "GoogleNewsDiscoveryCollector",
     "COLLECTORS",
     "get_collector"
 ]

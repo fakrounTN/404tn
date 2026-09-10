@@ -69,6 +69,7 @@ class TestCleanDatabasePipeline(unittest.TestCase):
                     "SONEDE", "sonede.com.tn", "state_agency", "https://sonede.com.tn/kasserine", "fr",
                     0.95, 0.95, "CURRENT", "hash-test-sonede"
                 ))
+                conn.commit()
                 cursor.execute("SELECT COUNT(*) FROM evidence WHERE id LIKE 'EV-AUTO-%' AND (ingestion_status = 'AUTO_ACCEPTED' OR ingestion_status IS NULL)")
                 total_auto = cursor.fetchone()[0]
 

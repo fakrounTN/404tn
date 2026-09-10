@@ -1,0 +1,527 @@
+# 404TN Discovery Query Packs (AR, FR, EN) & Geographic Combinations
+# Used by Google News RSS & Search Discovery Providers in Collector V2
+
+packs:
+  water:
+    category: water
+    priority: 1
+    queries:
+      ar:
+        - "تونس أزمة المياه"
+        - "تونس انقطاع الماء"
+        - "تونس انقطاع مياه الشرب"
+        - "تونس العطش"
+        - "تونس مخزون السدود"
+        - "تونس الصوناد اضطراب توزيع المياه"
+      fr:
+        - "Tunisie pénurie eau"
+        - "Tunisie coupure eau"
+        - "Tunisie coupure eau potable"
+        - "Tunisie stress hydrique"
+        - "Tunisie niveau barrages"
+        - "Tunisie SONEDE coupure"
+      en:
+        - "Tunisia water shortage"
+        - "Tunisia water cuts"
+        - "Tunisia drinking water crisis"
+        - "Tunisia drought dams"
+        - "Tunisia SONEDE disruption"
+
+  electricity:
+    category: electricity
+    priority: 1
+    queries:
+      ar:
+        - "تونس انقطاع الكهرباء"
+        - "تونس انقطاع التيار الكهربائي"
+        - "تونس الستاغ"
+        - "تونس أزمة الكهرباء"
+        - "تونس شبكة الكهرباء"
+      fr:
+        - "Tunisie coupure électricité"
+        - "Tunisie délestage"
+        - "Tunisie panne électricité"
+        - "Tunisie STEG panne"
+        - "Tunisie réseau électrique"
+      en:
+        - "Tunisia electricity outage"
+        - "Tunisia power cuts"
+        - "Tunisia blackout STEG"
+        - "Tunisia power grid"
+
+  gas_energy:
+    category: gas_energy
+    priority: 2
+    queries:
+      ar:
+        - "تونس نقص الغاز"
+        - "تونس أزمة الطاقة"
+        - "تونس قوارير الغاز"
+        - "تونس الغاز الجزائري"
+        - "تونس أزمة المحروقات"
+      fr:
+        - "Tunisie pénurie gaz"
+        - "Tunisie crise énergétique"
+        - "Tunisie bouteilles de gaz"
+        - "Tunisie gaz naturel"
+        - "Tunisie carburant pénurie"
+      en:
+        - "Tunisia gas shortage"
+        - "Tunisia energy crisis"
+        - "Tunisia fuel shortage"
+        - "Tunisia natural gas imports"
+
+  food_security:
+    category: food_security
+    priority: 1
+    queries:
+      ar:
+        - "تونس نقص المواد الغذائية"
+        - "تونس أزمة الخبز"
+        - "تونس نقص الحليب"
+        - "تونس السكر والزيت"
+        - "تونس ديوان الحبوب"
+        - "تونس مخزون القمح"
+      fr:
+        - "Tunisie pénurie alimentaire"
+        - "Tunisie crise du pain"
+        - "Tunisie pénurie lait sucre"
+        - "Tunisie stock blé céréales"
+        - "Tunisie Office des céréales"
+      en:
+        - "Tunisia food shortage"
+        - "Tunisia bread shortage"
+        - "Tunisia grain supply"
+        - "Tunisia food security crisis"
+
+  prices_cost_of_living:
+    category: prices_cost_of_living
+    priority: 1
+    queries:
+      ar:
+        - "تونس غلاء الأسعار"
+        - "تونس القدرة الشرائية"
+        - "تونس التضخم"
+        - "تونس أسعار المواد الأساسية"
+        - "تونس مؤشر أسعار الاستهلاك"
+      fr:
+        - "Tunisie inflation prix"
+        - "Tunisie pouvoir d'achat"
+        - "Tunisie flambée des prix"
+        - "Tunisie coût de la vie"
+        - "Tunisie indice des prix"
+      en:
+        - "Tunisia inflation"
+        - "Tunisia cost of living"
+        - "Tunisia food prices surge"
+        - "Tunisia purchasing power"
+
+  work_unemployment:
+    category: work_unemployment
+    priority: 1
+    queries:
+      ar:
+        - "تونس البطالة"
+        - "تونس الإضرابات"
+        - "تونس التشغيل"
+        - "تونس اتحاد الشغل إضراب"
+        - "تونس عمال الحضائر"
+        - "تونس أصحاب الشهادات العليا المعطلين"
+      fr:
+        - "Tunisie chômage"
+        - "Tunisie grève UGTT"
+        - "Tunisie licenciements"
+        - "Tunisie marché de l'emploi"
+        - "Tunisie ouvriers de chantiers"
+      en:
+        - "Tunisia unemployment"
+        - "Tunisia strikes UGTT"
+        - "Tunisia labor rights"
+        - "Tunisia jobs crisis"
+
+  migration:
+    category: migration
+    priority: 1
+    queries:
+      ar:
+        - "تونس الهجرة غير النظامية"
+        - "تونس الحرقة"
+        - "تونس غرق مهاجرين"
+        - "تونس جثث المهاجرين"
+        - "تونس الحرس البحري إحباط"
+        - "تونس العامرة جبنيانة مهاجرين"
+      fr:
+        - "Tunisie migration irrégulière"
+        - "Tunisie harqa"
+        - "Tunisie naufrage migrants"
+        - "Tunisie corps repêchés"
+        - "Tunisie El Amra Jbeniana"
+        - "Tunisie garde maritime interception"
+      en:
+        - "Tunisia migration crisis"
+        - "Tunisia sea crossing"
+        - "Tunisia drowned migrants"
+        - "Tunisia Coast Guard intercepted"
+        - "Tunisia El Amra migrants"
+
+  health:
+    category: health
+    priority: 1
+    queries:
+      ar:
+        - "تونس أزمة الصحة"
+        - "تونس نقص الأدوية"
+        - "تونس المستشفيات العمومية"
+        - "تونس الصيدلية المركزية"
+        - "تونس أزمة قطاع الصحة"
+      fr:
+        - "Tunisie crise santé hôpitaux"
+        - "Tunisie pénurie médicaments"
+        - "Tunisie Pharmacie Centrale"
+        - "Tunisie hôpitaux publics urgences"
+      en:
+        - "Tunisia hospital crisis"
+        - "Tunisia medicine shortage"
+        - "Tunisia public healthcare"
+        - "Tunisia drug shortage"
+
+  public_services:
+    category: public_services
+    priority: 2
+    queries:
+      ar:
+        - "تونس النقل العمومي"
+        - "تونس شركة نقل تونس"
+        - "تونس السكك الحديدية"
+        - "تونس تراكم النفايات"
+        - "تونس الديوان الوطني للتطهير"
+      fr:
+        - "Tunisie transport public"
+        - "Tunisie Transtu crise"
+        - "Tunisie SNCFT panne"
+        - "Tunisie crise des déchets"
+        - "Tunisie assainissement ONAS"
+      en:
+        - "Tunisia public transport crisis"
+        - "Tunisia Transtu transit"
+        - "Tunisia waste management"
+        - "Tunisia public sanitation"
+
+  pollution_environment:
+    category: pollution_environment
+    priority: 1
+    queries:
+      ar:
+        - "تونس تلوث"
+        - "تلوث قابس"
+        - "فسفوجبس قابس"
+        - "تلوث قفصة الفسفاط"
+        - "تلوث مياه البحر تونس"
+        - "تلوث شاطئ السلام"
+      fr:
+        - "Tunisie pollution Gabès"
+        - "pollution phosphogypse"
+        - "Tunisie Gafsa phosphate pollution"
+        - "Tunisie pollution marine littoral"
+        - "Chatt Essalam Gabès"
+      en:
+        - "Tunisia pollution"
+        - "Gabes pollution"
+        - "Gafsa phosphate pollution"
+        - "Tunisia phosphogypsum"
+        - "Tunisia coastal pollution"
+
+  rights_freedoms:
+    category: rights_freedoms
+    priority: 1
+    queries:
+      ar:
+        - "تونس حقوق الإنسان"
+        - "تونس حرية التعبير"
+        - "تونس المجتمع المدني"
+        - "تونس استهداف المعارضين"
+        - "تونس المعتقلين السياسيين"
+        - "تونس الرابطة التونسية للدفاع عن حقوق الإنسان"
+      fr:
+        - "Tunisie droits humains"
+        - "Tunisie liberté expression"
+        - "Tunisie société civile"
+        - "Tunisie prisonniers politiques"
+        - "Tunisie LTDH libertés"
+      en:
+        - "Tunisia human rights"
+        - "Tunisia freedom of expression"
+        - "Tunisia civil society"
+        - "Tunisia political prisoners"
+
+  justice_law:
+    category: justice_law
+    priority: 1
+    queries:
+      ar:
+        - "تونس المرسوم 54"
+        - "تونس مرسوم 54"
+        - "تونس القضاء"
+        - "تونس المحاكمات السياسية"
+        - "تونس بطاقة إيداع بالسجن"
+        - "تونس إعفاء القضاة"
+      fr:
+        - "Tunisie décret-loi 54"
+        - "Tunisie décret 54"
+        - "Tunisie justice procès"
+        - "Tunisie magistrats révocation"
+        - "Tunisie mandat de dépôt"
+      en:
+        - "Tunisia Decree Law 54"
+        - "Tunisia Decree 54"
+        - "Tunisia judiciary"
+        - "Tunisia political trials"
+        - "Tunisia judge dismissal"
+
+  media_press_freedom:
+    category: media_press_freedom
+    priority: 1
+    queries:
+      ar:
+        - "تونس إيقاف صحفي"
+        - "تونس حرية الصحافة"
+        - "تونس نقابة الصحفيين"
+        - "تونس محاكمة صحفيين"
+        - "تونس التضييق على الإعلام"
+      fr:
+        - "Tunisie journaliste arrestation"
+        - "Tunisie liberté presse"
+        - "Tunisie SNJT journalistes"
+        - "Tunisie procès journalistes"
+        - "Tunisie censure médias"
+      en:
+        - "Tunisia journalist arrest"
+        - "Tunisia press freedom"
+        - "Tunisia SNJT journalist prosecution"
+        - "Tunisia media censorship"
+
+  governance_institutions:
+    category: governance_institutions
+    priority: 2
+    queries:
+      ar:
+        - "رئاسة الجمهورية تونس"
+        - "قيس سعيد قرارات"
+        - "تونس مرسوم رئاسي"
+        - "تونس التعيينات الرئاسية"
+        - "تونس مجلس نواب الشعب"
+        - "تونس الدستور الجديد 2022"
+      fr:
+        - "Présidence Tunisie"
+        - "Kaïs Saïed décrets"
+        - "Tunisie vacance pouvoir"
+        - "Tunisie remaniement ministériel"
+        - "Tunisie Constitution 2022"
+      en:
+        - "Tunisia presidency"
+        - "Kais Saied decrees"
+        - "Tunisia executive power"
+        - "Tunisia constitutional system"
+
+  economy_public_finance:
+    category: economy_public_finance
+    priority: 2
+    queries:
+      ar:
+        - "تونس صندوق النقد الدولي"
+        - "تونس الدين العمومي"
+        - "تونس عجز الميزانية"
+        - "تونس البنك المركزي احتياطي"
+        - "تونس قانون المالية"
+      fr:
+        - "Tunisie FMI prêt"
+        - "Tunisie dette publique"
+        - "Tunisie déficit budgétaire"
+        - "Tunisie réserves devises BCT"
+        - "Tunisie loi de finances"
+      en:
+        - "Tunisia IMF"
+        - "Tunisia public debt"
+        - "Tunisia budget deficit"
+        - "Tunisia foreign currency reserves"
+
+  corruption_accountability:
+    category: corruption_accountability
+    priority: 2
+    queries:
+      ar:
+        - "تونس مكافحة الفساد"
+        - "تونس قضايا فساد مالي"
+        - "تونس دائرة المحاسبات"
+        - "تونس إهدار المال العام"
+        - "تونس صفقات عمومية مشبوهة"
+      fr:
+        - "Tunisie corruption"
+        - "Tunisie détournement fonds publics"
+        - "Tunisie Cour des comptes rapport"
+        - "Tunisie marchés publics irrégularités"
+      en:
+        - "Tunisia corruption"
+        - "Tunisia public funds misuse"
+        - "Tunisia Court of Auditors report"
+        - "Tunisia public procurement audit"
+
+  protests_social_movements:
+    category: protests_social_movements
+    priority: 1
+    queries:
+      ar:
+        - "تونس احتجاجات"
+        - "تونس مظاهرات"
+        - "تونس اعتصام"
+        - "تونس غلق الطرقات"
+        - "تونس تحركات احتجاجية اجتماعية"
+      fr:
+        - "Tunisie manifestations"
+        - "Tunisie mouvements sociaux"
+        - "Tunisie sit-in blocage"
+        - "Tunisie contestation sociale"
+      en:
+        - "Tunisia protests"
+        - "Tunisia demonstrations"
+        - "Tunisia sit-ins"
+        - "Tunisia social unrest"
+
+  security_policing:
+    category: security_policing
+    priority: 2
+    queries:
+      ar:
+        - "تونس قوات الأمن إيقافات"
+        - "تونس أوضاع السجون"
+        - "تونس تجاوزات أمنية"
+        - "تونس الهيئة الوطنية للوقاية من التعذيب"
+      fr:
+        - "Tunisie sécurité arrestations"
+        - "Tunisie état des prisons"
+        - "Tunisie violences policières"
+        - "Tunisie INPT torture"
+      en:
+        - "Tunisia police arrests"
+        - "Tunisia prison conditions"
+        - "Tunisia security custody"
+
+  education:
+    category: education
+    priority: 2
+    queries:
+      ar:
+        - "تونس أزمة التعليم"
+        - "تونس إضراب الأساتذة"
+        - "تونس المدارس العمومية"
+        - "تونس المعلمين النواب"
+      fr:
+        - "Tunisie crise éducation"
+        - "Tunisie grève enseignants"
+        - "Tunisie écoles publiques"
+        - "Tunisie rentrée scolaire crise"
+      en:
+        - "Tunisia education crisis"
+        - "Tunisia schools strike"
+        - "Tunisia public schools"
+
+  agriculture:
+    category: agriculture
+    priority: 2
+    queries:
+      ar:
+        - "تونس الفلاحة الجفاف"
+        - "تونس محاصيل الحبوب"
+        - "تونس مياه الري الفلاحي"
+        - "تونس أزمة زيت الزيتون"
+        - "تونس أسعار الأعلاف"
+      fr:
+        - "Tunisie agriculture sécheresse"
+        - "Tunisie récolte céréales"
+        - "Tunisie eau irrigation agriculture"
+        - "Tunisie filière lait élevage"
+      en:
+        - "Tunisia agriculture drought"
+        - "Tunisia crop yields"
+        - "Tunisia irrigation farming"
+
+  housing_infrastructure:
+    category: housing_infrastructure
+    priority: 2
+    queries:
+      ar:
+        - "تونس انهيار مبنى"
+        - "تونس رداءة الطرقات"
+        - "تونس البنية التحتية"
+        - "تونس فيضانات وبنية تحتية"
+      fr:
+        - "Tunisie effondrement bâtiment"
+        - "Tunisie routes dégradées"
+        - "Tunisie inondations infrastructure"
+        - "Tunisie voirie travaux"
+      en:
+        - "Tunisia infrastructure collapse"
+        - "Tunisia road conditions"
+        - "Tunisia flood infrastructure"
+
+# Geographic Combinations Settings
+geographic_discovery:
+  enabled: true
+  top_issues: ["water", "electricity", "pollution_environment", "work_unemployment", "migration", "health", "protests_social_movements"]
+  governorates:
+    - slug: "tunis"
+      aliases: { ar: ["تونس", "العاصمة"], fr: ["Tunis"], en: ["Tunis"] }
+    - slug: "ariana"
+      aliases: { ar: ["أريانة", "التضامن", "سكرة"], fr: ["Ariana", "Ettadhamen"], en: ["Ariana"] }
+    - slug: "ben_arous"
+      aliases: { ar: ["بن عروس", "رادس", "مقرين"], fr: ["Ben Arous", "Rades"], en: ["Ben Arous"] }
+    - slug: "manouba"
+      aliases: { ar: ["منوبة", "دوار هيشر"], fr: ["Manouba", "Douar Hicher"], en: ["Manouba"] }
+    - slug: "nabeul"
+      aliases: { ar: ["نابل", "الحمامات", "قليبية"], fr: ["Nabeul", "Hammamet"], en: ["Nabeul"] }
+    - slug: "zaghouan"
+      aliases: { ar: ["زغوان", "الفحص"], fr: ["Zaghouan", "El Fahs"], en: ["Zaghouan"] }
+    - slug: "bizerte"
+      aliases: { ar: ["بنزرت", "منزل بورقيبة", "ماطر"], fr: ["Bizerte", "Menzel Bourguiba"], en: ["Bizerte"] }
+    - slug: "beja"
+      aliases: { ar: ["باجة", "مجاز الباب", "تستور"], fr: ["Béja", "Beja", "Medjez el Bab"], en: ["Beja"] }
+    - slug: "jendouba"
+      aliases: { ar: ["جندوبة", "طبرقة", "غار الدماء"], fr: ["Jendouba", "Tabarka"], en: ["Jendouba"] }
+    - slug: "kef"
+      aliases: { ar: ["الكاف", "الدهماني", "تاجروين"], fr: ["Le Kef", "Kef", "Dahmani"], en: ["Kef"] }
+    - slug: "siliana"
+      aliases: { ar: ["سليانة", "مكثر", "بوعرادة"], fr: ["Siliana", "Makthar"], en: ["Siliana"] }
+    - slug: "sousse"
+      aliases: { ar: ["سوسة", "مساكن", "القلعة الكبرى"], fr: ["Sousse", "Msaken"], en: ["Sousse"] }
+    - slug: "monastir"
+      aliases: { ar: ["المنستير", "المكنين", "قصر هلال"], fr: ["Monastir", "Moknine"], en: ["Monastir"] }
+    - slug: "mahdia"
+      aliases: { ar: ["المهدية", "قصور الساف", "الشابة"], fr: ["Mahdia", "Ksour Essef"], en: ["Mahdia"] }
+    - slug: "sfax"
+      aliases: { ar: ["صفاقس", "العامرة", "جبنيانة", "قرقنة"], fr: ["Sfax", "El Amra", "Jbeniana", "Kerkennah"], en: ["Sfax"] }
+    - slug: "kairouan"
+      aliases: { ar: ["القيروان", "بوحجلة", "السبيخة"], fr: ["Kairouan", "Bouhajla"], en: ["Kairouan"] }
+    - slug: "kasserine"
+      aliases: { ar: ["القصرين", "سبيطلة", "تالة", "فريانة"], fr: ["Kasserine", "Sbeitla", "Thala"], en: ["Kasserine"] }
+    - slug: "sidi_bouzid"
+      aliases: { ar: ["سيدي بوزيد", "الرقاب", "المكناسي"], fr: ["Sidi Bouzid", "Regueb"], en: ["Sidi Bouzid"] }
+    - slug: "gabes"
+      aliases: { ar: ["قابس", "شط السلام", "غنوش", "الحامة"], fr: ["Gabès", "Gabes", "Chatt Essalam"], en: ["Gabes"] }
+    - slug: "medenine"
+      aliases: { ar: ["مدنين", "جرجيس", "بن قردان", "جربة"], fr: ["Médenine", "Medenine", "Zarzis", "Ben Guerdane", "Djerba"], en: ["Medenine", "Zarzis"] }
+    - slug: "tataouine"
+      aliases: { ar: ["تطاوين", "رمادة", "ذهيبة"], fr: ["Tataouine", "Remada"], en: ["Tataouine"] }
+    - slug: "gafsa"
+      aliases: { ar: ["قفصة", "الرديف", "المتلوي", "المظيلة", "أم العرائس"], fr: ["Gafsa", "Redeyef", "Metlaoui", "Mdhilla"], en: ["Gafsa", "Redeyef"] }
+    - slug: "tozeur"
+      aliases: { ar: ["توزر", "نفطة", "دقاش"], fr: ["Tozeur", "Nefta"], en: ["Tozeur"] }
+    - slug: "kebili"
+      aliases: { ar: ["قبلي", "دوز", "سوق الأحد"], fr: ["Kébili", "Kebili", "Douz"], en: ["Kebili"] }
+
+# Scheduler & Budget Configuration
+scheduler:
+  max_queries_per_run: 20
+  max_items_per_query: 15
+  cooldown_hours_priority_1: 4
+  cooldown_hours_priority_2: 12
+  cooldown_hours_geographic: 24

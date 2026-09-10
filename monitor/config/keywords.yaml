@@ -1,36 +1,106 @@
-# 404TN Semantic Keyword Rules
+# 404TN Semantic Keyword Rules for all 21 Canonical Issues
 keywords:
   water:
-    ar: ["ماء", "صونيد", "انقطاع الماء", "سدود", "جفاف", "عطش", "مياه الشرب"]
-    fr: ["eau", "sonede", "coupure d'eau", "barrage", "sécheresse", "stress hydrique"]
-    en: ["water", "sonede", "water cut", "dam capacity", "drought", "drinking water"]
+    ar: ["ماء", "صونيد", "الصوناد", "انقطاع الماء", "انقطاع المياه", "سدود", "جفاف", "عطش", "مياه الشرب", "طوارئ مائية", "مخزون السدود"]
+    fr: ["eau", "sonede", "coupure d'eau", "barrage", "sécheresse", "stress hydrique", "urgence hydrique", "eau potable"]
+    en: ["water", "sonede", "water cut", "dam capacity", "drought", "drinking water", "water scarcity"]
 
   electricity:
-    ar: ["كهرباء", "ستاغ", "انقطاع التيار", "الغاز الجزائري", "توليد الطاقة"]
-    fr: ["électricité", "steg", "coupure de courant", "délestage", "gaz algérien"]
-    en: ["electricity", "steg", "blackout", "load shedding", "power grid"]
+    ar: ["كهرباء", "ستاغ", "الستاغ", "انقطاع التيار", "انقطاع الكهرباء", "الغاز الجزائري", "توليد الطاقة", "الضغط العالي", "شبكة الكهرباء"]
+    fr: ["électricité", "steg", "coupure de courant", "délestage", "gaz algérien", "réseau électrique", "panne électrique"]
+    en: ["electricity", "steg", "blackout", "load shedding", "power grid", "power outage"]
 
-  work:
-    ar: ["بطالة", "أجور", "تشغيل", "التضخم", "القدرة الشرائية", "الشركات الأهلية"]
-    fr: ["chômage", "salaires", "inflation", "pouvoir d'achat", "entreprises communautaires"]
-    en: ["unemployment", "wages", "inflation", "purchasing power", "jobs", "labor"]
+  gas_energy:
+    ar: ["غاز", "قوارير الغاز", "نقص الغاز", "الغاز الطبيعي", "المحروقات", "بنزين", "طاقة", "شركة الأنشطة البترولية"]
+    fr: ["gaz", "bouteilles de gaz", "gaz naturel", "carburant", "essence", "énergie", "etap", "stir"]
+    en: ["gas", "bottled gas", "natural gas", "fuel shortage", "petrol", "energy security", "lpg"]
+
+  food_security:
+    ar: ["أمن غذائي", "نقص المواد الغذائية", "أزمة الخبز", "سميد", "فرينة", "حليب", "سكر", "زيت نباتي", "ديوان الحبوب", "مخزون القمح"]
+    fr: ["sécurité alimentaire", "pénurie alimentaire", "pain", "semoule", "farine", "lait", "sucre", "huile végétale", "céréales", "blé"]
+    en: ["food security", "food shortage", "bread crisis", "milk shortage", "sugar", "cooking oil", "grain stock", "wheat supply"]
+
+  prices_cost_of_living:
+    ar: ["غلاء الأسعار", "القدرة الشرائية", "التضخم", "أسعار المواد الأساسية", "مؤشر الأسعار", "ارتفاع الأسعار", "تكلفة المعيشة"]
+    fr: ["inflation", "pouvoir d'achat", "hausse des prix", "flambée des prix", "coût de la vie", "prix à la consommation"]
+    en: ["inflation", "cost of living", "purchasing power", "food prices", "price hike", "consumer price index"]
+
+  work_unemployment:
+    ar: ["بطالة", "أجور", "تشغيل", "عمال الحضائر", "التشغيل الهش", "إضراب", "الاتحاد العام التونسي للشغل", "سوق الشغل", "مواطن الشغل"]
+    fr: ["chômage", "salaires", "emploi", "ouvriers de chantiers", "grève", "ugtt", "licenciements", "marché du travail", "smig"]
+    en: ["unemployment", "wages", "jobs", "labor strike", "ugtt", "layoffs", "minimum wage", "employment"]
 
   migration:
-    ar: ["هجرة", "حرقة", "الحرس البحري", "العامرة", "جبنيانة", "المهاجرين"]
-    fr: ["migration", "harqa", "garde maritime", "el amra", "jbeniana", "naufrage"]
-    en: ["migration", "sea crossing", "maritime guard", "el amra", "asylum seekers", "mediterranean"]
+    ar: ["هجرة غير نظامية", "حرقة", "حراقة", "الحرس البحري", "العامرة", "جبنيانة", "غرق مركب", "انتشال جثث", "مهاجرين", "مفقودين في البحر"]
+    fr: ["migration", "harqa", "garde maritime", "el amra", "jbeniana", "naufrage", "corps repêchés", "migrants", "traversée"]
+    en: ["migration", "sea crossing", "maritime guard", "el amra", "drowned migrants", "shipwreck", "irregular migration", "harraga"]
+
+  health:
+    ar: ["صحة عمومية", "مستشفيات", "نقص الأدوية", "الصيدلية المركزية", "أدوية مفقودة", "صندوق التأمين على المرض", "أطباء", "طوارئ طبية"]
+    fr: ["santé publique", "hôpitaux", "pénurie de médicaments", "pharmacie centrale", "pct", "urgences hospitalières", "cnam", "médecins"]
+    en: ["public health", "hospitals", "medicine shortage", "drug shortage", "pharmacie centrale", "healthcare", "emergency ward"]
 
   public_services:
-    ar: ["صحة", "مستشفيات", "أدوية", "نقل", "نقل تونس", "السكك الحديدية", "بلديات"]
-    fr: ["santé", "hôpitaux", "médicaments", "transport", "transtu", "sncft", "déchets"]
-    en: ["health", "hospitals", "pharmaceuticals", "transport", "transtu", "sncft", "public services"]
+    ar: ["نقل عمومي", "شركة نقل تونس", "السكك الحديدية", "تطهير", "صرف صحي", "نفايات", "بلديات", "خدمات عمومية", "مرفق عمومي"]
+    fr: ["transport public", "transtu", "sncft", "assainissement", "onas", "déchets ménagers", "services municipaux", "service public"]
+    en: ["public services", "public transit", "transtu", "sncft", "sanitation", "onas", "waste collection", "municipalities"]
 
-  rights_institutions:
-    ar: ["مرسوم 54", "القضاء", "حرية التعبير", "قيس سعيد", "دستور 2022", "نقابة الصحفيين"]
-    fr: ["décret 54", "justice", "liberté d'expression", "kais saied", "constitution 2022", "snjt"]
-    en: ["decree 54", "judiciary", "press freedom", "kais saied", "constitution", "presidency"]
+  pollution_environment:
+    ar: ["تلوث", "فسفوجبس", "المجمع الكيميائي", "شاطئ السلام", "تلوث بحري", "تلوث هوائي", "انبعاثات سامة", "نفايات صناعية", "تأكل السواحل"]
+    fr: ["pollution", "phosphogypse", "groupe chimique", "gct", "chatt essalam", "pollution marine", "gaz toxiques", "déchets industriels", "érosion côtière"]
+    en: ["pollution", "phosphogypsum", "chemical group", "gct", "air pollution", "industrial emissions", "marine dead zone", "toxic waste"]
 
-  gabes:
-    ar: ["قابس", "فسفوجبس", "المجمع الكيميائي", "شاطئ السلام", "تلوث", "تفكيك الوحدات"]
-    fr: ["gabès", "phosphogypse", "groupe chimique", "chatt essalam", "pollution", "anpe"]
-    en: ["gabes", "phosphogypsum", "chemical group", "gct", "industrial pollution", "marine dead zone"]
+  rights_freedoms:
+    ar: ["حقوق الإنسان", "حرية التعبير", "حرية الرأي", "المجتمع المدني", "معتقلين سياسيين", "سجناء الرأي", "الرابطة التونسية للدفاع عن حقوق الإنسان", "تضييق على الحريات"]
+    fr: ["droits humains", "droits de l'homme", "liberté d'expression", "société civile", "prisonniers politiques", "détenus d'opinion", "ltdh", "libertés publiques"]
+    en: ["human rights", "freedom of expression", "civil society", "political prisoners", "civil liberties", "arbitrary detention"]
+
+  justice_law:
+    ar: ["مرسوم 54", "المرسوم 54", "القضاء", "محكمة", "بطاقة إيداع", "قضاة", "محاكمات", "وكيل الجمهورية", "استنطاق", "الرائد الرسمي"]
+    fr: ["décret 54", "décret-loi 54", "justice", "tribunal", "mandat de dépôt", "magistrats", "procès", "juge d'instruction", "jort"]
+    en: ["decree 54", "decree-law 54", "judiciary", "court", "detention warrant", "judges", "trials", "prosecution", "jort"]
+
+  media_press_freedom:
+    ar: ["حرية الصحافة", "نقابة الصحفيين", "إيقاف صحفي", "محاكمة صحفيين", "التضييق على الإعلام", "صفيين معتقلين", "الهايكا"]
+    fr: ["liberté de la presse", "snjt", "arrestation journaliste", "procès journalistes", "censure médias", "syndicat des journalistes", "haica"]
+    en: ["press freedom", "snjt", "journalist arrest", "journalist prosecution", "media censorship", "journalists", "haica"]
+
+  governance_institutions:
+    ar: ["رئاسة الجمهورية", "قصر قرطاج", "رئيس الجمهورية", "دستور 2022", "مرسوم رئاسي", "أمر رئاسي", "تحوير وزاري", "مجلس نواب الشعب", "القصبة"]
+    fr: ["présidence de la république", "palais de carthage", "constitution 2022", "décret présidentiel", "remaniement ministériel", "arp", "kasbah", "vacance du pouvoir"]
+    en: ["presidency", "carthage", "constitution 2022", "presidential decree", "cabinet reshuffle", "parliament", "executive power"]
+
+  economy_public_finance:
+    ar: ["اقتصاد", "صندوق النقد الدولي", "الدين العمومي", "عجز الميزانية", "البنك المركزي", "احتياطي العملة", "النمو الاقتصادي", "قانون المالية"]
+    fr: ["économie", "fmi", "dette publique", "déficit budgétaire", "banque centrale", "bct", "réserves de change", "loi de finances"]
+    en: ["economy", "imf", "public debt", "budget deficit", "central bank", "bct", "foreign reserves", "finance law"]
+
+  corruption_accountability:
+    ar: ["فساد", "إهدار المال العام", "صفقات عمومية", "دائرة المحاسبات", "تضارب المصالح", "اختلاس", "تدقيق مالي", "المساءلة"]
+    fr: ["corruption", "détournement de fonds", "marchés publics", "cour des comptes", "conflit d'intérêts", "malversation", "audit", "redevabilité"]
+    en: ["corruption", "public funds misuse", "procurement fraud", "court of auditors", "conflict of interest", "embezzlement", "state accountability"]
+
+  protests_social_movements:
+    ar: ["احتجاجات", "مظاهرات", "اعتصام", "غلق الطرقات", "تحركات اجتماعية", "مسيرة احتجاجية", "غضب شعبي", "مطالب تنموية"]
+    fr: ["manifestations", "protestations", "sit-in", "blocage de routes", "mouvements sociaux", "contestation sociale", "marche de protestation"]
+    en: ["protests", "demonstrations", "sit-in", "road blockades", "social movements", "civil unrest", "protest march"]
+
+  security_policing:
+    ar: ["أمن", "قوات الأمن", "إيقافات أمنية", "أوضاع السجون", "تعذيب", "تجاوزات أمنية", "الحرس الوطني", "مراكز الاحتجاز"]
+    fr: ["sécurité", "forces de l'ordre", "arrestations policières", "conditions carcérales", "prisons", "bavures policières", "garde nationale"]
+    en: ["security forces", "police arrests", "prison conditions", "custody violations", "national guard", "detention facilities"]
+
+  education:
+    ar: ["تعليم", "مدارس", "جامعات", "إضراب الأساتذة", "المعلمين النواب", "بنية المدارس", "عودة مدرسية", "التعليم العمومي"]
+    fr: ["éducation", "écoles publiques", "universités", "grève des enseignants", "enseignants suppléants", "infrastructure scolaire", "rentrée scolaire"]
+    en: ["education", "public schools", "universities", "teacher strikes", "school infrastructure", "education crisis"]
+
+  agriculture:
+    ar: ["فلاحة", "زراعة", "محاصيل الحبوب", "مياه الري", "جفاف فلاحي", "زيت الزيتون", "الأعلاف", "مربي الماشية", "اتحاد الفلاحة"]
+    fr: ["agriculture", "récolte de blé", "eau d'irrigation", "sécheresse agricole", "huile d'olive", "aliments de bétail", "éleveurs", "utap"]
+    en: ["agriculture", "crop harvest", "irrigation water", "agricultural drought", "olive oil", "livestock feed", "farming"]
+
+  housing_infrastructure:
+    ar: ["بنية تحتية", "طرقات", "انهيار مبنى", "أشغال عمومية", "جسور", "فيضانات وتصريف المياه", "تصدع المباني", "السكن الاجتماعي"]
+    fr: ["infrastructure", "routes dégradées", "effondrement d'immeuble", "travaux publics", "ponts", "inondations drainage", "bâtiments menaçant ruine"]
+    en: ["infrastructure failure", "road degradation", "building collapse", "public works", "bridges", "drainage flooding"]

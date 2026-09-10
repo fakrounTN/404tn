@@ -209,6 +209,88 @@ class TestPhase41GeoEvidenceEngine(unittest.TestCase):
         self.assertEqual(res10.scope, "UNRESOLVED")
         self.assertEqual(res10.location_confidence, 0.0)
 
+    def test_real_production_dataset_cases(self):
+        """
+        Verifies exact geolocation resolution against real production edge cases:
+        1. Multiple localities inside same governorate -> GOVERNORATE (MULTI_LOCALITY_SAME_GOVERNORATE)
+        2. INS national employment and unemployment survey -> NATIONAL
+        3. Systemic electricity crisis analysis -> NATIONAL
+        4. National food security -> NATIONAL
+        5. National constitutional succession (Constitution of 2022) -> NATIONAL
+        6. Nationwide water emergency proposition -> NATIONAL
+        7. Systemic prison health conditions in Tunisia -> NATIONAL
+        8. Demographic transition and population statistics -> NATIONAL
+        """
+        # 1. Multiple localities in same governorate (Ben Guerdane + Zarzis in Medenine)
+        res1 = resolve_location_advanced(
+            "Quinze jeunes de Ben Guerdane et de Zarzis ont quitté les côtes de Médenine...",
+            headline="Le dernier voyage : une barque de la harga met à nu la crise de Ben Guerdane"
+        )
+        self.assertEqual(res1.scope, "GOVERNORATE")
+        self.assertEqual(res1.governorate, "Médenine")
+        self.assertIsNone(res1.delegation)
+        self.assertEqual(res1.location_method, "MULTI_LOCALITY_SAME_GOVERNORATE")
+        self.assertEqual(res1.location_confidence, 0.85)
+        self.assertIsNotNone(res1.latitude)
+        self.assertIsNotNone(res1.longitude)
+
+        # 2. INS National employment survey
+        res2 = resolve_location_advanced(
+            "L'Institut National de la Statistique publie les résultats de l'enquête nationale sur l'emploi.",
+            headline="Indicateurs de l’emploi et du chômage, deuxième trimestre 2026"
+        )
+        self.assertEqual(res2.scope, "NATIONAL")
+        self.assertIsNone(res2.latitude)
+        self.assertIsNone(res2.governorate)
+
+        # 3. Systemic electricity crisis in numbers
+        res3 = resolve_location_advanced(
+            "Analyse des coupures répétées, de la capacité du réseau électrique national et des investissements de la STEG.",
+            headline="Tunisie : La crise de l’électricité en chiffres"
+        )
+        self.assertEqual(res3.scope, "NATIONAL")
+        self.assertIsNone(res3.latitude)
+
+        # 4. National food security
+        res4 = resolve_location_advanced(
+            "Rapport sur la souveraineté alimentaire et les réserves génétiques en Tunisie.",
+            headline="La préservation des semences locales, un enjeu pour la sécurité alimentaire nationale"
+        )
+        self.assertEqual(res4.scope, "NATIONAL")
+        self.assertIsNone(res4.latitude)
+
+        # 5. National constitutional succession
+        res5 = resolve_location_advanced(
+            "Analyse juridique des mécanismes prévus en cas de vacance définitive de la présidence.",
+            headline="Vacance du pouvoir en Tunisie, ce que prévoit la Constitution de 2022"
+        )
+        self.assertEqual(res5.scope, "NATIONAL")
+        self.assertIsNone(res5.latitude)
+
+        # 6. Nationwide water emergency proposition
+        res6 = resolve_location_advanced(
+            "خبراء المياه يدعون إلى تفعيل خطة الطوارئ للتعامل مع الجفاف الحاد وتراجع السدود.",
+            headline="على تونس إعلان حالة الطوارئ المائية"
+        )
+        self.assertEqual(res6.scope, "NATIONAL")
+        self.assertIsNone(res6.latitude)
+
+        # 7. Systemic prison health conditions
+        res7 = resolve_location_advanced(
+            "Rapport détaillé sur les conditions sanitaires dans les prisons tunisiennes.",
+            headline="Négligences médicales dans les prisons et centres de détention en Tunisie"
+        )
+        self.assertEqual(res7.scope, "NATIONAL")
+        self.assertIsNone(res7.latitude)
+
+        # 8. Demographic transition
+        res8 = resolve_location_advanced(
+            "Baisse du taux de natalité et vieillissement de la population tunisienne selon les données du recensement.",
+            headline="7 graphiques pour comprendre le basculement démographique de la Tunisie"
+        )
+        self.assertEqual(res8.scope, "NATIONAL")
+        self.assertIsNone(res8.latitude)
+
     def test_event_clustering_merging_and_separation(self):
         evidence_items = [
             {

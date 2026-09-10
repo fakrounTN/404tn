@@ -68,15 +68,17 @@ class BaseCollector(ABC):
         self.timeout = config.get("timeout", 10.0)
 
     def get_http_client(self) -> httpx.Client:
-        """Provides a configured HTTP client with User-Agent, timeout, and strict TLS verification."""
+        """Provides a configured HTTP client with User-Agent, timeouts, and strict TLS verification."""
         headers = {
             "User-Agent": USER_AGENT,
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.5",
             "Accept-Language": "en-US,en;q=0.9,fr;q=0.8,ar;q=0.7",
             "Cache-Control": "no-cache"
         }
+        # Explicit connect (5.0s) and read (15.0s) timeouts
+        timeout_config = httpx.Timeout(timeout=self.timeout, connect=5.0, read=15.0, write=5.0)
         return httpx.Client(
-            timeout=self.timeout,
+            timeout=timeout_config,
             follow_redirects=True,
             headers=headers
         )
@@ -85,15 +87,23 @@ class BaseCollector(ABC):
         self,
         client: httpx.Client,
         url: str,
-        retries: int = 1,
+        retries: int = 2,
         backoff_sec: float = 0.5
     ) -> httpx.Response:
-        """Fetches a URL with small exponential backoff for transient failures."""
+        """Fetches a URL with exponential backoff and Retry-After header handling for transient failures."""
         last_exc = None
         for attempt in range(retries + 1):
             try:
                 response = client.get(url)
-                if response.status_code in [429, 502, 503, 504] and attempt < retries:
+                if response.status_code == 429 and attempt < retries:
+                    retry_after_hdr = response.headers.get("Retry-After")
+                    if retry_after_hdr and retry_after_hdr.isdigit():
+                        sleep_time = min(float(retry_after_hdr), 10.0)
+                    else:
+                        sleep_time = backoff_sec * (2 ** attempt)
+                    time.sleep(sleep_time)
+                    continue
+                elif response.status_code in [502, 503, 504] and attempt < retries:
                     time.sleep(backoff_sec * (2 ** attempt))
                     continue
                 return response

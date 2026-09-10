@@ -1,88 +1,525 @@
-# 404TN Issues Taxonomy
+# 404TN Canonical Issues Taxonomy (21 Primary Issues)
 issues:
   - slug: water
     id: "01"
     title: "Water: Cuts, Restrictions, Infrastructure & Regional Inequality"
     short_title: "Water"
-    category: "RESOURCE COLLAPSE"
+    category: "RESOURCE & ENVIRONMENT"
+    sub_issues:
+      - id: water_cuts
+        name: "Drinking Water Cuts & Supply Disruptions"
+      - id: drinking_water
+        name: "Potable Water Access & Quality"
+      - id: drought
+        name: "Drought & Climate Stress"
+      - id: dam_capacity
+        name: "Dam Reserves & Filling Rates"
+      - id: groundwater_depletion
+        name: "Groundwater & Aquifer Depletion"
+      - id: water_quality
+        name: "Salinity & Water Contamination"
+      - id: sonede_infrastructure
+        name: "SONEDE Network Maintenance & Breakdowns"
     core_actors:
       - "SONEDE"
       - "Ministry of Agriculture, Hydraulic Resources and Maritime Fisheries"
+      - "ONAGRI"
       - "Presidency of the Republic"
-    tags: ["water", "drought", "dams", "sonede", "rationing", "salinity", "agriculture"]
+    tags: ["water", "drought", "dams", "sonede", "rationing", "salinity", "agriculture", "water_cuts"]
 
   - slug: electricity
     id: "02"
-    title: "Electricity: Outages, Network Load & Service Reliability"
+    title: "Electricity: Outages, Network Load & Grid Reliability"
     short_title: "Electricity"
-    category: "ENERGY SECURITY"
+    category: "ENERGY & INFRASTRUCTURE"
+    sub_issues:
+      - id: outage
+        name: "Power Outages & Blackouts"
+      - id: load_shedding
+        name: "Load Shedding & Peak Demand Management"
+      - id: generation
+        name: "Power Generation Capacity & Fuel Supply"
+      - id: grid
+        name: "Transmission Grid & Transformer Substations"
+      - id: electricity_prices
+        name: "STEG Tariffs & Billing"
+      - id: renewable_energy
+        name: "Solar, Wind & Transition Projects"
     core_actors:
       - "STEG"
       - "Ministry of Industry, Mines and Energy"
       - "Central Bank of Tunisia"
-    tags: ["electricity", "steg", "blackout", "gas_import", "peak_load", "substation"]
+    tags: ["electricity", "steg", "blackout", "load_shedding", "power_grid", "tariffs", "renewables"]
 
-  - slug: work
+  - slug: gas_energy
     id: "03"
-    title: "Work: Unemployment, Wages & Economic Pressure"
-    short_title: "Work"
-    category: "ECONOMIC STAGNATION"
+    title: "Gas & Energy: Supply, Fuel Crises & Energy Security"
+    short_title: "Gas & Energy"
+    category: "ENERGY & INFRASTRUCTURE"
+    sub_issues:
+      - id: natural_gas
+        name: "Natural Gas Pipeline & Supply"
+      - id: household_gas
+        name: "Bottled LPG & Household Shortages"
+      - id: fuel
+        name: "Fuel Stations & Petrol Deficits"
+      - id: energy_imports
+        name: "Algerian Gas Imports & Transit Royalty"
+      - id: energy_security
+        name: "Strategic Reserves & Energy Deficit"
+    core_actors:
+      - "ETAP"
+      - "STEG"
+      - "STIR"
+      - "Ministry of Industry, Mines and Energy"
+    tags: ["gas", "natural_gas", "lpg", "fuel", "energy_imports", "etap", "stir"]
+
+  - slug: food_security
+    id: "04"
+    title: "Food Security: Essential Commodity Shortages & Strategic Stocks"
+    short_title: "Food Security"
+    category: "BASIC NEEDS & LIVING STANDARDS"
+    sub_issues:
+      - id: food_shortage
+        name: "Shortages of Subsidized Basic Goods"
+      - id: cereals
+        name: "Wheat, Grain & Strategic Silos"
+      - id: bread
+        name: "Bakery Crises & Flour Distribution"
+      - id: milk
+        name: "Dairy Sector Production & Packaging"
+      - id: sugar
+        name: "Sugar Imports & OCT Distribution"
+      - id: cooking_oil
+        name: "Vegetable Oil Shortages"
+      - id: agricultural_supply
+        name: "Seed, Fertilizer & Feed Availability"
+    core_actors:
+      - "Office des Céréales"
+      - "Office du Commerce de la Tunisie (OCT)"
+      - "Ministry of Trade and Export Development"
+      - "Ministry of Agriculture"
+    tags: ["food_security", "bread", "cereals", "milk", "sugar", "cooking_oil", "subsidies", "grain"]
+
+  - slug: prices_cost_of_living
+    id: "05"
+    title: "Prices & Cost of Living: Inflation, Purchasing Power & Market Control"
+    short_title: "Cost of Living"
+    category: "BASIC NEEDS & LIVING STANDARDS"
+    sub_issues:
+      - id: inflation
+        name: "Consumer Price Index & Inflation Spikes"
+      - id: food_prices
+        name: "Fresh Produce & Meat Price Surges"
+      - id: fuel_prices
+        name: "Fuel Price Adjustments"
+      - id: purchasing_power
+        name: "Erosion of Household Purchasing Power"
+      - id: household_costs
+        name: "Schooling, Rent & Basic Utility Expenses"
+    core_actors:
+      - "INS"
+      - "Ministry of Trade"
+      - "Central Bank of Tunisia (BCT)"
+    tags: ["inflation", "cost_of_living", "purchasing_power", "prices", "ins", "market_control"]
+
+  - slug: work_unemployment
+    id: "06"
+    title: "Work & Unemployment: Joblessness, Labor Rights & Workplace Safety"
+    short_title: "Work & Unemployment"
+    category: "LABOR & ECONOMY"
+    sub_issues:
+      - id: unemployment
+        name: "Graduate & Regional Unemployment"
+      - id: layoffs
+        name: "Factory Closures & Mass Redundancies"
+      - id: strikes
+        name: "Sectoral & Regional Labor Strikes"
+      - id: wages
+        name: "Minimum Wage (SMIG) & Wage Stagnation"
+      - id: labor_rights
+        name: "Contract Precarity (Chantiers/Hadhayer)"
+      - id: informal_work
+        name: "Informal Labor Market Dynamics"
+      - id: workplace_safety
+        name: "Workplace Accidents & Occupational Safety"
     core_actors:
       - "Ministry of Social Affairs"
-      - "Ministry of Economy and Planning"
+      - "Ministry of Employment and Vocational Training"
       - "INS"
       - "UGTT"
-    tags: ["employment", "unemployment", "inflation", "wages", "smig", "informal_economy"]
+      - "UTICA"
+    tags: ["unemployment", "wages", "strikes", "smig", "hadhayer", "ugtt", "labor_rights"]
 
   - slug: migration
-    id: "04"
-    title: "Migration: Tunisians Leaving, African Migration & Border Policy"
+    id: "07"
+    title: "Migration: Mediterranean Crossings, Border Control & Migrant Rights"
     short_title: "Migration"
-    category: "HUMAN MOBILITY"
+    category: "HUMAN MOBILITY & BORDERS"
+    sub_issues:
+      - id: irregular_migration
+        name: "Tunisian Nationals Departing (Harga)"
+      - id: sea_crossings
+        name: "Maritime Departures & Interceptions"
+      - id: deaths_missing
+        name: "Shipwrecks, Drownings & Missing Persons"
+      - id: border_policy
+        name: "Land Border Control & Encampments"
+      - id: deportation
+        name: "Expulsions & Border Encampment Clearances"
+      - id: migrant_rights
+        name: "Rights of Sub-Saharan Migrants & Asylum Seekers"
+      - id: EU_tunisia
+        name: "EU-Tunisia Migration Agreements & Funding"
+      - id: return_policy
+        name: "Repatriation & Voluntary Return Operations"
     core_actors:
-      - "Ministry of Interior (National Guard)"
+      - "National Guard (Garde Nationale)"
+      - "Ministry of Interior"
       - "Ministry of Foreign Affairs"
-      - "European Commission"
       - "FTDES"
-    sub_files:
-      - id: "migration_tunisians"
-        name: "Tunisian Nationals Leaving"
-      - id: "migration_transit"
-        name: "Sub-Saharan Transit & Encampments"
-    tags: ["migration", "harqa", "mediterranean", "sfax", "el_amra", "national_guard", "unhcr"]
+      - "European Commission"
+      - "IOM / UNHCR"
+    tags: ["migration", "harqa", "naufrage", "garde_maritime", "el_amra", "jbeniana", "zarzis", "ftdes"]
 
-  - slug: public-services
-    id: "05"
-    title: "Public Services: Healthcare, Transport & Municipalities"
+  - slug: health
+    id: "08"
+    title: "Health: Medicine Shortages, Hospital Infrastructure & Public Health"
+    short_title: "Health"
+    category: "PUBLIC SYSTEMS & WELFARE"
+    sub_issues:
+      - id: medicine_shortage
+        name: "Drug & Vital Medication Stockouts"
+      - id: hospitals
+        name: "Public Hospital Infrastructure & Equipment"
+      - id: emergency_services
+        name: "SAMU & Emergency Ward Crisis"
+      - id: medical_staff
+        name: "Doctor Emigration & Staffing Deficits"
+      - id: public_health
+        name: "Epidemiological Trends & Chronic Illness Care"
+      - id: healthcare_access
+        name: "Regional Inequities & CNAM Coverage"
+    core_actors:
+      - "Ministry of Health"
+      - "Pharmacie Centrale de Tunisie (PCT)"
+      - "CNAM"
+      - "Syndicate of Pharmacists (CNOP/SPOT)"
+    tags: ["health", "hospitals", "pharmacie_centrale", "medicine_shortage", "cnam", "doctors"]
+
+  - slug: public_services
+    id: "09"
+    title: "Public Services: Public Transit, Sanitation, Municipalities & Admin"
     short_title: "Public Services"
-    category: "CIVIC INFRASTRUCTURE"
+    category: "PUBLIC SYSTEMS & WELFARE"
+    sub_issues:
+      - id: transport
+        name: "Buses, Metro & Trains (Transtu, SNCFT)"
+      - id: administration
+        name: "Administrative Bureaucracy & Public Records"
+      - id: sanitation
+        name: "Waste Collection & Sewage (ONAS)"
+      - id: municipal_services
+        name: "Municipal Special Delegations & Local Services"
+      - id: telecommunications
+        name: "Post Office & Public Telecom Networks"
     core_actors:
-      - "Ministry of Health (Pharmacie Centrale)"
       - "Ministry of Transport (Transtu / SNCFT)"
-      - "Ministry of Interior (Special Delegations)"
-    tags: ["health", "hospitals", "medicine", "transport", "transtu", "sncft", "waste_management"]
+      - "ONAS"
+      - "Ministry of Interior (Municipalities)"
+      - "La Poste Tunisienne"
+    tags: ["public_services", "transtu", "sncft", "transport", "onas", "waste", "municipalities"]
 
-  - slug: rights-institutions
-    id: "06"
-    title: "Rights & Institutions: Political Power, Freedoms & Accountability"
-    short_title: "Rights & Institutions"
-    category: "GOVERNANCE & ACCOUNTABILITY"
-    core_actors:
-      - "Presidency of the Republic (Carthage)"
-      - "Ministry of Justice"
-      - "ISIE"
-      - "SNJT"
-      - "ONAT (Bar Association)"
-    tags: ["decree_54", "judiciary", "press_freedom", "constitution_2022", "elections", "carthage"]
-
-  - slug: gabes
-    id: "GABÈS"
-    title: "Gabès: Industrial Phosphogypsum Pollution & Environmental Debt"
-    short_title: "Gabès Flagship"
-    category: "ENVIRONMENTAL INVESTIGATION"
+  - slug: pollution_environment
+    id: "10"
+    title: "Pollution & Environment: Industrial Waste, Chemical Rejects & Climate"
+    short_title: "Pollution & Environment"
+    category: "RESOURCE & ENVIRONMENT"
+    sub_issues:
+      - id: gabes
+        name: "Gabès Industrial Chemical Complex & Phosphogypsum"
+      - id: phosphate
+        name: "Gafsa Mining Basin Pollution & Waste Dumps"
+      - id: industrial_pollution
+        name: "Factory Emissions & Chemical Effluents"
+      - id: air_pollution
+        name: "Air Quality Degradation & Particulate Matter"
+      - id: water_pollution
+        name: "River & Groundwater Chemical Contamination"
+      - id: waste
+        name: "Landfills, Plastic Waste & Waste Management Crises"
+      - id: climate
+        name: "Extreme Heatwaves, Coastal Erosion & Wildfires"
+      - id: coastal_pollution
+        name: "Marine Dead Zones & Coastal Discharge"
     core_actors:
       - "Groupe Chimique Tunisien (GCT)"
+      - "Compagnie des Phosphates de Gafsa (CPG)"
       - "Ministry of Environment (ANPE)"
-      - "Ministry of Industry"
-      - "Presidency of the Republic"
-    tags: ["gabes", "phosphogypsum", "pollution", "gct", "marine_dead_zone", "chatt_essalam", "public_health"]
+      - "ANGED"
+    tags: ["pollution", "gabes", "phosphogypsum", "gct", "anpe", "gafsa", "environment", "climate"]
+
+  - slug: rights_freedoms
+    id: "11"
+    title: "Rights & Freedoms: Civil Liberties, Free Expression & Political Rights"
+    short_title: "Rights & Freedoms"
+    category: "RIGHTS, JUSTICE & GOVERNANCE"
+    sub_issues:
+      - id: freedom_of_expression
+        name: "Speech, Assembly & Digital Expression"
+      - id: political_rights
+        name: "Opposition Parties & Civic Engagement"
+      - id: civil_society
+        name: "NGO Regulations & Decree-Law 88 Scrutiny"
+      - id: digital_rights
+        name: "Online Surveillance & Digital Privacy"
+      - id: detention
+        name: "Arbitrary Detention & Political Prisoners"
+      - id: human_rights
+        name: "Anti-Torture, Dignity & Physical Integrity"
+    core_actors:
+      - "LTDH"
+      - "FTDES"
+      - "INPT (Anti-Torture Body)"
+      - "Ministry of Interior"
+      - "Ministry of Justice"
+    tags: ["rights", "freedoms", "civil_society", "freedom_of_expression", "ltdh", "detention"]
+
+  - slug: justice_law
+    id: "12"
+    title: "Justice & Law: Judicial Independence, Trials & Decree-Law 54"
+    short_title: "Justice & Law"
+    category: "RIGHTS, JUSTICE & GOVERNANCE"
+    sub_issues:
+      - id: decree_law_54
+        name: "Decree-Law 54 Invocations & Prosecutions"
+      - id: judiciary
+        name: "Judicial Independence & Judge Dismissals"
+      - id: trials
+        name: "High-Profile Political & Financial Trials"
+      - id: prosecution
+        name: "Public Prosecution Orders & Investigating Judges"
+      - id: detention
+        name: "Preventive Detention Warrants & Conditions"
+      - id: constitutional_law
+        name: "Constitutional Interpretation & Norms"
+      - id: legal_reform
+        name: "Penal Code, JORT & Statutory Revisions"
+    core_actors:
+      - "Ministry of Justice"
+      - "Supreme Judicial Council (CSM)"
+      - "Association of Tunisian Magistrates (AMT)"
+      - "ONAT (National Bar Association)"
+    tags: ["justice", "decree_54", "judiciary", "trials", "prosecution", "judges", "jort"]
+
+  - slug: media_press_freedom
+    id: "13"
+    title: "Media & Press Freedom: Journalist Prosecutions, Censorship & Media Law"
+    short_title: "Media & Press Freedom"
+    category: "RIGHTS, JUSTICE & GOVERNANCE"
+    sub_issues:
+      - id: journalist_arrest
+        name: "Arrests & Interrogations of Journalists"
+      - id: journalist_prosecution
+        name: "Trials & Sentences Against Media Professionals"
+      - id: censorship
+        name: "Editorial Interference & State Media Directives"
+      - id: press_freedom
+        name: "Access to Information & Field Obstacles"
+      - id: media_regulation
+        name: "HAICA & Public Broadcasting Oversight"
+    core_actors:
+      - "SNJT (Journalists Syndicate)"
+      - "HAICA"
+      - "Public Media (Télévision Tunisienne, Radio Tunisienne, TAP)"
+      - "Ministry of Interior"
+    tags: ["media", "press_freedom", "snjt", "journalists", "censorship", "haica", "decree_54"]
+
+  - slug: governance_institutions
+    id: "14"
+    title: "Governance & Institutions: Presidency, Executive Decisions & Constitution"
+    short_title: "Governance & Institutions"
+    category: "RIGHTS, JUSTICE & GOVERNANCE"
+    sub_issues:
+      - id: presidency
+        name: "Presidency of the Republic & Carthage Palace"
+      - id: executive_power
+        name: "Cabinet Reshuffles & Ministerial Directives"
+      - id: constitutional_system
+        name: "2022 Constitutional Architecture & Separation of Powers"
+      - id: appointments
+        name: "Governor, Diplomatic & High Senior Appointments"
+      - id: presidential_decrees
+        name: "Presidential Decrees & Executive Orders"
+      - id: government_policy
+        name: "State Strategies & Inter-Ministerial Councils"
+      - id: institutional_accountability
+        name: "Institutional Functioning & Check on Power"
+    core_actors:
+      - "Presidency of the Republic (Carthage)"
+      - "Presidency of the Government (Kasbah)"
+      - "Assembly of the Representatives of the People (ARP)"
+      - "ISIE"
+    tags: ["governance", "presidency", "carthage", "constitution_2022", "kais_saied", "executive", "arp"]
+
+  - slug: economy_public_finance
+    id: "15"
+    title: "Economy & Public Finance: Sovereign Debt, Budget, IMF & Currency"
+    short_title: "Economy & Public Finance"
+    category: "LABOR & ECONOMY"
+    sub_issues:
+      - id: inflation
+        name: "Macroeconomic Inflationary Pressures"
+      - id: growth
+        name: "GDP Growth & Industrial Output Dynamics"
+      - id: public_debt
+        name: "Sovereign Debt Servicing & External Borrowing"
+      - id: budget
+        name: "State Finance Law & Fiscal Deficits"
+      - id: IMF
+        name: "Multilateral Negotiations & External Support"
+      - id: foreign_reserves
+        name: "Foreign Currency Reserves & Dinar Valuation"
+      - id: trade
+        name: "Trade Balance & Current Account Deficit"
+      - id: public_enterprises
+        name: "Public Enterprise Debt & Financial Health"
+    core_actors:
+      - "Ministry of Finance"
+      - "Ministry of Economy and Planning"
+      - "Central Bank of Tunisia (BCT)"
+      - "INS"
+    tags: ["economy", "public_finance", "bct", "imf", "debt", "budget", "dinar", "growth"]
+
+  - slug: corruption_accountability
+    id: "16"
+    title: "Corruption & Accountability: Public Procurement, Audits & Misuse of Funds"
+    short_title: "Corruption & Accountability"
+    category: "RIGHTS, JUSTICE & GOVERNANCE"
+    sub_issues:
+      - id: corruption
+        name: "Financial & Administrative Corruption"
+      - id: procurement
+        name: "Public Procurement & Tendering Irregularities"
+      - id: misuse_of_public_funds
+        name: "Embezzlement & Mismanagement of State Assets"
+      - id: conflict_of_interest
+        name: "Illicit Enrichment & Nepotism"
+      - id: audit
+        name: "Court of Auditors (Cour des Comptes) Findings"
+      - id: state_accountability
+        name: "Official Investigations & Anti-Corruption Audits"
+    core_actors:
+      - "Cour des Comptes"
+      - "Financial Judicial Pole (Pôle Judiciaire Financier)"
+      - "Higher Committee of Administrative and Financial Control (HCCAF)"
+    tags: ["corruption", "accountability", "procurement", "cour_des_comptes", "audit", "public_funds"]
+
+  - slug: protests_social_movements
+    id: "17"
+    title: "Protests & Social Movements: Demonstrations, Sit-Ins & Civic Mobilization"
+    short_title: "Protests & Social Movements"
+    category: "CIVIC SPACE & SOCIETY"
+    sub_issues:
+      - id: demonstrations
+        name: "Street Protests & Public Marches"
+      - id: strikes
+        name: "General & Sectoral Strike Actions"
+      - id: sit_ins
+        name: "Sit-Ins & Resource Site Blockades"
+      - id: road_blocks
+        name: "Road Blocks & Regional Disruption"
+      - id: social_movements
+        name: "Spontaneous Local Grievances & Mobilizations"
+    core_actors:
+      - "FTDES (Social Movements Observatory)"
+      - "UGTT"
+      - "Local Coordination Committees"
+      - "Ministry of Interior"
+    tags: ["protests", "demonstrations", "sit_in", "social_movements", "ftdes", "mobilization"]
+
+  - slug: security_policing
+    id: "18"
+    title: "Security & Policing: Law Enforcement, Arrests, Prisons & Border Security"
+    short_title: "Security & Policing"
+    category: "SECURITY & JUSTICE"
+    sub_issues:
+      - id: policing
+        name: "Security Deployments & Police Operations"
+      - id: arrests
+        name: "Security Sweeps & Preventive Arrests"
+      - id: use_of_force
+        name: "Police Brutality & Custody Violations"
+      - id: prisons
+        name: "Penitentiary Overcrowding & Prisoner Rights"
+      - id: border_security
+        name: "Land and Sea Border Security Operations"
+    core_actors:
+      - "Ministry of Interior (National Police & National Guard)"
+      - "General Directorate of Prisons and Rehabilitation (DGPR)"
+      - "Ministry of National Defense"
+    tags: ["security", "policing", "police", "prisons", "arrests", "border_security", "dgpr"]
+
+  - slug: education
+    id: "19"
+    title: "Education: Schools, Universities, Teacher Strikes & Infrastructure"
+    short_title: "Education"
+    category: "PUBLIC SYSTEMS & WELFARE"
+    sub_issues:
+      - id: schools
+        name: "Primary & Secondary School Operation"
+      - id: universities
+        name: "Higher Education & Research Faculties"
+      - id: teachers
+        name: "Substitute Teachers & Union Strikes"
+      - id: infrastructure
+        name: "Classroom Maintenance & School Sanitation"
+      - id: student_services
+        name: "University Housing & Canteens (OOUN/OOS)"
+    core_actors:
+      - "Ministry of Education"
+      - "Ministry of Higher Education and Scientific Research"
+      - "Secondary Education Union (UGTT)"
+    tags: ["education", "schools", "teachers", "universities", "students", "ugtt_education"]
+
+  - slug: agriculture
+    id: "20"
+    title: "Agriculture: Drought Impact, Irrigation, Crops & Farming Viability"
+    short_title: "Agriculture"
+    category: "RESOURCE & ENVIRONMENT"
+    sub_issues:
+      - id: drought
+        name: "Agricultural Drought & Rainfall Deficit"
+      - id: irrigation
+        name: "Irrigation Quotas & Water Cuts to Farms"
+      - id: crops
+        name: "Cereal, Olive Oil & Citrus Yields"
+      - id: livestock
+        name: "Fodder Prices, Milk Production & Herds"
+      - id: agricultural_workers
+        name: "Rural Women & Agricultural Worker Transport Safety"
+    core_actors:
+      - "Ministry of Agriculture, Hydraulic Resources and Maritime Fisheries"
+      - "UTAP (Tunisian Union of Agriculture and Fisheries)"
+      - "ONAGRI"
+    tags: ["agriculture", "crops", "irrigation", "olive_oil", "livestock", "drought", "utap"]
+
+  - slug: housing_infrastructure
+    id: "21"
+    title: "Housing & Infrastructure: Roads, Public Works & Structural Failures"
+    short_title: "Housing & Infrastructure"
+    category: "ENERGY & INFRASTRUCTURE"
+    sub_issues:
+      - id: roads
+        name: "Road Network Degradation & Highway Maintenance"
+      - id: housing
+        name: "Social Housing & Construction Regulations"
+      - id: public_works
+        name: "Bridges, Drainage & Strategic Works"
+      - id: infrastructure_failure
+        name: "Building Collapses & Flooding Vulnerabilities"
+    core_actors:
+      - "Ministry of Equipment and Housing"
+      - "Municipalities"
+      - "Civil Protection (Protection Civile)"
+    tags: ["infrastructure", "roads", "housing", "public_works", "equipment", "flooding"]

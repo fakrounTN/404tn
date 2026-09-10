@@ -21,7 +21,9 @@ class EvidenceItemSchema(BaseModel):
     source_name: str
     source_domain: str
     source_type: str
+    source_tier: Optional[str] = "TIER_2"
     source_url: str
+    canonical_url: Optional[str] = None
     source_language: str = "en"
     source_confidence: float = 0.9
     evidence_confidence: float = 0.9
@@ -34,9 +36,22 @@ class EvidenceItemSchema(BaseModel):
     outcome: Optional[str] = None
     tags: Optional[List[str]] = []
     secondary_topics: Optional[List[str]] = []
+    secondary_issues: Optional[List[str]] = []
+    topics: Optional[List[str]] = []
+    entities: Optional[List[str]] = []
     classification_confidence: float = 0.9
     classification_reason: Optional[str] = None
     ingestion_status: str = "AUTO_ACCEPTED"
+    location_scope: Optional[str] = "UNRESOLVED"
+    governorate: Optional[str] = None
+    delegation: Optional[str] = None
+    locality: Optional[str] = None
+    location_confidence: Optional[float] = 0.0
+    location_method: Optional[str] = "UNRESOLVED"
+    discovery_provider: Optional[str] = None
+    discovery_query: Optional[str] = None
+    discovery_url: Optional[str] = None
+    discovered_at: Optional[str] = None
     freshness: Optional[str] = None
 
 class GovernorateStatsSchema(BaseModel):

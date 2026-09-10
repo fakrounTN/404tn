@@ -530,24 +530,32 @@ GOVERNORATE_DEFINITIONS = [
     }
 ]
 
-# Substantive national indicators that establish countrywide scope.
-# Note: Mentioning Tunisia, a ministry, or an institution alone is NOT sufficient.
+# Substantive national indicators that establish countrywide subject scope.
+# Note: Mentioning Tunisia or an institution name alone is NOT sufficient.
 NATIONAL_PATTERNS = [
-    # 1. Explicit nationwide scale phrases
-    r"\b(a\s+l['’]echelle\s+nationale|sur\s+tout\s+le\s+territoire|sur\s+l['’]ensemble\s+du\s+territoire|territoire\s+national|countrywide|nationwide|dans\s+tout\s+le\s+pays|a\s+travers\s+le\s+pays)\b",
-    r"\b(على\s+المستوى\s+الوطني|على\s+نطاق\s+وطني|على\s+كامل\s+التراب|التراب\s+الوطني|كامل\s+تراب\s+الجمهورية|في\s+كامل\s+البلاد|على\s+نطاق\s+البلاد)\b",
+    # 1. Explicit nationwide spatial / population scale phrases
+    r"\b(a\s+l['’]echelle\s+nationale|sur\s+tout\s+le\s+territoire|sur\s+l['’]ensemble\s+du\s+territoire|territoire\s+national|countrywide|nationwide|dans\s+tout\s+le\s+pays|a\s+travers\s+le\s+pays|dans\s+l['’]ensemble\s+du\s+pays)\b",
+    r"\b(على\s+المستوى\s+الوطني|على\s+نطاق\s+وطني|على\s+كامل\s+التراب|التراب\s+الوطني|كامل\s+تراب\s+الجمهورية|في\s+كامل\s+البلاد|على\s+نطاق\s+البلاد|في\s+كافة\s+انحاء\s+البلاد|في\s+كافة\s+انحاء\s+الجمهورية)\b",
 
-    # 2. National strategies, plans, policies, legislation, decrees
-    r"\b(strategie\s+nationale|plan\s+national|politique\s+nationale|programme\s+national|campagne\s+nationale|decret\s+presidentiel|decret\s+gouvernemental|journal\s+officiel|jort|accord\s+cadre\s+national|convention\s+collective\s+nationale)\b",
-    r"\b(الاستراتيجية\s+الوطنية|استراتيجية\s+وطنية|المخطط\s+الوطني|الخطة\s+الوطنية|السياسة\s+الوطنية|برنامج\s+وطني|البرنامج\s+الوطني|حملة\s+وطنية|الرائد\s+الرسمي|مرسوم\s+رئاسي|امر\s+رئاسي|اتفاق\s+اطاري\s+وطني)\b",
+    # 2. National strategies, plans, policies, programs, campaigns, framework agreements
+    r"\b(strategie\s+nationale|plan\s+national|politique\s+nationale|programme\s+national|campagne\s+nationale|reforme\s+nationale|accord\s+cadre\s+national|convention\s+collective\s+nationale|securite\s+alimentaire\s+nationale|souverainete\s+alimentaire)\b",
+    r"\b(الاستراتيجية\s+الوطنية|استراتيجية\s+وطنية|المخطط\s+الوطني|الخطة\s+الوطنية|السياسة\s+الوطنية|برنامج\s+وطني|البرنامج\s+الوطني|حملة\s+وطنية|اصلاح\s+وطني|اتفاق\s+اطاري\s+وطني|الامن\s+الغذائي\s+الوطني|السيادة\s+الغذائية)\b",
 
-    # 3. National aggregates, statistics, inventories, balance sheets, networks
-    r"\b(bilan\s+national|taux\s+national|moyenne\s+nationale|production\s+nationale|consommation\s+nationale|capacite\s+nationale|reserves?\s+nationales?|barrages\s+nationaux|barrages\s+tunisiens|reseau\s+national|indices?\s+nationa(?:l|ux)|statistiques?\s+nationales?|enquete\s+nationale|rapport\s+national|chomage\s+national|emploi\s+national|recolte\s+nationale|pluviometrie\s+nationale)\b",
-    r"\b(الحصيلة\s+الوطنية|التقرير\s+الوطني|المعدل\s+الوطني|النسبة\s+الوطنية|الإنتاج\s+الوطني|الانتاج\s+الوطني|الاستهلاك\s+الوطني|مخزون\s+السدود|سدود\s+تونس|الشبكة\s+الوطنية|مؤشرات\s+وطنية|المؤشر\s+الوطني|احصائيات\s+وطنية|مسح\s+وطني|البطالة\s+الوطنية|المحصول\s+الوطني)\b",
+    # 3. National constitutional, legal, judicial & statutory governance framework
+    r"\b(constitution\s+de\s+2022|vacance\s+du\s+pouvoir|cour\s+constitutionnelle|code\s+electoral|loi\s+de\s+finances|journal\s+officiel|jort|decret\s+presidentiel|decret\s+gouvernemental|ordonnance\s+presidentielle)\b",
+    r"\b(دستور\s+2022|شغور\s+منصب|المحكمة\s+الدستورية|القانون\s+الانتخابي|قانون\s+المالية|الرائد\s+الرسمي|مرسوم\s+رئاسي|امر\s+رئاسي|مرسوم\s+بقانون)\b",
 
-    # 4. Qualified substantive national topics
-    r"\b(secteur\s+national|economie\s+nationale|croissance\s+nationale|inflation\s+nationale|greve\s+generale\s+nationale|deuil\s+national|urgence\s+nationale)\b",
-    r"\b(القطاع\s+الوطني|الاقتصاد\s+الوطني|النمو\s+الوطني|التضخم\s+الوطني|اضراب\s+عام\s+وطني|حداد\s+وطني|طوارئ\s+وطنية)\b"
+    # 4. Country-level statistical aggregates, surveys, demographic & macroeconomic indicators
+    r"\b(indicateurs?\s+(?:de\s+l['’]emploi|du\s+chomage|economiques?|nationa(?:l|ux))|taux\s+(?:de\s+chomage|d['’]inflation|de\s+croissance|d['’]emploi)|bilan\s+national|rapport\s+national|enquete\s+nationale|recensement\s+general|basculement\s+demographique|demographie\s+de\s+la\s+tunisie|produit\s+interieur\s+brut|indices?\s+des\s+prix|production\s+industrielle\s+en\s+tunisie|croissance\s+economique|conjoncture\s+nationale)\b",
+    r"\b(مؤشرات\s+(?:التشغيل|البطالة|الاقتصاد|الوطنية)|معدل\s+(?:البطالة|التضخم|النمو)|نسبة\s+(?:البطالة|التضخم|النمو)|الحصيلة\s+الوطنية|التقرير\s+الوطني|مسح\s+وطني|التعداد\s+العام|التحول\s+الديمغرافي|الناتج\s+المحلي|مؤشر\s+اسعار\s+الاستهلاك|الانتاج\s+الصناعي|النمو\s+الاقتصادي)\b",
+
+    # 5. Systemic countrywide infrastructure, utilities & institutional system analysis ("en chiffres", nationwide grids/systems)
+    r"\b(crise\s+de\s+l['’]electricite\s+en\s+chiffres|reseau\s+electrique\s+national|production\s+nationale\s+d['’]electricite|capacite\s+nationale|reserves?\s+nationales?|barrages\s+nationaux|barrages\s+tunisiens|etat\s+d['’]urgence\s+hydrique|urgence\s+hydrique|les\s+prisons\s+tunisiennes|prisons\s+en\s+tunisie|systeme\s+carceral\s+tunisien|hopitaux\s+publics\s+en\s+tunisie|systeme\s+de\s+sante\s+en\s+tunisie|systeme\s+educatif\s+en\s+tunisie)\b",
+    r"\b(ازمة\s+الكهرباء\s+بالارقام|الشبكة\s+الوطنية\s+للكهرباء|الانتاج\s+الوطني\s+للكهرباء|مخزون\s+السدود|سدود\s+تونس|حالة\s+الطوارئ\s+المائية|طوارئ\s+مائية|السجون\s+التونسية|السجون\s+في\s+تونس|المنظومة\s+السجنية|المستشفيات\s+العمومية\s+في\s+تونس|المنظومة\s+الصحية|المنظومة\s+التربوية)\b",
+
+    # 6. Qualified substantive national sector/macro topics
+    r"\b(secteur\s+national|economie\s+nationale|greve\s+generale\s+nationale|deuil\s+national|urgence\s+nationale|production\s+nationale|consommation\s+nationale)\b",
+    r"\b(القطاع\s+الوطني|الاقتصاد\s+الوطني|اضراب\s+عام\s+وطني|حداد\s+وطني|طوارئ\s+وطنية|الإنتاج\s+الوطني|الانتاج\s+الوطني|الاستهلاك\s+الوطني)\b"
 ]
 
 def normalize_text(text: str) -> str:
@@ -591,7 +599,7 @@ def resolve_location_advanced(
     Authoritative 24-governorate location extraction engine.
     
     Priority:
-    1. Explicit locality / delegation match -> LOCAL (0.95 confidence)
+    1. Explicit locality / delegation match -> LOCAL (0.95 confidence) or MULTI_LOCALITY_SAME_GOVERNORATE (0.85 confidence)
     2. Governorate-level match -> GOVERNORATE (0.90 confidence)
     3. Multiple distinct governorates matched -> MULTI_GOVERNORATE (0.75 confidence, no fake coords)
     4. National scope match -> NATIONAL (0.90 confidence, no fake coords)
@@ -652,8 +660,9 @@ def resolve_location_advanced(
                         "evidence_context": ctx
                     })
                     matched_governorates.add(gov_slug)
-                    gov_matched_phrases[gov_slug] = m.group(0)
-                    gov_matched_contexts[gov_slug] = ctx
+                    if gov_slug not in gov_matched_phrases:
+                        gov_matched_phrases[gov_slug] = m.group(0)
+                        gov_matched_contexts[gov_slug] = ctx
                     break
 
         # 2. Check governorate patterns
@@ -672,15 +681,14 @@ def resolve_location_advanced(
                     gov_matched_contexts[gov_slug] = ctx
                 break
 
-    # PRIORITY 1: Exactly one delegation / explicit locality matched
+    # PRIORITY 1: Check matched delegations / explicit localities
     if matched_delegations:
-        # If one delegation in lead, prefer it
-        lead_deleg = [d for d in matched_delegations if d["in_lead"]]
-        chosen = lead_deleg[0] if len(lead_deleg) == 1 else matched_delegations[0]
-        
-        # Check if all matched delegations belong to the same governorate
+        distinct_deleg_names = {d["delegation_name"] for d in matched_delegations}
         gov_slugs_in_delegs = {d["gov_slug"] for d in matched_delegations}
-        if len(gov_slugs_in_delegs) == 1:
+
+        # Case 1A: Exactly ONE unique delegation matched
+        if len(distinct_deleg_names) == 1 and len(gov_slugs_in_delegs) == 1:
+            chosen = matched_delegations[0]
             gov_slug = chosen["gov_slug"]
             gov_name = chosen["gov_name"]
             lat, lon = chosen["coords"]
@@ -698,9 +706,34 @@ def resolve_location_advanced(
                 matched_phrase=chosen["matched_phrase"],
                 evidence_context=chosen["evidence_context"]
             )
-        elif len(gov_slugs_in_delegs) > 1:
-            # Multiple governorates mentioned via delegations
+
+        # Case 1B: >= 2 distinct delegations inside the SAME governorate
+        elif len(distinct_deleg_names) >= 2 and len(gov_slugs_in_delegs) == 1:
+            gov_slug = list(gov_slugs_in_delegs)[0]
+            gov_def = gov_meta_map[gov_slug]
+            gov_name = gov_def["governorate"]
+            lat, lon = gov_def["centroid"]
             all_phrases = [d["matched_phrase"] for d in matched_delegations]
+            deleg_list_str = ", ".join(sorted(distinct_deleg_names))
+            return ResolvedLocation(
+                canonical_name=gov_name,
+                scope="GOVERNORATE",
+                governorate=gov_name,
+                delegation=None,
+                locality=None,
+                latitude=lat,
+                longitude=lon,
+                location_confidence=0.85,
+                location_method="MULTI_LOCALITY_SAME_GOVERNORATE",
+                reason=f"Multiple delegations ({deleg_list_str}) within governorate {gov_name}",
+                matched_phrase=", ".join(all_phrases),
+                evidence_context=matched_delegations[0]["evidence_context"]
+            )
+
+        # Case 1C: Multiple delegations across DIFFERENT governorates
+        elif len(gov_slugs_in_delegs) > 1:
+            all_phrases = [d["matched_phrase"] for d in matched_delegations]
+            gov_names = [gov_meta_map[s]["governorate"] for s in gov_slugs_in_delegs]
             return ResolvedLocation(
                 canonical_name="Multi-Governorate",
                 scope="MULTI_GOVERNORATE",
@@ -711,9 +744,9 @@ def resolve_location_advanced(
                 longitude=None,
                 location_confidence=0.75,
                 location_method="MULTI_GOVERNORATE",
-                reason=f"Multiple delegations across governorates: {', '.join(gov_slugs_in_delegs)}",
+                reason=f"Multiple delegations across governorates: {', '.join(gov_names)}",
                 matched_phrase=", ".join(all_phrases),
-                evidence_context=chosen["evidence_context"]
+                evidence_context=matched_delegations[0]["evidence_context"]
             )
 
     # PRIORITY 2: Exactly one governorate matched
