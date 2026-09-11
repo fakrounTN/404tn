@@ -631,7 +631,23 @@ export const keyStatistic = renderKeyStat;
 export const pullQuote = renderAttributedQuote;
 export const stateResponseBlock = renderStateCommitmentBlock;
 
-export function classificationBadge(classification) {
+export function classificationBadge(classification, isPaper = false) {
+  if (isPaper) {
+    if (classification === 'FACT') {
+      return `<span class="stamp-badge stamp-paper-fact">FACT</span>`;
+    }
+    if (classification === 'CLAIM' || classification === 'CLAIM · ATTRIBUTED') {
+      return `<span class="stamp-badge stamp-paper-claim" title="Attributed statement or allegation">CLAIM · ATTRIBUTED</span>`;
+    }
+    if (classification === 'ANALYSIS') {
+      return `<span class="stamp-badge stamp-paper-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
+    }
+    if (classification === 'DATA_GAP' || classification === 'DATA GAP') {
+      return `<span class="stamp-badge stamp-paper-datagap">DATA GAP</span>`;
+    }
+    return `<span class="stamp-badge bg-surface-200 text-paper-main border-paper">${escapeHtml(classification)}</span>`;
+  }
+
   if (classification === 'FACT') {
     return `<span class="stamp-badge stamp-fact">FACT</span>`;
   }
@@ -641,21 +657,46 @@ export function classificationBadge(classification) {
   if (classification === 'ANALYSIS') {
     return `<span class="stamp-badge stamp-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
   }
+  if (classification === 'DATA_GAP' || classification === 'DATA GAP') {
+    return `<span class="stamp-badge stamp-datagap">DATA GAP</span>`;
+  }
   return `<span class="stamp-badge bg-surface-800 text-surface-400 border-surface-700">${escapeHtml(classification)}</span>`;
 }
 
-export function sourceReference(src) {
+export function documentaryFigure({ src = '', alt = '', caption = '', source = '', figureNumber = '' }) {
   if (!src) return '';
   return `
-    <div class="source-slip flex flex-wrap items-center justify-between gap-2">
+    <figure class="documentary-figure">
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt || caption)}" class="w-full h-auto object-cover document-facsimile" loading="lazy">
+      ${caption || source || figureNumber ? `
+        <figcaption class="mt-2">
+          ${figureNumber ? `<span class="figure-number">FIG. ${escapeHtml(figureNumber)}</span>` : ''}
+          ${caption ? `<span class="figure-caption">${escapeHtml(caption)}</span>` : ''}
+          ${source ? `<div class="figure-source">SOURCE: ${escapeHtml(source)}</div>` : ''}
+        </figcaption>
+      ` : ''}
+    </figure>
+  `;
+}
+
+export function sourceReference(src, isPaper = false) {
+  if (!src) return '';
+  const textClass = isPaper ? 'text-paper-muted' : 'text-surface-400';
+  const orgClass = isPaper ? 'text-paper-main font-bold' : 'text-bone-100 font-medium';
+  const titleClass = isPaper ? 'text-paper-main italic' : 'text-surface-300 italic';
+  const borderClass = isPaper ? 'border-paper' : 'border-surface-800';
+  const linkClass = isPaper ? 'text-paper-red hover:underline font-bold' : 'text-sand hover:underline font-bold';
+
+  return `
+    <div class="source-slip pt-2 mt-2 border-t ${borderClass} flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono ${textClass}">
       <div>
-        <span class="text-surface-500 uppercase">SOURCE:</span>
-        <span class="text-bone-100 font-medium ml-1">${escapeHtml(src.organization || src.publisher || '')}</span>
-        ${src.title ? `<span class="text-surface-500"> — </span><span class="text-surface-300 italic">"${escapeHtml(src.title)}"</span>` : ''}
-        ${src.date ? `<span class="text-surface-500">(${escapeHtml(src.date)})</span>` : ''}
+        <span class="${isPaper ? 'text-paper-dim' : 'text-surface-500'} uppercase">SOURCE:</span>
+        <span class="${orgClass} ml-1">${escapeHtml(src.organization || src.publisher || '')}</span>
+        ${src.title ? `<span class="${isPaper ? 'text-paper-dim' : 'text-surface-500'}"> — </span><span class="${titleClass}">"${escapeHtml(src.title)}"</span>` : ''}
+        ${src.date ? `<span class="${isPaper ? 'text-paper-dim' : 'text-surface-500'}">(${escapeHtml(src.date)})</span>` : ''}
       </div>
       <div>
-        ${src.url ? `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer" class="text-sand hover:underline font-bold">Document Link ↗</a>` : ''}
+        ${src.url ? `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer" class="${linkClass}">Document Link ↗</a>` : ''}
       </div>
     </div>
   `;

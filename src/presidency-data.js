@@ -44,40 +44,43 @@ function resolveInstitutionName(institutionId) {
 }
 
 /**
- * Renders classification badge with restrained editorial styling.
+ * Renders classification badge with restrained paper editorial styling.
  */
 function renderClassificationBadge(classification) {
   if (classification === EPISTEMIC_CLASSIFICATION.FACT) {
-    return `<span class="stamp-badge stamp-fact">FACT</span>`;
+    return `<span class="stamp-badge stamp-paper-fact">FACT</span>`;
   }
   if (classification === EPISTEMIC_CLASSIFICATION.CLAIM) {
-    return `<span class="stamp-badge stamp-claim" title="Attributed statement or allegation not independently established as fact">CLAIM · ATTRIBUTED</span>`;
+    return `<span class="stamp-badge stamp-paper-claim" title="Attributed statement or allegation not independently established as fact">CLAIM · ATTRIBUTED</span>`;
   }
   if (classification === EPISTEMIC_CLASSIFICATION.ANALYSIS) {
-    return `<span class="stamp-badge stamp-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
+    return `<span class="stamp-badge stamp-paper-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
   }
-  return `<span class="stamp-badge bg-surface-800 text-surface-400 border-surface-700">${escapeHtml(classification)}</span>`;
+  if (classification === 'DATA_GAP' || classification === 'DATA GAP') {
+    return `<span class="stamp-badge stamp-paper-datagap">DATA GAP</span>`;
+  }
+  return `<span class="stamp-badge bg-surface-200 text-paper-main border-paper">${escapeHtml(classification)}</span>`;
 }
 
 /**
- * Renders a canonical status badge.
+ * Renders a canonical status badge on paper.
  */
 function renderStatusBadge(status, highlight = false) {
   if (!status) return '';
   const s = String(status).replace(/_/g, ' ');
-  let colorClass = 'bg-surface-900 text-surface-400 border-surface-800';
-  if (status === 'UNEXECUTED' || status === 'UNRESOLVED' || status === 'NOT_PUBLISHED' || status === 'INACCESSIBLE') {
-    colorClass = 'bg-crimson/15 text-crimson border-crimson/40 font-semibold';
-  } else if (status === 'ENACTED' || status === 'CONFIRMED' || status === 'VERIFIED') {
-    colorClass = 'bg-emerald-950/40 text-emerald-300 border-emerald-800/40 font-semibold';
+  let colorClass = 'bg-[#F2EFE9] text-paper-muted border-paper';
+  if (status === 'UNEXECUTED' || status === 'UNRESOLVED' || status === 'NOT_PUBLISHED' || status === 'INACCESSIBLE' || status === 'BROKEN' || status === 'SUBVERTED') {
+    colorClass = 'bg-red-50 text-red-700 border-red-200 font-semibold';
+  } else if (status === 'ENACTED' || status === 'CONFIRMED' || status === 'VERIFIED' || status === 'FULFILLED') {
+    colorClass = 'bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold';
   } else if (status === 'DISPUTED' || status === 'CONTESTED' || status === 'PARTIAL' || status === 'PRELIMINARY') {
-    colorClass = 'bg-sand/15 text-sand border-sand/40 font-semibold';
+    colorClass = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
   }
   return `<span class="text-[9px] font-mono uppercase px-2 py-0.5 border ${colorClass}">${escapeHtml(s)}</span>`;
 }
 
 /**
- * Renders responsible institutions for a record.
+ * Renders responsible institutions for a record on paper.
  */
 function renderResponsibilityList(recordId) {
   const rsps = getResponsibilityForRecord(recordId, RESPONSIBILITY_RECORDS, INSTITUTIONS_REGISTRY);
@@ -86,21 +89,21 @@ function renderResponsibilityList(recordId) {
   const entries = rsps.map(r => {
     const instName = r.institution ? `${r.institution.name} (${r.institution.short_name})` : r.institution_id;
     const typeLabel = (r.responsibility_type || '').replace(/_/g, ' ');
-    const basis = r.legal_or_administrative_basis ? ` · <span class="text-surface-400 font-light">${escapeHtml(r.legal_or_administrative_basis)}</span>` : '';
+    const basis = r.legal_or_administrative_basis ? ` · <span class="text-paper-muted font-light">${escapeHtml(r.legal_or_administrative_basis)}</span>` : '';
     return `
       <div class="text-xs font-mono">
-        <span class="text-sand font-bold">${escapeHtml(instName)}</span>
-        <span class="text-surface-500"> — </span>
-        <span class="text-bone-100 font-medium uppercase text-[10px]">${escapeHtml(typeLabel)}</span>
+        <span class="text-paper-sand font-bold">${escapeHtml(instName)}</span>
+        <span class="text-paper-dim"> — </span>
+        <span class="text-paper-main font-semibold uppercase text-[10px]">${escapeHtml(typeLabel)}</span>
         ${basis}
       </div>
     `;
   }).join('');
 
   return `
-    <div class="p-3 bg-surface-900/50 border border-surface-800 space-y-1.5 mt-3">
-      <span class="text-[9px] font-mono uppercase tracking-meta text-surface-400 block font-bold">INSTITUTIONAL RESPONSIBILITY</span>
-      <div class="space-y-1">
+    <div class="pt-2 mt-2 border-t border-paper text-xs font-mono space-y-1">
+      <span class="text-[9px] font-mono uppercase tracking-meta text-paper-dim block font-bold">INSTITUTIONAL RESPONSIBILITY</span>
+      <div class="space-y-0.5">
         ${entries}
       </div>
     </div>
@@ -108,25 +111,25 @@ function renderResponsibilityList(recordId) {
 }
 
 /**
- * Renders primary source provenance footer for a record.
+ * Renders primary source provenance footnote for a record on paper.
  */
 function renderSourceSlip(sourceIds) {
   if (!Array.isArray(sourceIds) || sourceIds.length === 0) return '';
   const slips = sourceIds.map(sid => {
     const s = resolveSource(sid);
-    if (!s) return `<span class="text-surface-400 font-mono text-[10px]">SRC: ${escapeHtml(sid)}</span>`;
-    const urlHtml = s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="text-sand hover:underline ml-1.5 font-bold">Document Link ↗</a>` : '';
+    if (!s) return `<span class="text-paper-dim font-mono text-[10px]">[SRC: ${escapeHtml(sid)}]</span>`;
+    const urlHtml = s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="text-paper-red hover:underline ml-1.5 font-bold">Document Link ↗</a>` : '';
     return `
-      <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-surface-400">
+      <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-paper-muted">
         <div>
-          <span class="text-surface-500 uppercase">SOURCE:</span>
-          <span class="text-bone-100 font-medium ml-1">${escapeHtml(s.organization)}</span>
-          <span class="text-surface-500"> — </span>
-          <span class="text-surface-300 italic">"${escapeHtml(s.title)}"</span>
-          <span class="text-surface-500">(${escapeHtml(s.publication_date || s.reference_period || '')})</span>
+          <span class="text-paper-dim uppercase font-bold">[SRC]</span>
+          <span class="text-paper-main font-bold ml-1">${escapeHtml(s.organization)}</span>
+          <span class="text-paper-dim"> — </span>
+          <span class="text-paper-main italic">"${escapeHtml(s.title)}"</span>
+          <span class="text-paper-dim">(${escapeHtml(s.publication_date || s.reference_period || '')})</span>
         </div>
         <div>
-          <span class="px-1.5 py-0.2 bg-surface-900 border border-surface-800 text-surface-400 uppercase text-[9px]">${escapeHtml(s.source_type)}</span>
+          <span class="px-1.5 py-0.5 bg-[#F2EFE9] border border-paper text-paper-muted uppercase text-[9px]">${escapeHtml(s.source_type)}</span>
           ${urlHtml}
         </div>
       </div>
@@ -134,17 +137,17 @@ function renderSourceSlip(sourceIds) {
   }).join('');
 
   return `
-    <div class="pt-2.5 mt-3 border-t border-surface-800/80 space-y-1.5">
+    <div class="pt-2 mt-2 border-t border-paper space-y-1">
       ${slips}
     </div>
   `;
 }
 
 /**
- * Renders a primary chronology record row/card.
+ * Renders a primary chronology record row/entry on paper (open broadsheet item, NO enclosing card rectangle).
  */
 function renderChronologyItem(rec) {
-  const typeBadge = `<span class="stamp-badge bg-surface-900 border-surface-700 text-surface-300 font-semibold uppercase">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
+  const typeBadge = `<span class="stamp-badge bg-[#F2EFE9] border-paper text-paper-muted font-semibold uppercase">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
   const classBadge = renderClassificationBadge(rec.classification);
   const statusBadge = rec.status ? renderStatusBadge(rec.status) : '';
   const dateStr = rec.date_start ? (rec.date_start.length === 10 ? rec.date_start : rec.date_start) : '2019–2026';
@@ -154,30 +157,30 @@ function renderChronologyItem(rec) {
   // LAW Metadata
   if (rec.record_type === RECORD_TYPES.LAW) {
     specificDetailsHtml = `
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 pt-2 border-t border-paper text-xs font-sans">
         ${rec.stated_purpose ? `
-          <div class="p-3 bg-surface-900/50 border border-surface-800 space-y-1">
-            <span class="text-[9px] font-mono text-sand uppercase font-bold block">STATED LEGISLATIVE PURPOSE</span>
-            <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(rec.stated_purpose)}</p>
+          <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+            <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">STATED LEGISLATIVE PURPOSE</span>
+            <p class="text-paper-main font-light leading-relaxed">${escapeHtml(rec.stated_purpose)}</p>
           </div>
         ` : ''}
         ${rec.documented_effect ? `
-          <div class="p-3 bg-surface-900/50 border border-surface-800 space-y-1">
-            <span class="text-[9px] font-mono text-crimson uppercase font-bold block">DOCUMENTED INSTITUTIONAL EFFECT</span>
-            <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(rec.documented_effect)}</p>
+          <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+            <span class="text-[9px] font-mono text-paper-red uppercase font-bold block">DOCUMENTED INSTITUTIONAL EFFECT</span>
+            <p class="text-paper-main font-light leading-relaxed">${escapeHtml(rec.documented_effect)}</p>
           </div>
         ` : ''}
       </div>
       ${rec.legal_challenges ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-background border border-surface-800">
-          <span class="text-[9px] font-mono text-sand uppercase font-bold block">LEGAL CHALLENGES &amp; OBJECTIONS</span>
-          <p class="text-surface-400 font-light mt-0.5">${escapeHtml(rec.legal_challenges)}</p>
+        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">LEGAL CHALLENGES &amp; OBJECTIONS</span>
+          <p class="text-paper-muted font-light mt-0.5">${escapeHtml(rec.legal_challenges)}</p>
         </div>
       ` : ''}
       ${rec.jort_reference ? `
-        <div class="text-[10px] font-mono text-surface-400 mt-2">
-          GAZETTE: <span class="text-bone-100 font-medium">${escapeHtml(rec.jort_reference)}</span>
-          ${rec.relevant_articles ? ` · Articles: <span class="text-surface-300">${escapeHtml(rec.relevant_articles.join(', '))}</span>` : ''}
+        <div class="text-[10px] font-mono text-paper-muted mt-2">
+          GAZETTE: <span class="text-paper-main font-bold">${escapeHtml(rec.jort_reference)}</span>
+          ${rec.relevant_articles ? ` · Articles: <span class="text-paper-main font-medium">${escapeHtml(rec.relevant_articles.join(', '))}</span>` : ''}
         </div>
       ` : ''}
     `;
@@ -187,20 +190,20 @@ function renderChronologyItem(rec) {
   else if (rec.record_type === RECORD_TYPES.DECISION) {
     specificDetailsHtml = `
       ${rec.stated_reason ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-surface-900/50 border border-surface-800">
-          <span class="text-[9px] font-mono text-sand uppercase font-bold block">STATED ADMINISTRATIVE REASON</span>
-          <p class="text-surface-300 font-light mt-0.5">${escapeHtml(rec.stated_reason)}</p>
+        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">STATED ADMINISTRATIVE REASON</span>
+          <p class="text-paper-main font-light mt-0.5">${escapeHtml(rec.stated_reason)}</p>
         </div>
       ` : ''}
       ${rec.contested_interpretations ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-background border border-surface-800">
-          <span class="text-[9px] font-mono text-crimson uppercase font-bold block">CONTESTED INTERPRETATION &amp; COURT INJUNCTIONS</span>
-          <p class="text-surface-300 font-light mt-0.5">${escapeHtml(rec.contested_interpretations)}</p>
+        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono text-paper-red uppercase font-bold block">CONTESTED INTERPRETATION &amp; COURT INJUNCTIONS</span>
+          <p class="text-paper-main font-light mt-0.5">${escapeHtml(rec.contested_interpretations)}</p>
         </div>
       ` : ''}
       ${rec.legal_basis ? `
-        <div class="text-[10px] font-mono text-surface-400 mt-2">
-          LEGAL BASIS: <span class="text-bone-100 font-medium">${escapeHtml(rec.legal_basis)}</span>
+        <div class="text-[10px] font-mono text-paper-muted mt-2">
+          LEGAL BASIS: <span class="text-paper-main font-bold">${escapeHtml(rec.legal_basis)}</span>
         </div>
       ` : ''}
     `;
@@ -209,25 +212,25 @@ function renderChronologyItem(rec) {
   // INDICATOR Metadata
   else if (rec.record_type === RECORD_TYPES.INDICATOR) {
     specificDetailsHtml = `
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
-        <div class="p-3 bg-surface-900/60 border border-surface-800 text-center">
-          <span class="text-[9px] font-mono uppercase text-surface-400 block">RECORDED VALUE</span>
-          <span class="text-2xl font-editorial font-bold text-crimson block my-1">${escapeHtml(rec.value)}</span>
-          <span class="text-[9px] font-mono text-surface-400">${escapeHtml(rec.unit || '')}</span>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 pt-2 border-t border-paper text-xs font-sans">
+        <div class="p-3 bg-[#F2EFE9] border border-paper text-center">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block">RECORDED VALUE</span>
+          <span class="text-2xl font-editorial font-bold text-paper-red block my-1">${escapeHtml(rec.value)}</span>
+          <span class="text-[9px] font-mono text-paper-muted">${escapeHtml(rec.unit || '')}</span>
         </div>
-        <div class="p-3 bg-surface-900/40 border border-surface-800 space-y-1">
-          <span class="text-[9px] font-mono uppercase text-sand font-bold block">OBSERVATION TYPE</span>
-          <div class="font-mono text-xs font-bold text-bone-100">${escapeHtml(rec.observation_type || '')}</div>
-          <div class="text-[10px] text-surface-400">Ref: ${escapeHtml(rec.reference_period || '')}</div>
+        <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+          <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">OBSERVATION TYPE</span>
+          <div class="font-mono text-xs font-bold text-paper-main">${escapeHtml(rec.observation_type || '')}</div>
+          <div class="text-[10px] text-paper-dim">Ref: ${escapeHtml(rec.reference_period || '')}</div>
         </div>
-        <div class="p-3 bg-surface-900/40 border border-surface-800 space-y-1">
-          <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">METHODOLOGY &amp; BASE</span>
-          <p class="text-[10px] text-surface-300 leading-tight">${escapeHtml(rec.methodology || '')}</p>
+        <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">METHODOLOGY &amp; BASE</span>
+          <p class="text-[10px] text-paper-muted leading-tight">${escapeHtml(rec.methodology || '')}</p>
         </div>
       </div>
       ${rec.comparability_notes ? `
-        <div class="text-[10px] font-mono text-surface-400 p-2 bg-background border border-surface-800 mt-2">
-          <strong class="text-sand">COMPARABILITY NOTE:</strong> ${escapeHtml(rec.comparability_notes)}
+        <div class="text-[10px] font-mono text-paper-muted p-2 bg-[#F2EFE9] border border-paper mt-2">
+          <strong class="text-paper-sand">COMPARABILITY NOTE:</strong> ${escapeHtml(rec.comparability_notes)}
         </div>
       ` : ''}
     `;
@@ -236,18 +239,18 @@ function renderChronologyItem(rec) {
   // OUTCOME Metadata
   else if (rec.record_type === RECORD_TYPES.OUTCOME) {
     specificDetailsHtml = `
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
-        <div class="p-3 bg-surface-900/60 border border-surface-800">
-          <span class="text-[9px] font-mono uppercase text-surface-400 block font-bold">MEASURED RESULT</span>
-          <span class="text-base font-mono font-bold text-crimson block mt-1">${escapeHtml(rec.measurement || rec.result || '')}</span>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 pt-2 border-t border-paper text-xs font-sans">
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block font-bold">MEASURED RESULT</span>
+          <span class="text-base font-mono font-bold text-paper-red block mt-1">${escapeHtml(rec.measurement || rec.result || '')}</span>
         </div>
-        <div class="p-3 bg-surface-900/40 border border-surface-800">
-          <span class="text-[9px] font-mono uppercase text-surface-400 block font-bold">BASELINE ANCHOR</span>
-          <span class="text-xs font-mono text-bone-100 block mt-1">${escapeHtml(rec.baseline || 'Pre-2019 Normal')}</span>
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block font-bold">BASELINE ANCHOR</span>
+          <span class="text-xs font-mono text-paper-main block mt-1 font-semibold">${escapeHtml(rec.baseline || 'Pre-2019 Normal')}</span>
         </div>
-        <div class="p-3 bg-surface-900/40 border border-surface-800">
-          <span class="text-[9px] font-mono uppercase text-sand block font-bold">CAUSATION STATUS</span>
-          <span class="text-xs font-mono font-bold text-bone-100 block mt-1">${escapeHtml((rec.causation_status || '').replace(/_/g, ' '))}</span>
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-sand block font-bold">CAUSATION STATUS</span>
+          <span class="text-xs font-mono font-bold text-paper-main block mt-1">${escapeHtml((rec.causation_status || '').replace(/_/g, ' '))}</span>
         </div>
       </div>
     `;
@@ -257,24 +260,24 @@ function renderChronologyItem(rec) {
   const sourceHtml = renderSourceSlip(rec.source_ids);
 
   return `
-    <article class="p-5 sm:p-6 bg-background-elevated border border-surface-800 hover:border-surface-700 transition-colors space-y-3" id="${escapeHtml(rec.id)}" data-record-type="${escapeHtml(rec.record_type)}" data-record-classification="${escapeHtml(rec.classification)}">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-surface-800/80">
+    <article class="chronology-record-item py-4 space-y-2.5 border-b border-paper last:border-b-0" id="${escapeHtml(rec.id)}" data-record-type="${escapeHtml(rec.record_type)}" data-record-classification="${escapeHtml(rec.classification)}">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
         <div class="flex items-center gap-2 flex-wrap">
-          <time class="text-xs font-mono font-bold text-crimson">${escapeHtml(dateStr)}</time>
+          <time class="text-xs font-mono font-bold text-paper-red">${escapeHtml(dateStr)}</time>
           ${typeBadge}
           ${classBadge}
           ${statusBadge}
         </div>
-        <div class="text-[10px] font-mono text-surface-500">
-          ID: <span class="text-surface-400 font-mono">${escapeHtml(rec.id)}</span>
+        <div class="text-[10px] font-mono text-paper-dim">
+          ID: <span class="text-paper-muted font-mono">${escapeHtml(rec.id)}</span>
         </div>
       </div>
 
-      <h3 class="font-editorial font-bold text-bone-100 text-lg sm:text-xl leading-snug">
+      <h3 class="font-editorial font-bold text-paper-main text-lg sm:text-xl leading-snug">
         ${escapeHtml(rec.title)}
       </h3>
 
-      <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed max-w-prose">
+      <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-prose">
         ${escapeHtml(rec.summary)}
       </p>
 
@@ -286,7 +289,7 @@ function renderChronologyItem(rec) {
 }
 
 /**
- * Renders a Promise -> Actions -> Result -> Evidence -> Data Gap accountability chain.
+ * Renders a Promise -> Actions -> Result -> Evidence -> Data Gap accountability chain on paper.
  */
 function renderPromiseAccountabilityModule(promiseId) {
   const trace = getAccountabilityTrace(promiseId, { sourceManifest: Array.from(SOURCE_MAP.values()) });
@@ -298,50 +301,50 @@ function renderPromiseAccountabilityModule(promiseId) {
   // Actions
   const actionsHtml = trace.actions && trace.actions.length > 0
     ? trace.actions.map(act => `
-        <div class="p-3 bg-surface-900/80 border border-surface-800 space-y-1">
+        <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
           <div class="flex items-center justify-between text-[9px] font-mono">
-            <span class="text-sand font-bold uppercase">${escapeHtml(act.record_type.replace(/_/g, ' '))}</span>
-            <span class="text-surface-500">${escapeHtml(act.date_start || '')}</span>
+            <span class="text-paper-sand font-bold uppercase">${escapeHtml(act.record_type.replace(/_/g, ' '))}</span>
+            <span class="text-paper-dim">${escapeHtml(act.date_start || '')}</span>
           </div>
-          <div class="font-sans font-semibold text-bone-100 text-xs">${escapeHtml(act.short_title || act.title)}</div>
-          <p class="text-[11px] text-surface-400 font-light leading-snug">${escapeHtml(act.summary)}</p>
+          <div class="font-sans font-semibold text-paper-main text-xs">${escapeHtml(act.short_title || act.title)}</div>
+          <p class="text-[11px] text-paper-muted font-light leading-snug">${escapeHtml(act.summary)}</p>
         </div>
       `).join('')
-    : `<div class="p-3 bg-surface-900/40 border border-surface-800 text-[11px] font-mono text-surface-400">Institutionalized via statutory decree framework; ministerial implementation ongoing.</div>`;
+    : `<div class="p-3 bg-[#F2EFE9] border border-paper text-[11px] font-mono text-paper-muted">Institutionalized via statutory decree framework; ministerial implementation ongoing.</div>`;
 
   // Results (Outcomes or Indicators)
   const resultsHtml = [
     ...trace.outcomes.map(o => `
-      <div class="p-3 bg-surface-900/80 border border-surface-800 space-y-1">
-        <div class="flex items-center justify-between text-[9px] font-mono text-crimson">
+      <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+        <div class="flex items-center justify-between text-[9px] font-mono text-paper-red">
           <span class="font-bold uppercase">MEASURED OUTCOME</span>
           <span>${escapeHtml(o.reference_period || '2022–2026')}</span>
         </div>
-        <div class="font-mono font-bold text-bone-100 text-xs">${escapeHtml(o.measurement || o.result)}</div>
-        <p class="text-[11px] text-surface-300 font-light leading-snug">${escapeHtml(o.summary)}</p>
+        <div class="font-mono font-bold text-paper-main text-xs">${escapeHtml(o.measurement || o.result)}</div>
+        <p class="text-[11px] text-paper-muted font-light leading-snug">${escapeHtml(o.summary)}</p>
       </div>
     `),
     ...trace.indicators.map(ind => `
-      <div class="p-3 bg-surface-900/80 border border-surface-800 space-y-1">
-        <div class="flex items-center justify-between text-[9px] font-mono text-crimson">
+      <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
+        <div class="flex items-center justify-between text-[9px] font-mono text-paper-red">
           <span class="font-bold uppercase">INDICATOR · ${escapeHtml(ind.observation_type || '')}</span>
           <span>${escapeHtml(ind.reference_period || '')}</span>
         </div>
-        <div class="font-mono font-bold text-bone-100 text-xs">${escapeHtml(ind.name)}: <span class="text-crimson">${escapeHtml(ind.value)}</span></div>
-        <p class="text-[11px] text-surface-300 font-light leading-snug">${escapeHtml(ind.summary)}</p>
+        <div class="font-mono font-bold text-paper-main text-xs">${escapeHtml(ind.name)}: <span class="text-paper-red">${escapeHtml(ind.value)}</span></div>
+        <p class="text-[11px] text-paper-muted font-light leading-snug">${escapeHtml(ind.summary)}</p>
       </div>
     `)
   ].join('');
 
   // Data Gaps
   const gapsHtml = trace.dataGaps.map(g => `
-    <div class="p-3 bg-surface-900/40 border border-sand/30 space-y-1">
-      <div class="flex items-center justify-between text-[9px] font-mono text-sand">
+    <div class="p-3 bg-[#FEF9C3]/50 border border-[#EAB308]/40 space-y-1">
+      <div class="flex items-center justify-between text-[9px] font-mono text-paper-sand">
         <span class="font-bold uppercase">DATA GAP IDENTIFIED</span>
         <span>${escapeHtml(g.data_gap_status || 'NOT_PUBLISHED')}</span>
       </div>
-      <div class="font-sans font-medium text-bone-100 text-xs">${escapeHtml(g.short_title || g.title)}</div>
-      <p class="text-[11px] text-surface-400 font-light leading-snug">${escapeHtml(g.summary)}</p>
+      <div class="font-sans font-medium text-paper-main text-xs">${escapeHtml(g.short_title || g.title)}</div>
+      <p class="text-[11px] text-paper-muted font-light leading-snug">${escapeHtml(g.summary)}</p>
     </div>
   `).join('');
 
@@ -349,19 +352,19 @@ function renderPromiseAccountabilityModule(promiseId) {
   const respHtml = trace.responsibleInstitutions && trace.responsibleInstitutions.length > 0
     ? trace.responsibleInstitutions.map(r => `
         <div class="text-xs font-mono">
-          <span class="text-sand font-semibold">${escapeHtml(r.institution ? r.institution.name : r.institution_id)}</span>
-          <span class="text-surface-500"> — </span>
-          <span class="text-surface-300 text-[10px] uppercase">${escapeHtml((r.responsibility_type || '').replace(/_/g, ' '))}</span>
+          <span class="text-paper-sand font-semibold">${escapeHtml(r.institution ? r.institution.name : r.institution_id)}</span>
+          <span class="text-paper-dim"> — </span>
+          <span class="text-paper-main text-[10px] uppercase font-medium">${escapeHtml((r.responsibility_type || '').replace(/_/g, ' '))}</span>
         </div>
       `).join('')
     : '';
 
   return `
-    <div class="p-6 bg-background-elevated border border-surface-800 space-y-5" id="trace-${escapeHtml(p.id)}">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-surface-800">
+    <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4 my-4" id="trace-${escapeHtml(p.id)}">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-paper">
         <div>
-          <span class="text-[10px] font-mono uppercase tracking-meta text-surface-400 block">ACCOUNTABILITY CHAIN · ${escapeHtml(p.policy_area || 'GOVERNANCE')}</span>
-          <h3 class="font-sans font-bold text-bone-100 text-base sm:text-lg mt-0.5">${escapeHtml(p.title)}</h3>
+          <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim block font-bold">ACCOUNTABILITY CHAIN · ${escapeHtml(p.policy_area || 'GOVERNANCE')}</span>
+          <h3 class="font-sans font-bold text-paper-main text-base sm:text-lg mt-0.5">${escapeHtml(p.title)}</h3>
         </div>
         <div class="flex items-center gap-2">
           ${renderClassificationBadge(p.classification)}
@@ -371,41 +374,41 @@ function renderPromiseAccountabilityModule(promiseId) {
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
         <!-- 1. PROMISE -->
-        <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-          <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-bold">1. WHAT WAS PROMISED</span>
-          <p class="text-surface-200 font-light leading-relaxed italic">"${escapeHtml(p.promise_text || p.summary)}"</p>
-          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800/60">
-            Speaker: <span class="text-bone-100">${escapeHtml(p.speaker)}</span> (${escapeHtml(p.speaker_role || 'President')})
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-2">
+          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">1. WHAT WAS PROMISED</span>
+          <p class="text-paper-main font-light leading-relaxed italic">"${escapeHtml(p.promise_text || p.summary)}"</p>
+          <div class="text-[10px] font-mono text-paper-dim pt-2 border-t border-paper">
+            Speaker: <span class="text-paper-main font-bold">${escapeHtml(p.speaker)}</span> (${escapeHtml(p.speaker_role || 'President')})
           </div>
         </div>
 
         <!-- 2. ACTION -->
-        <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-          <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-bold">2. ACTIONS TAKEN</span>
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-2">
+          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">2. ACTIONS TAKEN</span>
           <div class="space-y-2">
             ${actionsHtml}
           </div>
         </div>
 
         <!-- 3. RESULT & DATA GAP -->
-        <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-          <span class="text-[10px] font-mono text-crimson uppercase tracking-wider block font-bold">3. WHAT EVIDENCE SHOWS</span>
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-2">
+          <span class="text-[10px] font-mono text-paper-red uppercase tracking-wider block font-bold">3. WHAT EVIDENCE SHOWS</span>
           <div class="space-y-2">
-            ${resultsHtml || `<div class="text-surface-400 text-xs font-light">Outcome metrics tracked in 2026 reporting.</div>`}
+            ${resultsHtml || `<div class="text-paper-muted text-xs font-light">Outcome metrics tracked in 2026 reporting.</div>`}
             ${gapsHtml}
           </div>
         </div>
       </div>
 
       <!-- Status Reason & Institutional Responsibility -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-surface-800/80 text-xs font-sans">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-paper text-xs font-sans">
         <div class="space-y-1">
-          <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">STATUS JUSTIFICATION</span>
-          <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(p.status_reason || 'Audited based on official ministry bulletins and decree gazettes.')}</p>
+          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">STATUS JUSTIFICATION</span>
+          <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(p.status_reason || 'Audited based on official ministry bulletins and decree gazettes.')}</p>
         </div>
         ${respHtml ? `
           <div class="space-y-1">
-            <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">ACCOUNTABLE AUTHORITIES</span>
+            <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">ACCOUNTABLE AUTHORITIES</span>
             <div class="space-y-1">${respHtml}</div>
           </div>
         ` : ''}
@@ -417,7 +420,7 @@ function renderPromiseAccountabilityModule(promiseId) {
 }
 
 /**
- * Renders the "WHAT THE STATE SAID" vs "WHAT THE RECORD SHOWS" comparison module for July 25 rupture.
+ * Renders the "WHAT THE STATE SAID" vs "WHAT THE RECORD SHOWS" comparison module for July 25 rupture on paper.
  */
 function renderStateComparisonModule() {
   const stm = getRecordById("ROP-STM-2021-0725-001");
@@ -425,46 +428,46 @@ function renderStateComparisonModule() {
   if (!stm || !dec) return '';
 
   return `
-    <div class="p-6 bg-background-elevated border border-surface-800 space-y-5">
-      <div class="pb-3 border-b border-surface-800">
-        <span class="text-[10px] font-mono uppercase tracking-meta text-crimson font-bold block">COMPETING INTERPRETATIONS · JULY 25 RUPTURE</span>
-        <h3 class="font-editorial text-2xl text-bone-100 mt-1">What Was Claimed vs What The Law Enacted</h3>
+    <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4 my-4">
+      <div class="pb-3 border-b border-paper">
+        <span class="text-[10px] font-mono uppercase tracking-meta text-paper-red font-bold block">COMPETING INTERPRETATIONS · JULY 25 RUPTURE</span>
+        <h3 class="font-editorial text-2xl text-paper-main mt-1">What Was Claimed vs What The Law Enacted</h3>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- WHAT THE PRESIDENCY SAID -->
-        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-sand/30 space-y-3" id="${escapeHtml(stm.id)}" data-record-type="OFFICIAL_STATEMENT">
+        <div class="lg:col-span-6 p-5 bg-[#FAF8F5] border border-paper space-y-3" id="${escapeHtml(stm.id)}" data-record-type="OFFICIAL_STATEMENT">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-sand font-bold">1. WHAT THE PRESIDENCY SAID</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-paper-sand font-bold">1. WHAT THE PRESIDENCY SAID</span>
             <div class="flex items-center gap-2">
-              <span class="text-[9px] font-mono text-surface-500">ID: ${escapeHtml(stm.id)}</span>
+              <span class="text-[9px] font-mono text-paper-dim">ID: ${escapeHtml(stm.id)}</span>
               ${renderClassificationBadge(stm.classification)}
             </div>
           </div>
-          <blockquote class="font-editorial text-sm sm:text-base text-bone-100 italic leading-relaxed">
+          <blockquote class="font-editorial text-sm sm:text-base text-paper-main italic leading-relaxed">
             "${escapeHtml(stm.statement_text_or_summary || stm.summary)}"
           </blockquote>
-          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
-            Speaker: <span class="text-bone-100">${escapeHtml(stm.speaker)}</span> · Date: 25 July 2021 · Carthage Palace
+          <div class="text-[10px] font-mono text-paper-muted pt-2 border-t border-paper">
+            Speaker: <span class="text-paper-main font-bold">${escapeHtml(stm.speaker)}</span> · Date: 25 July 2021 · Carthage Palace
           </div>
           ${renderSourceSlip(stm.source_ids)}
         </div>
 
         <!-- WHAT THE RECORD SHOWS -->
-        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-surface-800 space-y-3" id="${escapeHtml(dec.id)}-comp" data-record-type="DECISION">
+        <div class="lg:col-span-6 p-5 bg-[#FAF8F5] border border-paper space-y-3" id="${escapeHtml(dec.id)}-comp" data-record-type="DECISION">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-crimson font-bold">2. WHAT THE RECORD SHOWS</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-paper-red font-bold">2. WHAT THE RECORD SHOWS</span>
             <div class="flex items-center gap-2">
-              <span class="text-[9px] font-mono text-surface-500">REF: ${escapeHtml(dec.id)}</span>
+              <span class="text-[9px] font-mono text-paper-dim">REF: ${escapeHtml(dec.id)}</span>
               ${renderClassificationBadge(dec.classification)}
             </div>
           </div>
-          <div class="space-y-2 text-xs text-surface-300 font-light leading-relaxed">
-            <p><strong class="text-bone-100">Decree 117 (22 Sept 2021):</strong> Concentrated plenary executive and legislative decree authority in the presidency, suspended constitutional review mechanisms, and subordinated judicial careers to executive oversight.</p>
-            <p><strong class="text-sand">Contested Legal Assessment:</strong> Venice Commission, National Bar Association, and international jurists documented the suspension of the separation of powers and lack of judicial remedies.</p>
+          <div class="space-y-2 text-xs text-paper-muted font-light leading-relaxed">
+            <p><strong class="text-paper-main font-semibold">Decree 117 (22 Sept 2021):</strong> Concentrated plenary executive and legislative decree authority in the presidency, suspended constitutional review mechanisms, and subordinated judicial careers to executive oversight.</p>
+            <p><strong class="text-paper-sand font-semibold">Contested Legal Assessment:</strong> Venice Commission, National Bar Association, and international jurists documented the suspension of the separation of powers and lack of judicial remedies.</p>
           </div>
-          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
-            Instrument: <span class="text-bone-100">Presidential Decree 2021-117 (JORT n° 86)</span>
+          <div class="text-[10px] font-mono text-paper-muted pt-2 border-t border-paper">
+            Instrument: <span class="text-paper-main font-bold">Presidential Decree 2021-117 (JORT n° 86)</span>
           </div>
           ${renderSourceSlip(dec.source_ids)}
         </div>
@@ -474,7 +477,7 @@ function renderStateComparisonModule() {
 }
 
 /**
- * Renders Certified Result vs Contested Claim for the 2024 Election.
+ * Renders Certified Result vs Contested Claim for the 2024 Election on paper.
  */
 function renderCertifiedVsContestedModule() {
   const elec2024 = getRecordById("ROP-EVT-2024-ELEC-001");
@@ -482,51 +485,51 @@ function renderCertifiedVsContestedModule() {
   if (!elec2024 || !opp2024) return '';
 
   return `
-    <div class="p-6 bg-background-elevated border border-surface-800 space-y-5">
-      <div class="pb-3 border-b border-surface-800">
-        <span class="text-[10px] font-mono uppercase tracking-meta text-surface-400 font-bold block">OCTOBER 2024 PRESIDENTIAL ELECTION</span>
-        <h3 class="font-editorial text-2xl text-bone-100 mt-1">Certified Outcome vs Procedural Challenges</h3>
+    <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4 my-4">
+      <div class="pb-3 border-b border-paper">
+        <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim font-bold block">OCTOBER 2024 PRESIDENTIAL ELECTION</span>
+        <h3 class="font-editorial text-2xl text-paper-main mt-1">Certified Outcome vs Procedural Challenges</h3>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- CERTIFIED RESULT -->
-        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-surface-800 space-y-3" id="${escapeHtml(elec2024.id)}" data-record-type="EVENT">
+        <div class="lg:col-span-6 p-5 bg-[#FAF8F5] border border-paper space-y-3" id="${escapeHtml(elec2024.id)}" data-record-type="EVENT">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">OFFICIAL CERTIFIED RESULT</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-800 font-bold">OFFICIAL CERTIFIED RESULT</span>
             <div class="flex items-center gap-2">
-              <span class="text-[9px] font-mono text-surface-500">ID: ${escapeHtml(elec2024.id)}</span>
+              <span class="text-[9px] font-mono text-paper-dim">ID: ${escapeHtml(elec2024.id)}</span>
               ${renderClassificationBadge(elec2024.classification)}
             </div>
           </div>
-          <div class="text-2xl font-editorial font-bold text-bone-100">
-            90.69% <span class="text-xs font-mono font-normal text-surface-400">(2,438,954 ballots / 28.8% Turnout)</span>
+          <div class="text-2xl font-editorial font-bold text-paper-main">
+            90.69% <span class="text-xs font-mono font-normal text-paper-muted">(2,438,954 ballots / 28.8% Turnout)</span>
           </div>
-          <p class="text-xs text-surface-300 font-light leading-relaxed">
+          <p class="text-xs text-paper-muted font-light leading-relaxed">
             ${escapeHtml(elec2024.summary)}
           </p>
-          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
-            Certified by: <span class="text-bone-100">ISIE (Decision in JORT October 2024)</span>
+          <div class="text-[10px] font-mono text-paper-dim pt-2 border-t border-paper">
+            Certified by: <span class="text-paper-main font-bold">ISIE (Decision in JORT October 2024)</span>
           </div>
           ${renderSourceSlip(elec2024.source_ids)}
         </div>
 
         <!-- CONTESTED CLAIM -->
-        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-sand/30 space-y-3" id="${escapeHtml(opp2024.id)}" data-record-type="OPPOSITION_CLAIM">
+        <div class="lg:col-span-6 p-5 bg-[#FAF8F5] border border-paper space-y-3" id="${escapeHtml(opp2024.id)}" data-record-type="OPPOSITION_CLAIM">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-sand font-bold">PROCEDURAL &amp; LEGAL CHALLENGES</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-paper-sand font-bold">PROCEDURAL &amp; LEGAL CHALLENGES</span>
             <div class="flex items-center gap-2">
-              <span class="text-[9px] font-mono text-surface-500">ID: ${escapeHtml(opp2024.id)}</span>
+              <span class="text-[9px] font-mono text-paper-dim">ID: ${escapeHtml(opp2024.id)}</span>
               ${renderClassificationBadge(opp2024.classification)}
             </div>
           </div>
-          <div class="text-sm font-sans font-semibold text-bone-100">
+          <div class="text-sm font-sans font-semibold text-paper-main">
             Administrative Court Reinstatement Rulings Rejected
           </div>
-          <p class="text-xs text-surface-300 font-light leading-relaxed">
+          <p class="text-xs text-paper-muted font-light leading-relaxed">
             ${escapeHtml(opp2024.summary)}
           </p>
-          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
-            Status: <span class="text-sand font-bold uppercase">${escapeHtml(opp2024.status)}</span> · Tribunal Administratif Decisions
+          <div class="text-[10px] font-mono text-paper-dim pt-2 border-t border-paper">
+            Status: <span class="text-paper-sand font-bold uppercase">${escapeHtml(opp2024.status)}</span> · Tribunal Administratif Decisions
           </div>
           ${renderSourceSlip(opp2024.source_ids)}
         </div>
@@ -536,7 +539,7 @@ function renderCertifiedVsContestedModule() {
 }
 
 /**
- * Renders a structured Data Gap card.
+ * Renders a structured Data Gap card on paper.
  */
 function renderDataGapCard(gapRecord) {
   if (!gapRecord) return '';
@@ -544,40 +547,40 @@ function renderDataGapCard(gapRecord) {
   const instName = resolveInstitutionName(gapRecord.institution_expected_to_hold_data);
 
   return `
-    <div class="p-5 sm:p-6 bg-surface-900/40 border border-sand/30 space-y-3" id="${escapeHtml(gapRecord.id)}" data-record-type="DATA_GAP">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-surface-800">
+    <div class="p-5 bg-[#FEF9C3]/50 border border-[#EAB308]/40 space-y-2.5" id="${escapeHtml(gapRecord.id)}" data-record-type="DATA_GAP">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-[#EAB308]/30">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-sand"></span>
-          <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold">DOCUMENTED DATA GAP</span>
+          <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-paper-sand font-bold">DOCUMENTED DATA GAP</span>
           ${statusBadge}
         </div>
-        <div class="text-[10px] font-mono text-surface-500">
+        <div class="text-[10px] font-mono text-paper-dim">
           ID: ${escapeHtml(gapRecord.id)}
         </div>
       </div>
 
-      <h4 class="font-sans font-bold text-bone-100 text-sm sm:text-base">
+      <h4 class="font-sans font-bold text-paper-main text-sm sm:text-base">
         ${escapeHtml(gapRecord.title)}
       </h4>
 
-      <p class="text-xs text-surface-300 font-light leading-relaxed">
+      <p class="text-xs text-paper-muted font-light leading-relaxed">
         ${escapeHtml(gapRecord.summary)}
       </p>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs font-sans">
-        <div class="p-2.5 bg-background border border-surface-800">
-          <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">INSTITUTION EXPECTED TO HOLD DATA</span>
-          <span class="text-bone-100 font-medium">${escapeHtml(instName || gapRecord.institution_expected_to_hold_data)}</span>
+        <div class="p-2.5 bg-white border border-[#EAB308]/30">
+          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">INSTITUTION EXPECTED TO HOLD DATA</span>
+          <span class="text-paper-main font-bold">${escapeHtml(instName || gapRecord.institution_expected_to_hold_data)}</span>
         </div>
-        <div class="p-2.5 bg-background border border-surface-800">
-          <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">WHY THIS GAP MATTERS</span>
-          <span class="text-surface-300 font-light">${escapeHtml(gapRecord.why_it_matters || '')}</span>
+        <div class="p-2.5 bg-white border border-[#EAB308]/30">
+          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">WHY THIS GAP MATTERS</span>
+          <span class="text-paper-muted font-light">${escapeHtml(gapRecord.why_it_matters || '')}</span>
         </div>
       </div>
 
       ${gapRecord.search_or_request_status ? `
-        <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
-          SEARCH STATUS: <span class="text-surface-300">${escapeHtml(gapRecord.search_or_request_status)}</span>
+        <div class="text-[10px] font-mono text-paper-dim pt-2 border-t border-[#EAB308]/30">
+          SEARCH STATUS: <span class="text-paper-main font-medium">${escapeHtml(gapRecord.search_or_request_status)}</span>
         </div>
       ` : ''}
 
@@ -601,7 +604,7 @@ export function renderPresidencyReportViewHtml() {
     </nav>
   `;
 
-  // Header Opener
+  // Header Opener (Dark Investigative Canvas)
   const headerHtml = renderInvestigationOpener({
     breadcrumbHtml,
     eyebrow: "THE RECORD OF POWER",
@@ -632,220 +635,331 @@ export function renderPresidencyReportViewHtml() {
   const gabesGap = getRecordById("ROP-GAP-2026-GABES-AIR-001");
   const reconGap = getRecordById("ROP-GAP-2026-RECON-RECEIPTS-001");
 
-  // 6-Question Accountability Grammar Block
-  const accountabilityGrammar = {
-    topic: "The Record of Power: Centralized Governance Audit (2019–2026)",
-    authority: "Presidency of the Republic of Tunisia (Carthage Palace)",
-    promised: "A moral, self-reliant republic with eliminated corruption, decentralized grassroots councils, working public utilities, and rejection of external financial dictates.",
-    announcedAction: "Concentrated executive and decree power via Decree 117 and 2022 Constitution; dissolved elected CSM; enacted Decree-Law 54; froze IMF EFF arrangement.",
-    whatHappened: "Institutional counter-powers were dismantled; sovereign debt expanded to 80.2% of GDP; graduate unemployment reached 38.8%; potable water rationing became operational in Summer 2026.",
-    verifiedFact: "Under the 2022 Constitution, all executive authority and ministerial appointments are formally centralized in the presidency, establishing unambiguous institutional responsibility.",
-    unresolved: "The exact fiscal ledger of penal reconciliation settlements (held confidential under Decree-Law 2022-13) and real-time industrial ambient emissions in Gabès."
-  };
+  // 6-Question Accountability Grammar Block (Adapted for Paper)
+  const accountabilityGrammarHtml = `
+    <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6" aria-label="Accountability Grammar">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">404TN ACCOUNTABILITY GRAMMAR</span>
+          <h3 class="font-editorial text-2xl text-paper-main mt-1">The Record of Power: Centralized Governance Audit (2019–2026)</h3>
+        </div>
+        <div class="text-xs font-mono text-paper-muted">
+          RESPONSIBLE: <span class="text-paper-main font-bold">Presidency of the Republic of Tunisia (Carthage Palace)</span>
+        </div>
+      </div>
 
-  const accountabilityGrammarHtml = renderAccountabilityQuestionBlock(accountabilityGrammar);
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-sans">
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">1. WHAT WAS PROMISED?</span>
+          <p class="text-paper-muted font-light leading-relaxed">A moral, self-reliant republic with eliminated corruption, decentralized grassroots councils, working public utilities, and rejection of external financial dictates.</p>
+        </div>
+
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">2. WHAT ACTION WAS ANNOUNCED?</span>
+          <p class="text-paper-muted font-light leading-relaxed">Concentrated executive and decree power via Decree 117 and 2022 Constitution; dissolved elected CSM; enacted Decree-Law 54; froze IMF EFF arrangement.</p>
+        </div>
+
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">3. WHAT HAPPENED?</span>
+          <p class="text-paper-muted font-light leading-relaxed">Institutional counter-powers were dismantled; sovereign debt expanded to 80.2% of GDP; graduate unemployment reached 38.8%; potable water rationing became operational in Summer 2026.</p>
+        </div>
+
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-main uppercase tracking-wider block font-bold">4. WHO WAS RESPONSIBLE?</span>
+          <p class="text-paper-muted font-light leading-relaxed">Presidency of the Republic of Tunisia (Carthage Palace)</p>
+        </div>
+
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-emerald-800 uppercase tracking-wider block font-bold">5. WHAT IS VERIFIED?</span>
+          <p class="text-paper-main font-medium leading-relaxed">Under the 2022 Constitution, all executive authority and ministerial appointments are formally centralized in the presidency, establishing unambiguous institutional responsibility.</p>
+        </div>
+
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-red uppercase tracking-wider block font-bold">6. WHAT REMAINS UNKNOWN?</span>
+          <p class="text-paper-muted font-light leading-relaxed">The exact fiscal ledger of penal reconciliation settlements (held confidential under Decree-Law 2022-13) and real-time industrial ambient emissions in Gabès.</p>
+        </div>
+      </div>
+    </section>
+  `;
 
   return `
-    <article class="presidency-dossier-page py-12 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <!-- A. INVESTIGATION OPENER -->
-      ${headerHtml}
+    <article class="presidency-dossier-page">
 
-      <!-- METHODOLOGY & EPISTEMIC STANDARDS STRIP -->
-      <section class="p-6 bg-background-elevated border border-surface-800 space-y-4" aria-label="Methodology and Standards">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <span class="text-xs font-mono uppercase tracking-widest text-sand font-bold block">404TN EPISTEMIC STANDARD &amp; VERIFICATION RULES</span>
-          <span class="text-[10px] font-mono text-surface-500">PHASE R2.2 CHRONOLOGY ENGINE</span>
+      <!-- A. INVESTIGATION OPENER (DARK INVESTIGATIVE CANVAS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${headerHtml}
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
-          <div class="p-3.5 bg-surface-900/60 border border-surface-800 space-y-1">
-            <span class="text-[10px] font-mono text-bone-100 font-bold uppercase block">FACT</span>
-            <p class="text-surface-300 font-light leading-relaxed">Discrete assertions directly substantiated by official gazettes (JORT), statutory bulletins, or accredited empirical surveys.</p>
+      </div>
+
+      <!-- B. DOCUMENTARY REPORT VIEW (REAL WARM PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+
+          <!-- METHODOLOGY & EPISTEMIC STANDARDS STRIP -->
+          <section class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4" aria-label="Methodology and Standards">
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-paper">
+              <span class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold block">404TN EPISTEMIC STANDARD &amp; VERIFICATION RULES</span>
+              <span class="text-[10px] font-mono text-paper-dim">PHASE R2.2 CHRONOLOGY ENGINE · PAPER EDITION</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
+              <div class="p-3.5 bg-[#FAF8F5] border border-paper space-y-1">
+                <span class="text-[10px] font-mono text-paper-main font-bold uppercase block">FACT</span>
+                <p class="text-paper-muted font-light leading-relaxed">Discrete assertions directly substantiated by official gazettes (JORT), statutory bulletins, or accredited empirical surveys.</p>
+              </div>
+              <div class="p-3.5 bg-[#FAF8F5] border border-paper space-y-1">
+                <span class="text-[10px] font-mono text-paper-sand font-bold uppercase block">CLAIM · ATTRIBUTED</span>
+                <p class="text-paper-muted font-light leading-relaxed">Government declarations, speech justifications, or opposition allegations. Preserved as attributed discourse; never converted to fact.</p>
+              </div>
+              <div class="p-3.5 bg-[#FAF8F5] border border-paper space-y-1">
+                <span class="text-[10px] font-mono text-paper-red font-bold uppercase block">ANALYSIS</span>
+                <p class="text-paper-muted font-light leading-relaxed">404TN investigative interpretation and contextual synthesis of documented evidence and legal transformations.</p>
+              </div>
+              <div class="p-3.5 bg-[#FAF8F5] border border-paper space-y-1">
+                <span class="text-[10px] font-mono text-paper-dim font-bold uppercase block">DATA GAPS</span>
+                <p class="text-paper-muted font-light leading-relaxed">Systematically documented missing or unpublished state datasets, tracked as legitimate empirical transparency findings.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- CHRONOLOGY NAVIGATION & FILTER BAR -->
+          <nav id="chronology-nav" class="sticky top-0 z-20 bg-[#FAF8F5]/95 backdrop-blur border-y border-paper py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono" aria-label="Chronology Navigation">
+            <div class="flex items-center gap-1.5 sm:gap-3 flex-wrap">
+              <span class="text-[10px] uppercase text-paper-dim font-bold mr-1">CHRONOLOGY:</span>
+              <a href="#year-2019" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2019 · Mandate</a>
+              <a href="#year-2021" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2021 · Rupture</a>
+              <a href="#year-2022" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2022 · New Order</a>
+              <a href="#year-2024" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2024 · Consolidation</a>
+              <a href="#year-2026" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2026 · Outcomes</a>
+            </div>
+          </nav>
+
+          <!-- =====================================================================
+               ERA 1: 2019 — MANDATE
+               ===================================================================== -->
+          <section id="year-2019" class="space-y-6 pt-2">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2019</span>
+                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Mandate</span>
+                </div>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Elected on October 13, 2019 with 72.71% of the vote (2.77 million ballots) on a platform pledging direct grassroots democracy, anti-corruption restitution, and text-based economic sovereignty.</p>
+              </div>
+            </div>
+
+            <div class="chronology-spine-paper space-y-4 pt-2">
+              ${elec2019 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(elec2019)}</div>` : ''}
+              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}</div>
+              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}</div>
+            </div>
+          </section>
+
+          <!-- =====================================================================
+               ERA 2: 2021 — RUPTURE
+               ===================================================================== -->
+          <section id="year-2021" class="space-y-6 pt-8 border-t border-paper">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2021</span>
+                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Rupture</span>
+                </div>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Following severe pandemic healthcare distress and nationwide unrest, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament, and concentrated executive and legislative powers.</p>
+              </div>
+            </div>
+
+            <div class="chronology-spine-paper space-y-4 pt-2">
+              ${elec2021 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(elec2021)}</div>` : ''}
+              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderStateComparisonModule()}</div>
+              ${dec2021 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(dec2021)}</div>` : ''}
+            </div>
+          </section>
+
+          <!-- =====================================================================
+               ERA 3: 2022 — NEW POLITICAL ORDER
+               ===================================================================== -->
+          <section id="year-2022" class="space-y-6 pt-8 border-t border-paper">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2022</span>
+                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The New Political Order</span>
+                </div>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Structural transition to an executive-dominant republic: dissolution of the High Judicial Council, executive revocation of 57 magistrates, promulgation of the 2022 Constitution via referendum, and enactment of Decree-Law 54.</p>
+              </div>
+            </div>
+
+            <div class="chronology-spine-paper space-y-4 pt-2">
+              ${csm2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(csm2022)}</div>` : ''}
+              ${judges2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(judges2022)}</div>` : ''}
+              ${const2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(const2022)}</div>` : ''}
+              ${law54 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(law54)}</div>` : ''}
+            </div>
+          </section>
+
+          <!-- =====================================================================
+               ERA 4: 2024 — CONSOLIDATION
+               ===================================================================== -->
+          <section id="year-2024" class="space-y-6 pt-8 border-t border-paper">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2024</span>
+                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— Political Consolidation</span>
+                </div>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Kais Saied secured re-election on October 6, 2024 with 90.69% of the vote on a 28.8% turnout in a ballot characterized by candidate disqualifications and non-execution of Administrative Court reinstatement orders.</p>
+              </div>
+            </div>
+
+            <div class="chronology-spine-paper space-y-4 pt-2">
+              <div class="chronology-node">
+                <span class="chronology-node-dot-paper"></span>
+                ${renderCertifiedVsContestedModule()}
+              </div>
+            </div>
+          </section>
+
+          <!-- =====================================================================
+               ERA 5: 2026 — RECORD & OUTCOMES
+               ===================================================================== -->
+          <section id="year-2026" class="space-y-8 pt-8 border-t border-paper">
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-baseline gap-3">
+                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2026</span>
+                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Record &amp; Measured Outcomes</span>
+                </div>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps.</p>
+              </div>
+            </div>
+
+            <!-- Macroeconomic Indicators & Public Services (Open broadsheet layout) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              ${unempGrad ? renderChronologyItem(unempGrad) : ''}
+              ${gdpGrowth ? renderChronologyItem(gdpGrowth) : ''}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+              ${reconOutcome ? renderChronologyItem(reconOutcome) : ''}
+              ${waterOutcome ? renderChronologyItem(waterOutcome) : ''}
+            </div>
+
+            <!-- Documented Data Gaps Sub-Section -->
+            <div class="space-y-4 pt-6 border-t border-paper">
+              <div class="flex items-center justify-between pb-2 border-b border-paper">
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold">DOCUMENTED TRANSPARENCY DATA GAPS</span>
+                <span class="text-[10px] font-mono text-paper-dim">2 AUDITED GAPS</span>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                ${gabesGap ? renderDataGapCard(gabesGap) : ''}
+                ${reconGap ? renderDataGapCard(reconGap) : ''}
+              </div>
+            </div>
+
+            <!-- Sovereign Ratings & Public Trust Benchmarks -->
+            <div class="space-y-6 pt-6 border-t border-paper">
+              <div class="flex items-center justify-between pb-2 border-b border-paper">
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-muted font-bold">SOVEREIGN RATINGS &amp; PUBLIC TRUST TRAJECTORY</span>
+                <span class="text-[10px] font-mono text-paper-dim">ARAB BAROMETER · MOODY'S · FITCH</span>
+              </div>
+
+              <div class="space-y-3">
+                ${eco.sovereignRatings.map(r => `
+                  <div class="p-4 bg-white border border-paper flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-sans font-bold text-paper-main text-sm">${escapeHtml(r.agency)}</span>
+                        <span class="text-[10px] font-mono uppercase px-2 py-0.5 bg-[#F2EFE9] border border-paper text-paper-muted">${escapeHtml(r.date)}</span>
+                      </div>
+                      ${r.rationale ? `<p class="text-xs text-paper-muted font-light max-w-xl">${escapeHtml(r.rationale)}</p>` : ''}
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                      <div class="text-right">
+                        <span class="text-[9px] font-mono text-paper-dim uppercase block">PREV: ${escapeHtml(r.previousRating)}</span>
+                        <span class="text-xs font-mono text-paper-sand">${escapeHtml(r.outlook)}</span>
+                      </div>
+                      <div class="text-2xl font-mono font-bold text-paper-red px-3 py-1 bg-[#F2EFE9] border border-paper">
+                        ${escapeHtml(r.currentRating)}
+                      </div>
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+                ${trust.benchmarks.slice(0, 3).map(bm => `
+                  <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-paper">
+                      <div>
+                        <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim">SURVEY EVIDENCE</span>
+                        <div class="font-sans font-bold text-paper-main text-sm sm:text-base">${escapeHtml(trust.metadata.primarySource)} · 2018–2024 Trends</div>
+                      </div>
+                      <div class="text-[10px] font-mono text-paper-dim">
+                        ${escapeHtml(trust.metadata.sampleSize)} · ±2.5% MoE
+                      </div>
+                    </div>
+
+                    ${bm.question ? `
+                      <div class="p-3 bg-[#FAF8F5] border border-paper text-xs font-sans text-paper-muted italic">
+                        "${escapeHtml(bm.question)}"
+                      </div>
+                    ` : ''}
+
+                    <div class="space-y-3 pt-1">
+                      ${bm.results.map(r => `
+                        <div class="space-y-1">
+                          <div class="flex items-center justify-between text-xs font-mono">
+                            <span class="text-paper-muted">${escapeHtml(r.wave)}: ${escapeHtml(r.note || '')}</span>
+                            <span class="font-bold ${r.highlight ? 'text-paper-red' : 'text-paper-main'}">${escapeHtml(String(r.value))}%</span>
+                          </div>
+                          <div class="w-full h-1.5 bg-[#E5E0D8] rounded-full overflow-hidden">
+                            <div class="${r.highlight ? 'bg-[#B91C1C]' : 'bg-[#141517]'}" style="width: ${Math.min(100, Math.max(0, r.value))}%; height: 100%;"></div>
+                          </div>
+                        </div>
+                      `).join("")}
+                    </div>
+
+                    <div class="pt-3 border-t border-paper text-[10px] font-mono text-paper-dim">
+                      METHODOLOGY: ${escapeHtml(trust.metadata.methodology)}
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </section>
+
+          <!-- 6-QUESTION ACCOUNTABILITY GRAMMAR BLOCK -->
+          ${accountabilityGrammarHtml}
+
+        </div>
+      </div>
+
+      <!-- C. CONNECTED INVESTIGATIVE FILES (DARK INVESTIGATIVE FOOTER TRANSITION) -->
+      <section class="bg-background text-bone-100 py-12 border-t border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase tracking-widest text-surface-400 block font-semibold">CONNECTED THEMATIC DOSSIERS</span>
+            <a href="/the-files" class="text-xs font-mono text-sand hover:underline">View All 07 Files ↗</a>
           </div>
-          <div class="p-3.5 bg-surface-900/60 border border-sand/30 space-y-1">
-            <span class="text-[10px] font-mono text-sand font-bold uppercase block">CLAIM · ATTRIBUTED</span>
-            <p class="text-surface-300 font-light leading-relaxed">Government declarations, speech justifications, or opposition allegations. Preserved as attributed discourse; never converted to fact.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="/issues/water" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 01: Water Deficit (21.4%)</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/issues/electricity" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 02: Electrical Stress (52%)</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/gabes" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">Gabès Flagship Investigation</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/issues/rights" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 07: Rights &amp; Freedoms</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
           </div>
-          <div class="p-3.5 bg-surface-900/60 border border-crimson/30 space-y-1">
-            <span class="text-[10px] font-mono text-crimson font-bold uppercase block">ANALYSIS</span>
-            <p class="text-surface-300 font-light leading-relaxed">404TN investigative interpretation and contextual synthesis of documented evidence and legal transformations.</p>
-          </div>
-          <div class="p-3.5 bg-surface-900/60 border border-surface-800 space-y-1">
-            <span class="text-[10px] font-mono text-surface-400 font-bold uppercase block">DATA GAPS</span>
-            <p class="text-surface-300 font-light leading-relaxed">Systematically documented missing or unpublished state datasets, tracked as legitimate empirical transparency findings.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- CHRONOLOGY NAVIGATION & FILTER BAR -->
-      <nav id="chronology-nav" class="sticky top-0 z-20 bg-background/95 backdrop-blur border-y border-surface-800 py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono" aria-label="Chronology Navigation">
-        <div class="flex items-center gap-1.5 sm:gap-3 flex-wrap">
-          <span class="text-[10px] uppercase text-surface-500 font-bold mr-1">CHRONOLOGY:</span>
-          <a href="#year-2019" class="px-2.5 py-1 bg-surface-900 hover:bg-surface-800 border border-surface-800 text-bone-100 hover:text-crimson transition-colors">2019 · Mandate</a>
-          <a href="#year-2021" class="px-2.5 py-1 bg-surface-900 hover:bg-surface-800 border border-surface-800 text-bone-100 hover:text-crimson transition-colors">2021 · Rupture</a>
-          <a href="#year-2022" class="px-2.5 py-1 bg-surface-900 hover:bg-surface-800 border border-surface-800 text-bone-100 hover:text-crimson transition-colors">2022 · New Order</a>
-          <a href="#year-2024" class="px-2.5 py-1 bg-surface-900 hover:bg-surface-800 border border-surface-800 text-bone-100 hover:text-crimson transition-colors">2024 · Consolidation</a>
-          <a href="#year-2026" class="px-2.5 py-1 bg-surface-900 hover:bg-surface-800 border border-surface-800 text-bone-100 hover:text-crimson transition-colors">2026 · Outcomes</a>
-        </div>
-      </nav>
-
-      <!-- =====================================================================
-           ERA 1: 2019 — MANDATE
-           ===================================================================== -->
-      <section id="year-2019" class="space-y-6 pt-4">
-        ${renderSectionOpener({
-          eyebrow: "ERA 01 · 2019",
-          title: "2019 — The Mandate: Anti-Establishment Landslide & Campaign Doctrine",
-          deck: "Elected on October 13, 2019 with 72.71% of the vote (2.77 million ballots) on a platform pledging direct grassroots democracy, anti-corruption restitution, and text-based economic sovereignty."
-        })}
-
-        <div class="chronology-spine-container space-y-6 pt-2">
-          ${elec2019 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(elec2019)}</div>` : ''}
-          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}</div>
-          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}</div>
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           ERA 2: 2021 — RUPTURE
-           ===================================================================== -->
-      <section id="year-2021" class="space-y-6 pt-8 border-t border-surface-800">
-        ${renderSectionOpener({
-          eyebrow: "ERA 02 · 2021",
-          title: "2021 — The Rupture: Article 80 Emergency Measures & Decree 117",
-          deck: "Following severe pandemic healthcare distress and nationwide unrest, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament, and concentrated executive and legislative powers."
-        })}
-
-        <div class="chronology-spine-container space-y-6 pt-2">
-          ${elec2021 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(elec2021)}</div>` : ''}
-          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderStateComparisonModule()}</div>
-          ${dec2021 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(dec2021)}</div>` : ''}
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           ERA 3: 2022 — NEW POLITICAL ORDER
-           ===================================================================== -->
-      <section id="year-2022" class="space-y-6 pt-8 border-t border-surface-800">
-        ${renderSectionOpener({
-          eyebrow: "ERA 03 · 2022",
-          title: "2022 — The New Political Order: Constitutional Transformation & Judicial Restructuring",
-          deck: "Structural transition to an executive-dominant republic: dissolution of the High Judicial Council, executive revocation of 57 magistrates, promulgation of the 2022 Constitution via referendum, and enactment of Decree-Law 54."
-        })}
-
-        <div class="chronology-spine-container space-y-6 pt-2">
-          ${csm2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(csm2022)}</div>` : ''}
-          ${judges2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(judges2022)}</div>` : ''}
-          ${const2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(const2022)}</div>` : ''}
-          ${law54 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(law54)}</div>` : ''}
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           ERA 4: 2024 — CONSOLIDATION
-           ===================================================================== -->
-      <section id="year-2024" class="space-y-6 pt-8 border-t border-surface-800">
-        ${renderSectionOpener({
-          eyebrow: "ERA 04 · 2024",
-          title: "2024 — Political Consolidation: Re-Election & Contested Electoral Framework",
-          deck: "Kais Saied secured re-election on October 6, 2024 with 90.69% of the vote on a 28.8% turnout in a ballot characterized by candidate disqualifications and non-execution of Administrative Court reinstatement orders."
-        })}
-
-        <div class="chronology-spine-container space-y-6 pt-2">
-          <div class="chronology-node">
-            <span class="chronology-node-dot"></span>
-            ${renderCertifiedVsContestedModule()}
-          </div>
-        </div>
-      </section>
-
-      <!-- =====================================================================
-           ERA 5: 2026 — RECORD & OUTCOMES
-           ===================================================================== -->
-      <section id="year-2026" class="space-y-8 pt-8 border-t border-surface-800">
-        ${renderSectionOpener({
-          eyebrow: "ERA 05 · 2026",
-          title: "2026 — The Record & Measured Outcomes: Direct Executive Responsibility Tested",
-          deck: "Five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps."
-        })}
-
-        <!-- Macroeconomic Indicators & Public Services -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          ${unempGrad ? renderChronologyItem(unempGrad) : ''}
-          ${gdpGrowth ? renderChronologyItem(gdpGrowth) : ''}
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          ${reconOutcome ? renderChronologyItem(reconOutcome) : ''}
-          ${waterOutcome ? renderChronologyItem(waterOutcome) : ''}
-        </div>
-
-        <!-- Documented Data Gaps Sub-Section -->
-        <div class="space-y-4 pt-4">
-          <div class="flex items-center justify-between pb-2 border-b border-surface-800">
-            <span class="text-xs font-mono uppercase tracking-widest text-sand font-bold">DOCUMENTED TRANSPARENCY DATA GAPS</span>
-            <span class="text-[10px] font-mono text-surface-500">2 AUDITED GAPS</span>
-          </div>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            ${gabesGap ? renderDataGapCard(gabesGap) : ''}
-            ${reconGap ? renderDataGapCard(reconGap) : ''}
-          </div>
-        </div>
-
-        <!-- Sovereign Ratings & Public Trust Benchmarks -->
-        <div class="space-y-6 pt-6 border-t border-surface-800">
-          <div class="flex items-center justify-between pb-2 border-b border-surface-800">
-            <span class="text-xs font-mono uppercase tracking-widest text-surface-400 font-bold">SOVEREIGN RATINGS &amp; PUBLIC TRUST TRAJECTORY</span>
-            <span class="text-[10px] font-mono text-surface-500">ARAB BAROMETER · MOODY'S · FITCH</span>
-          </div>
-
-          <div class="space-y-3">
-            ${eco.sovereignRatings.map(r => renderRatingChange(r)).join("")}
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
-            ${trust.benchmarks.slice(0, 3).map(bm => renderPollResult({
-              organization: trust.metadata.primarySource,
-              fieldwork: "2018–2024 Trends",
-              sampleSize: trust.metadata.sampleSize,
-              methodology: trust.metadata.methodology,
-              question: bm.question,
-              results: bm.results.map(r => ({
-                label: `${r.wave}: ${r.note || ''}`,
-                percentage: r.value,
-                highlight: r.highlight
-              }))
-            })).join("")}
-          </div>
-        </div>
-      </section>
-
-      <!-- 6-QUESTION ACCOUNTABILITY GRAMMAR BLOCK -->
-      ${accountabilityGrammarHtml}
-
-      <!-- CONNECTED INVESTIGATIVE FILES -->
-      <section class="space-y-4 pt-6 border-t border-surface-800">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-mono uppercase tracking-widest text-surface-400 block font-semibold">CONNECTED THEMATIC DOSSIERS</span>
-          <a href="/the-files" class="text-xs font-mono text-sand hover:underline">View All 07 Files ↗</a>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <a href="/issues/water" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
-            <span class="text-bone-100 group-hover:text-crimson font-medium">File 01: Water Deficit (21.4%)</span>
-            <span class="text-surface-400 group-hover:text-bone-100">→</span>
-          </a>
-          <a href="/issues/electricity" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
-            <span class="text-bone-100 group-hover:text-crimson font-medium">File 02: Electrical Stress (52%)</span>
-            <span class="text-surface-400 group-hover:text-bone-100">→</span>
-          </a>
-          <a href="/gabes" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
-            <span class="text-bone-100 group-hover:text-crimson font-medium">Gabès Flagship Investigation</span>
-            <span class="text-surface-400 group-hover:text-bone-100">→</span>
-          </a>
-          <a href="/issues/rights" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
-            <span class="text-bone-100 group-hover:text-crimson font-medium">File 07: Rights &amp; Freedoms</span>
-            <span class="text-surface-400 group-hover:text-bone-100">→</span>
-          </a>
         </div>
       </section>
 

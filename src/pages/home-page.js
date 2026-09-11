@@ -158,88 +158,89 @@ export function renderHomepageHtml() {
     </section>
 
     <!-- =========================================================================
-         2. THE SEVEN FILES (EDITORIAL ARCHIVE INDEX)
+         2. THE SEVEN FILES (EDITORIAL ARCHIVE INDEX ON PAPER)
          ========================================================================= -->
-    <section id="the-files-section" class="py-16 sm:py-24 border-b border-surface-800">
+    <section id="the-files-section" class="surface-paper py-16 sm:py-24 border-y border-paper">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-surface-800">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-paper">
           <div class="space-y-1">
-            ${sectionKicker('SYSTEMIC DOSSIERS · SUMMER 2026')}
-            ${sectionHeading('The Seven Files', 'Structured ongoing documentation of systemic pressure, public utility strain, and institutional accountability across Tunisia.')}
+            <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">SYSTEMIC DOSSIERS · SUMMER 2026</span>
+            <h2 class="font-editorial text-2xl sm:text-3xl text-paper-main font-bold">The Seven Files</h2>
+            <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-2xl">Structured ongoing documentation of systemic pressure, public utility strain, and institutional accountability across Tunisia.</p>
           </div>
-          <a href="/the-files" class="text-xs font-mono text-sand hover:underline shrink-0">View Complete Archive Index →</a>
+          <a href="/the-files" class="text-xs font-mono text-paper-red hover:underline shrink-0 font-bold">View Complete Archive Index →</a>
         </div>
 
-        <div class="divide-y divide-surface-800 border-y border-surface-800 font-sans">
+        <div class="divide-y divide-paper border-y border-paper font-sans">
           
           <!-- File 01: Water -->
-          <a href="/issues/water" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/water" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">01</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Water</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Cuts, rationing schedules, aged conveyance infrastructure and reservoir storage deficit (21.4% capacity).</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">01</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Water</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Cuts, rationing schedules, aged conveyance infrastructure and reservoir storage deficit (21.4% capacity).</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 02: Electricity -->
-          <a href="/issues/electricity" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/electricity" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">02</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Electricity</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">STEG generation shortfalls, summer peak thermal strain (4,825 MW), and recurring local load shedding.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">02</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Electricity</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">STEG generation shortfalls, summer peak thermal strain (4,825 MW), and recurring local load shedding.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 03: Pollution & Environment -->
-          <a href="/issues/pollution" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/pollution" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">03</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Pollution & Environment</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Industrial emissions, phosphogypsum marine discharge, municipal waste crises, and state data deficits.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">03</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Pollution & Environment</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Industrial emissions, phosphogypsum marine discharge, municipal waste crises, and state data deficits.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 04: Work -->
-          <a href="/issues/work" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/work" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">04</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Work</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Graduate joblessness (38.8%), informal labor expansion, and wage compression under persistent inflation.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">04</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Work</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Graduate joblessness (38.8%), informal labor expansion, and wage compression under persistent inflation.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 05: Migration -->
-          <a href="/issues/migration" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/migration" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">05</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Migration</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Mediterranean departures, transit encampments, external border outsourcing, and regional human rights fallout.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">05</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Migration</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Mediterranean departures, transit encampments, external border outsourcing, and regional human rights fallout.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 06: Public Services -->
-          <a href="/issues/public-services" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/public-services" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">06</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Public Services</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Public hospital medicine stockouts, suburban transport fleet decay, and municipal maintenance deficits.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">06</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Public Services</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Public hospital medicine stockouts, suburban transport fleet decay, and municipal maintenance deficits.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 
           <!-- File 07: Rights & Freedoms -->
-          <a href="/issues/rights" class="block py-6 group hover:bg-surface-900/30 transition-colors px-2 no-underline">
+          <a href="/issues/rights" class="block py-6 group hover:bg-[#F2EFE9] transition-colors px-2 no-underline">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-1 num-archival text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">07</div>
-              <div class="md:col-span-3 font-bold text-lg text-bone-100 group-hover:text-crimson transition-colors">Rights & Freedoms</div>
-              <div class="md:col-span-6 text-xs sm:text-sm text-surface-300 font-light">Decree-Law 54 criminal prosecutions, judicial restructuring, and executive containment of civic dissent.</div>
-              <div class="md:col-span-2 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">Inspect File →</div>
+              <div class="md:col-span-1 num-archival text-2xl font-light text-paper-dim group-hover:text-paper-red transition-colors font-mono">07</div>
+              <div class="md:col-span-3 font-bold text-lg text-paper-main group-hover:text-paper-red transition-colors">Rights & Freedoms</div>
+              <div class="md:col-span-6 text-xs sm:text-sm text-paper-muted font-light">Decree-Law 54 criminal prosecutions, judicial restructuring, and executive containment of civic dissent.</div>
+              <div class="md:col-span-2 text-right font-mono text-xs text-paper-dim group-hover:text-paper-red group-hover:translate-x-1 transition-all font-bold">Inspect File →</div>
             </div>
           </a>
 

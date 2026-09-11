@@ -632,42 +632,72 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* ==========================================================================
-   DOCUMENT PAPER SURFACE & TWO-SURFACE SYSTEM
+   DOCUMENT PAPER SURFACE & TWO-SURFACE SYSTEM (PHASE 1.1 REFINEMENT)
    ========================================================================== */
+:root {
+  --paper-bg: #FAF8F5;
+  --paper-bg-elevated: #FFFFFF;
+  --paper-bg-subtle: #F2EFE9;
+  --paper-text-main: #141517;
+  --paper-text-muted: #4A4D54;
+  --paper-text-dim: #6F737D;
+  --paper-border: #E5E0D8;
+  --paper-border-strong: #CCC6BC;
+  --paper-red: #B91C1C;
+  --paper-sand: #854D0E;
+}
+
 .surface-paper {
-  background-color: #F7F6F2;
-  color: #141517;
+  background-color: var(--paper-bg);
+  color: var(--paper-text-main);
 }
 
 .surface-paper-elevated {
-  background-color: #EFECE6;
-  color: #141517;
+  background-color: var(--paper-bg-elevated);
+  color: var(--paper-text-main);
+}
+
+.surface-paper-subtle {
+  background-color: var(--paper-bg-subtle);
+  color: var(--paper-text-main);
 }
 
 .surface-paper-card {
-  background-color: #FFFFFF;
-  border: 1px solid rgba(20, 21, 23, 0.1);
-  color: #141517;
+  background-color: var(--paper-bg-elevated);
+  border: 1px solid var(--paper-border);
+  color: var(--paper-text-main);
 }
 
 .border-paper {
-  border-color: rgba(20, 21, 23, 0.12);
+  border-color: var(--paper-border);
 }
 
 .border-paper-strong {
-  border-color: rgba(20, 21, 23, 0.24);
+  border-color: var(--paper-border-strong);
 }
 
 .text-paper-main {
-  color: #141517;
+  color: var(--paper-text-main);
 }
 
 .text-paper-muted {
-  color: #55534E;
+  color: var(--paper-text-muted);
 }
 
 .text-paper-dim {
-  color: #85827A;
+  color: var(--paper-text-dim);
+}
+
+.text-paper-red {
+  color: var(--paper-red);
+}
+
+.text-paper-sand {
+  color: var(--paper-sand);
+}
+
+.newspaper-rule-paper {
+  border-bottom: 1px solid var(--paper-border);
 }
 
 /* ==========================================================================
@@ -688,8 +718,24 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   z-index: 1;
 }
 
+.chronology-spine-paper {
+  position: relative;
+}
+
+.chronology-spine-paper::before {
+  content: '';
+  position: absolute;
+  top: 1rem;
+  bottom: 2rem;
+  left: 1.25rem;
+  width: 1px;
+  background-color: var(--paper-border-strong);
+  z-index: 1;
+}
+
 @media (min-width: 640px) {
-  .chronology-spine-container::before {
+  .chronology-spine-container::before,
+  .chronology-spine-paper::before {
     left: 2rem;
   }
 }
@@ -708,7 +754,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .chronology-node-dot {
   position: absolute;
-  left: 1rem;
+  left: 1.25rem;
   top: 1.25rem;
   width: 0.5rem;
   height: 0.5rem;
@@ -718,9 +764,53 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   box-shadow: 0 0 0 4px var(--bg-primary);
 }
 
+.chronology-node-dot-paper {
+  position: absolute;
+  left: 1.25rem;
+  top: 1.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--paper-red);
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 4px var(--paper-bg);
+}
+
 @media (min-width: 640px) {
-  .chronology-node-dot {
+  .chronology-node-dot,
+  .chronology-node-dot-paper {
     left: 2rem;
+  }
+}
+
+/* Open broadsheet chronology record (No enclosing card box) */
+.chronology-record-item {
+  position: relative;
+  transition: background-color 0.15s ease;
+}
+
+/* ==========================================================================
+   LARGE ARCHITECTURAL YEAR DISPLAY
+   ========================================================================== */
+.architectural-year-header {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+}
+
+.architectural-year-numeral {
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 3.5rem;
+  line-height: 0.9;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--paper-red);
+}
+
+@media (min-width: 640px) {
+  .architectural-year-numeral {
+    font-size: 5rem;
   }
 }
 
@@ -738,6 +828,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   font-weight: 400;
 }
 
+.editorial-essay-lead-paper::first-letter {
+  float: left;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 3.75rem;
+  line-height: 0.8;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  color: var(--paper-red);
+  font-weight: 400;
+}
+
 .pull-stat-editorial {
   font-family: "Newsreader", Georgia, serif;
   font-feature-settings: "lnum" 1, "tnum" 1;
@@ -752,19 +853,75 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   background-color: rgba(23, 25, 27, 0.6);
 }
 
+.documentary-frame-paper {
+  position: relative;
+  border-left: 2px solid var(--paper-red);
+  padding: 1.25rem 1.5rem;
+  background-color: var(--paper-bg-subtle);
+  border-top: 1px solid var(--paper-border);
+  border-right: 1px solid var(--paper-border);
+  border-bottom: 1px solid var(--paper-border);
+}
+
+/* ==========================================================================
+   DOCUMENTARY VISUAL PRIMITIVES (FIGURES & FACSIMILES)
+   ========================================================================== */
+.documentary-figure {
+  margin: 1.5rem 0;
+  padding: 0.75rem;
+  background-color: var(--paper-bg-subtle);
+  border: 1px solid var(--paper-border);
+}
+
+.figure-caption {
+  font-family: "Newsreader", Georgia, serif;
+  font-style: italic;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--paper-text-muted);
+  margin-top: 0.5rem;
+}
+
+.figure-source {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--paper-text-dim);
+  margin-top: 0.25rem;
+}
+
+.figure-number {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--paper-red);
+  margin-right: 0.35rem;
+}
+
+.document-facsimile {
+  border: 1px solid var(--paper-border-strong);
+  background-color: var(--paper-bg-elevated);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   EPISTEMIC STAMPS (DARK & PAPER EDITIONS)
+   ========================================================================== */
 .stamp-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   font-family: "JetBrains Mono", monospace;
   font-size: 9px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-weight: 700;
   padding: 1px 6px;
   border-width: 1px;
 }
 
+/* Dark canvas stamps */
 .stamp-fact {
   background-color: rgba(241, 240, 236, 0.95);
   border-color: #F1F0EC;
@@ -789,3 +946,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: #FBBF24;
 }
 
+/* Paper canvas stamps */
+.stamp-paper-fact {
+  background-color: #141517;
+  border-color: #141517;
+  color: #FAF8F5;
+}
+
+.stamp-paper-claim {
+  background-color: #FEF3C7;
+  border-color: #F59E0B;
+  color: #92400E;
+}
+
+.stamp-paper-analysis {
+  background-color: #FEE2E2;
+  border-color: #EF4444;
+  color: #991B1B;
+}
+
+.stamp-paper-datagap {
+  background-color: #FEF9C3;
+  border-color: #EAB308;
+  color: #854D0E;
+}
