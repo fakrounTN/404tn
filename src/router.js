@@ -3,28 +3,28 @@
 import { SEO_REGISTRY } from './seo-registry.js';
 
 export const ROUTE_MAP = {
-  '/': { sectionId: 'hero', navRoute: '/', isStandard: true },
-  '/summer-2026': { sectionId: 'summer-2026', navRoute: '/summer-2026', isStandard: true },
-  '/the-files': { sectionId: 'the-files', navRoute: '/the-files', isStandard: true },
-  '/geospatial-monitor': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor', isStandard: true },
-  '/geospatial': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor', isStandard: true },
-  '/gabes': { sectionId: 'gabes-report-view', navRoute: '/the-files', isGabes: true },
-  '/state-response': { sectionId: 'state-response', navRoute: '/state-response', isStandard: true },
-  '/presidency': { sectionId: 'presidency-report-view', navRoute: '/presidency', isPresidency: true },
-  '/timeline': { sectionId: 'timeline', navRoute: '/timeline', isStandard: true },
-  '/evidence': { sectionId: 'methodology', navRoute: '/methodology', isStandard: true },
-  '/methodology': { sectionId: 'methodology', navRoute: '/methodology', isStandard: true },
-  '/statement': { sectionId: 'statement', navRoute: '/statement', isStandard: true },
+  '/': { type: 'home', navRoute: '/' },
+  '/summer-2026': { type: 'summer', navRoute: '/summer-2026' },
+  '/the-files': { type: 'the-files', navRoute: '/the-files' },
+  '/geospatial-monitor': { type: 'geospatial', navRoute: '/geospatial-monitor' },
+  '/geospatial': { type: 'geospatial', navRoute: '/geospatial-monitor' },
+  '/gabes': { type: 'gabes', navRoute: '/the-files' },
+  '/state-response': { type: 'state-response', navRoute: '/state-response' },
+  '/presidency': { type: 'presidency', navRoute: '/presidency' },
+  '/timeline': { type: 'timeline', navRoute: '/timeline' },
+  '/evidence': { type: 'evidence', navRoute: '/methodology' },
+  '/methodology': { type: 'methodology', navRoute: '/methodology' },
+  '/statement': { type: 'statement', navRoute: '/statement' },
 
   // Issue routes
-  '/issues/water': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'water' },
-  '/issues/electricity': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'electricity' },
-  '/issues/work': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'work' },
-  '/issues/migration': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'migration' },
-  '/issues/public-services': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'publicServices' },
-  '/issues/rights': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'institutions' },
-  '/issues/rights-institutions': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'institutions' },
-  '/issues/pollution': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'pollution' }
+  '/issues/water': { type: 'issue', navRoute: '/the-files', issueKey: 'water' },
+  '/issues/electricity': { type: 'issue', navRoute: '/the-files', issueKey: 'electricity' },
+  '/issues/work': { type: 'issue', navRoute: '/the-files', issueKey: 'work' },
+  '/issues/migration': { type: 'issue', navRoute: '/the-files', issueKey: 'migration' },
+  '/issues/public-services': { type: 'issue', navRoute: '/the-files', issueKey: 'publicServices' },
+  '/issues/rights': { type: 'issue', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/rights-institutions': { type: 'issue', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/pollution': { type: 'issue', navRoute: '/the-files', issueKey: 'pollution' }
 };
 
 export const LEGACY_HASH_MAP = {
@@ -42,26 +42,19 @@ export const LEGACY_HASH_MAP = {
   '#statement': '/statement'
 };
 
-let onIssueRouteHandler = null;
-let onGabesRouteHandler = null;
-let onPresidencyRouteHandler = null;
-let onStandardRouteHandler = null;
+let onRouteViewHandler = null;
 
+export function setRouteViewHandler(handler) {
+  onRouteViewHandler = handler;
+}
+
+// Backward compatibility setters
 export function setIssueRouteHandler(handler) {
-  onIssueRouteHandler = handler;
+  // Handled via setRouteViewHandler
 }
-
-export function setGabesRouteHandler(handler) {
-  onGabesRouteHandler = handler;
-}
-
-export function setPresidencyRouteHandler(handler) {
-  onPresidencyRouteHandler = handler;
-}
-
-export function setStandardRouteHandler(handler) {
-  onStandardRouteHandler = handler;
-}
+export function setGabesRouteHandler(handler) {}
+export function setPresidencyRouteHandler(handler) {}
+export function setStandardRouteHandler(handler) {}
 
 export function resolveRoute(pathname, hash = '') {
   // Normalize pathname: remove trailing slash (except root)
@@ -155,18 +148,7 @@ export function scrollToTarget(sectionId, hash) {
     }
   }
 
-  if (sectionId === 'hero' || !sectionId) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-
-  const el = document.getElementById(sectionId);
-  if (el) {
-    const headerOffset = 70;
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-  }
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function setMetaTag(attrName, attrValue, content) {
@@ -232,16 +214,10 @@ export function handleNavigation(pathWithHash, pushState = true) {
     updateHeadMetadata(resolution.targetPath);
     updateActiveNavLinks(resolution.routeConfig.navRoute);
 
-    if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
-      onIssueRouteHandler(resolution.routeConfig.issueKey);
-    } else if (resolution.routeConfig.isGabes && onGabesRouteHandler) {
-      onGabesRouteHandler();
-    } else if (resolution.routeConfig.isPresidency && onPresidencyRouteHandler) {
-      onPresidencyRouteHandler();
-    } else {
-      if (onStandardRouteHandler) onStandardRouteHandler(resolution.routeConfig.sectionId);
-      scrollToTarget(resolution.routeConfig.sectionId, null);
+    if (onRouteViewHandler) {
+      onRouteViewHandler(resolution.targetPath, resolution.routeConfig);
     }
+    scrollToTarget(null, null);
     return;
   }
 
@@ -264,16 +240,10 @@ export function handleNavigation(pathWithHash, pushState = true) {
   updateHeadMetadata(resolution.cleanPath);
   updateActiveNavLinks(resolution.routeConfig.navRoute);
 
-  if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
-    onIssueRouteHandler(resolution.routeConfig.issueKey);
-  } else if (resolution.routeConfig.isGabes && onGabesRouteHandler) {
-    onGabesRouteHandler();
-  } else if (resolution.routeConfig.isPresidency && onPresidencyRouteHandler) {
-    onPresidencyRouteHandler();
-  } else {
-    if (onStandardRouteHandler) onStandardRouteHandler(resolution.routeConfig.sectionId);
-    scrollToTarget(resolution.routeConfig.sectionId, hash);
+  if (onRouteViewHandler) {
+    onRouteViewHandler(resolution.cleanPath, resolution.routeConfig);
   }
+  scrollToTarget(null, hash);
 }
 
 export function initRouter() {

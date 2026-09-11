@@ -17,7 +17,8 @@ import {
   renderEvidenceHtml,
   renderMethodologyHtml,
   renderStatementHtml,
-  renderGeospatialHtml
+  renderGeospatialHtml,
+  renderHomepageHtml
 } from '../src/dossier-data.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -56,9 +57,6 @@ function escapeAttr(str) {
 }
 
 function generateSchemaJson(entry) {
-  // Phase 1 Scope: Minimal global WebSite and NewsMediaOrganization graph only.
-  // Route-specific Article, Report, Dataset, CollectionPage, and BreadcrumbList schemas
-  // are deferred to the dedicated structured data phase.
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -152,92 +150,37 @@ function prerenderRoute(baseHtml, entry) {
   const jsonLdTag = `<script type="application/ld+json">\n${schemaJsonStr}\n  </script>`;
   html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/i, jsonLdTag);
 
-  // 9. Semantic H1 & Prerender Content Block
+  // 9. Route-specific Body Content Injection into #content-views
+  let routeHtml = '';
   if (entry.path === '/') {
-    // Root route: Hero contains the single H1.
+    routeHtml = renderHomepageHtml();
+  } else if (ISSUE_PATH_MAP[entry.path]) {
+    const issueKey = ISSUE_PATH_MAP[entry.path];
+    routeHtml = renderDossierViewHtml(issueKey);
+  } else if (entry.path === '/gabes') {
+    routeHtml = renderGabesReportViewHtml();
+  } else if (entry.path === '/presidency') {
+    routeHtml = renderPresidencyReportViewHtml();
+  } else if (entry.path === '/summer-2026') {
+    routeHtml = renderSummer2026Html({ isPrerender: true });
+  } else if (entry.path === '/the-files') {
+    routeHtml = renderTheFilesHtml({ isPrerender: true });
+  } else if (entry.path === '/timeline') {
+    routeHtml = renderTimelineHtml({ isPrerender: true });
+  } else if (entry.path === '/state-response') {
+    routeHtml = renderStateResponseHtml({ isPrerender: true });
+  } else if (entry.path === '/evidence') {
+    routeHtml = renderEvidenceHtml({ isPrerender: true });
+  } else if (entry.path === '/methodology') {
+    routeHtml = renderMethodologyHtml({ isPrerender: true });
+  } else if (entry.path === '/statement') {
+    routeHtml = renderStatementHtml({ isPrerender: true });
+  } else if (entry.path === '/geospatial-monitor' || entry.path === '/geospatial') {
+    routeHtml = renderGeospatialHtml({ isPrerender: true });
   } else {
-    // Subpage: Demote Hero H1 to H2 so the page has exactly 1 H1.
-    html = html.replace(
-      /<h1(\s+class="font-editorial[^"]*")>([\s\S]*?)<\/h1>/i,
-      `<h2$1>$2</h2>`
-    );
-
-    if (ISSUE_PATH_MAP[entry.path]) {
-      // Full rich issue dossier injection with single H1
-      const issueKey = ISSUE_PATH_MAP[entry.path];
-      const dossierHtml = renderDossierViewHtml(issueKey);
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${dossierHtml}`
-      );
-    } else if (entry.path === '/gabes') {
-      // Full rich Gabès flagship special report injection with single H1
-      const gabesHtml = renderGabesReportViewHtml();
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${gabesHtml}`
-      );
-    } else if (entry.path === '/presidency') {
-      // Full rich Kais Saied presidency special investigation with single H1
-      const presidencyHtml = renderPresidencyReportViewHtml();
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${presidencyHtml}`
-      );
-    } else if (entry.path === '/summer-2026') {
-      const summerHtml = renderSummer2026Html({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${summerHtml}`
-      );
-    } else if (entry.path === '/the-files') {
-      const filesHtml = renderTheFilesHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${filesHtml}`
-      );
-    } else if (entry.path === '/timeline') {
-      const timelineHtml = renderTimelineHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${timelineHtml}`
-      );
-    } else if (entry.path === '/state-response') {
-      const stateResponseHtml = renderStateResponseHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${stateResponseHtml}`
-      );
-    } else if (entry.path === '/evidence') {
-      const evidenceHtml = renderEvidenceHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${evidenceHtml}`
-      );
-    } else if (entry.path === '/methodology') {
-      const methodologyHtml = renderMethodologyHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${methodologyHtml}`
-      );
-    } else if (entry.path === '/statement') {
-      const statementHtml = renderStatementHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${statementHtml}`
-      );
-    } else if (entry.path === '/geospatial-monitor' || entry.path === '/geospatial') {
-      const geoHtml = renderGeospatialHtml({ isPrerender: true });
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${geoHtml}`
-      );
-    } else {
-      // Other Subpages: Subpage semantic header banner containing its single H1, breadcrumbs, editorial intro, and internal links
-      const breadcrumbHtml = renderBreadcrumbHtml(entry.breadcrumb);
-      const internalLinksHtml = renderInternalLinksHtml(entry.internalLinks);
-
-      const subpageBannerHtml = `
+    const breadcrumbHtml = renderBreadcrumbHtml(entry.breadcrumb);
+    const internalLinksHtml = renderInternalLinksHtml(entry.internalLinks);
+    routeHtml = `
     <!-- Prerendered Semantic Dossier/Route Header for Non-JS Crawlers & Deep Links -->
     <section id="prerendered-route-header" class="border-b border-surface-800 bg-surface-900/90 py-10 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto space-y-5">
@@ -256,12 +199,22 @@ function prerenderRoute(baseHtml, entry) {
       </div>
     </section>
 `;
+  }
 
-      html = html.replace(
-        /(<div\s+id="content-views">)/i,
-        `$1\n${subpageBannerHtml}`
-      );
-    }
+  // Replace content-views inner HTML cleanly
+  const startTag = '<div id="content-views">';
+  const startIndex = html.indexOf(startTag);
+  const endMarker = '<section id="not-found-view"';
+  const endMarkerIndex = html.indexOf(endMarker);
+
+  if (startIndex !== -1 && endMarkerIndex !== -1) {
+    const beforeContent = html.substring(0, startIndex + startTag.length);
+    const afterContent = html.substring(endMarkerIndex);
+    const contentAndClose = html.substring(startIndex + startTag.length, endMarkerIndex);
+    const lastCloseDiv = contentAndClose.lastIndexOf('</div>');
+    const trailingBetween = lastCloseDiv !== -1 ? contentAndClose.substring(lastCloseDiv + 6) : '\n\n    ';
+
+    html = `${beforeContent}\n${routeHtml}\n    </div>${trailingBetween}${afterContent}`;
   }
 
   return html;
@@ -292,7 +245,6 @@ export function runPrerender() {
     if (routePath === '/') {
       targetFilePath = path.join(DIST_DIR, 'index.html');
     } else {
-      // Remove leading slash for path join
       const relPath = routePath.replace(/^\//, '');
       const targetDir = path.join(DIST_DIR, relPath);
       if (!fs.existsSync(targetDir)) {
