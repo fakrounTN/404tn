@@ -251,6 +251,86 @@ class TestSeoPrerender(unittest.TestCase):
         self.assertNotIn("Disallow: /gabes", content)
         self.assertNotIn("Disallow: /issues/", content)
 
+    def test_phase_b_dossier_and_gabes_templates(self):
+        """Phase B: Verify dossier template consistency across 7 files, exact Rights & Freedoms naming, and Gabès investigation."""
+        dossier_keys = [
+            ("01", "water"),
+            ("02", "electricity"),
+            ("03", "pollution"),
+            ("04", "work"),
+            ("05", "migration"),
+            ("06", "public-services"),
+            ("07", "rights")
+        ]
+
+        if not os.path.exists(self.dist_dir):
+            self.skipTest("dist/ directory not yet generated; skipping dist template assertions.")
+
+        for num, key in dossier_keys:
+            fpath = os.path.join(self.dist_dir, "issues", key, "index.html")
+            self.assertTrue(os.path.exists(fpath), f"Dossier file missing: {fpath}")
+            with open(fpath, "r", encoding="utf-8") as f:
+                html = f.read()
+
+            self.assertIn(f"404TN FILE {num}", html)
+            self.assertIn(f"File {num}", html)
+            self.assertIn("What This File Documents", html)
+            self.assertIn("ACCOUNTABLE INSTITUTIONS", html)
+            self.assertIn("EXPLICITLY IN SCOPE", html)
+            self.assertIn("DELIBERATELY OUTSIDE SCOPE", html)
+            self.assertIn("Key Documented Evidence", html)
+            self.assertIn("Chronology of Documented Events", html)
+            self.assertTrue("State Response & Known Outcomes" in html or "State Response &amp; Known Outcomes" in html)
+            self.assertIn("RELATED INVESTIGATIVE FILES", html)
+            self.assertNotIn('href="/issues/rights-institutions"', html)
+
+        # File 07 strict naming
+        rights_path = os.path.join(self.dist_dir, "issues", "rights", "index.html")
+        with open(rights_path, "r", encoding="utf-8") as f:
+            rights_html = f.read()
+        self.assertTrue("Rights & Freedoms" in rights_html or "Rights &amp; Freedoms" in rights_html)
+        self.assertNotIn("Rights &amp; Institutions", rights_html)
+        self.assertNotIn("Rights & Institutions", rights_html)
+
+        # Gabès flagship investigation assertions
+        gabes_path = os.path.join(self.dist_dir, "gabes", "index.html")
+        self.assertTrue(os.path.exists(gabes_path))
+        with open(gabes_path, "r", encoding="utf-8") as f:
+            gabes_html = f.read()
+
+        self.assertIn("SPECIAL INVESTIGATION", gabes_html)
+        self.assertIn("14,000", gabes_html)
+        self.assertIn("2017", gabes_html)
+        self.assertIn("href=\"/issues/pollution\"", gabes_html)
+        self.assertNotIn('href="/issues/rights-institutions"', gabes_html)
+
+    def test_phase_c_presidency_and_editorial_design_system(self):
+        """Phase C: Verify /presidency deep investigation structure, Promise/Action/Result blocks, and editorial design components."""
+        if not os.path.exists(self.dist_dir):
+            self.skipTest("dist/ directory not yet generated; skipping dist template assertions.")
+
+        presidency_path = os.path.join(self.dist_dir, "presidency", "index.html")
+        self.assertTrue(os.path.exists(presidency_path), f"Presidency file missing: {presidency_path}")
+        with open(presidency_path, "r", encoding="utf-8") as f:
+            pres_html = f.read()
+
+        self.assertIn("PRESIDENCY DOSSIER", pres_html)
+        self.assertIn("Kais Saied: Power, Promises and Responsibility", pres_html)
+        self.assertTrue("2019 Baseline" in pres_html or "The Anti-Establishment Mandate" in pres_html)
+        self.assertTrue("25 July 2021" in pres_html or "The Exceptional Rupture" in pres_html)
+        self.assertIn("2022", pres_html)
+        self.assertIn("2024", pres_html)
+        self.assertIn("WHAT WAS PROMISED", pres_html)
+        self.assertTrue("WHAT ACTION WAS TAKEN" in pres_html or "WHAT WAS DONE" in pres_html)
+        self.assertIn("WHAT THE EVIDENCE SHOWS", pres_html)
+        self.assertIn("STATUS:", pres_html)
+        self.assertIn("Arab Barometer", pres_html)
+        self.assertIn("2019 BASELINE", pres_html)
+        self.assertIn("2026 STATUS", pres_html)
+        self.assertTrue("Moody" in pres_html and "Fitch" in pres_html)
+        self.assertIn("ACCOUNTABILITY GRAMMAR", pres_html)
+        self.assertNotIn('href="/issues/rights-institutions"', pres_html)
+
 
 if __name__ == "__main__":
     unittest.main()

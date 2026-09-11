@@ -18,7 +18,7 @@ export const SEO_REGISTRY = {
     ],
     editorialIntro: '404TN documents systemic strain across water resources, energy grids, labor markets, human mobility, environmental contamination, and state accountability in Tunisia throughout 2026.',
     internalLinks: [
-      { href: '/the-files', label: 'The Six Files' },
+      { href: '/the-files', label: 'The Seven Files' },
       { href: '/gabes', label: 'Gabès Investigation' },
       { href: '/timeline', label: 'Summer 2026 Timeline' },
       { href: '/state-response', label: 'State Response Tracker' },
@@ -46,7 +46,7 @@ export const SEO_REGISTRY = {
     ],
     editorialIntro: 'Summer 2026 represents the convergence of multi-sectoral strain in Tunisia: potable water rationing, peak electrical demand disruptions, youth unemployment, and centralized governance.',
     internalLinks: [
-      { href: '/the-files', label: 'Inspect The Six Files' },
+      { href: '/the-files', label: 'Inspect The Seven Files' },
       { href: '/timeline', label: 'View Incident Chronology' },
       { href: '/evidence', label: 'Primary Evidence Registry' }
     ],
@@ -58,25 +58,26 @@ export const SEO_REGISTRY = {
 
   '/the-files': {
     path: '/the-files',
-    title: 'Index of Investigations: The Six Monitored Files | 404TN',
-    description: 'Explore 404TN’s ongoing forensic investigations into Tunisia’s water crisis, electrical grid, labor market, migration, public services, and civil liberties.',
+    title: 'Index of Investigations: The Seven Monitored Files | 404TN',
+    description: 'Explore 404TN’s ongoing forensic investigations into Tunisia’s water crisis, electrical grid, pollution, labor market, migration, public services, and civil liberties.',
     canonical: 'https://404tn.com/the-files',
     robots: 'index, follow',
     lang: 'en',
     pageType: 'collection',
-    h1: 'The Six Files: Monitored Systemic Pressures in Tunisia',
+    h1: 'The Seven Files: Monitored Systemic Pressures in Tunisia',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' }
     ],
-    editorialIntro: '404TN maintains structured ongoing documentation across six primary systemic files: Water, Electricity, Work, Migration, Public Services, and Rights & Institutions.',
+    editorialIntro: '404TN maintains structured ongoing documentation across seven primary systemic files: Water, Electricity, Pollution & Environment, Work, Migration, Public Services, and Rights & Freedoms.',
     internalLinks: [
       { href: '/issues/water', label: 'File 01: Water' },
       { href: '/issues/electricity', label: 'File 02: Electricity' },
-      { href: '/issues/work', label: 'File 03: Work' },
-      { href: '/issues/migration', label: 'File 04: Migration' },
-      { href: '/issues/public-services', label: 'File 05: Public Services' },
-      { href: '/issues/rights', label: 'File 06: Rights & Institutions' }
+      { href: '/issues/pollution', label: 'File 03: Pollution & Environment' },
+      { href: '/issues/work', label: 'File 04: Work' },
+      { href: '/issues/migration', label: 'File 05: Migration' },
+      { href: '/issues/public-services', label: 'File 06: Public Services' },
+      { href: '/issues/rights', label: 'File 07: Rights & Freedoms' }
     ],
     schemaTypes: ['CollectionPage'],
     sitemap: { inSitemap: true, priority: 0.9, changefreq: 'daily' },
@@ -126,7 +127,7 @@ export const SEO_REGISTRY = {
     ],
     editorialIntro: 'A verified chronological stream of documented infrastructural, economic, and institutional events across Tunisia during Summer 2026, with primary source provenance.',
     internalLinks: [
-      { href: '/the-files', label: 'The Six Files' },
+      { href: '/the-files', label: 'The Seven Files' },
       { href: '/geospatial-monitor', label: 'Geospatial Monitor' },
       { href: '/evidence', label: 'Evidence Registry' }
     ],
@@ -152,7 +153,7 @@ export const SEO_REGISTRY = {
     editorialIntro: '404TN systematically tracks government announcements, executive directives, ministerial promises, and documented real-world delivery across water, energy, labor, and civil rights.',
     internalLinks: [
       { href: '/presidency', label: 'Presidency Chronology' },
-      { href: '/the-files', label: 'The Six Files' },
+      { href: '/the-files', label: 'The Seven Files' },
       { href: '/evidence', label: 'Verified Evidence' }
     ],
     schemaTypes: ['Dataset', 'CollectionPage'],
@@ -177,7 +178,7 @@ export const SEO_REGISTRY = {
     editorialIntro: 'The central evidentiary repository of 404TN, indexing official government gazettes (JORT), statistical releases (INS/ONAGRI), utility notices, and verified field reports.',
     internalLinks: [
       { href: '/methodology', label: 'Epistemic Methodology' },
-      { href: '/the-files', label: 'The Six Files' },
+      { href: '/the-files', label: 'The Seven Files' },
       { href: '/timeline', label: 'Summer 2026 Timeline' }
     ],
     schemaTypes: ['CollectionPage'],
@@ -203,7 +204,7 @@ export const SEO_REGISTRY = {
     internalLinks: [
       { href: '/statement', label: 'Mission Statement' },
       { href: '/evidence', label: 'Evidence Registry' },
-      { href: '/the-files', label: 'The Six Files' }
+      { href: '/the-files', label: 'The Seven Files' }
     ],
     schemaTypes: ['WebPage'],
     sitemap: { inSitemap: true, priority: 0.7, changefreq: 'monthly' },
@@ -226,7 +227,7 @@ export const SEO_REGISTRY = {
     ],
     editorialIntro: 'A geographic projection of documented incidents and evidence records across Tunisia’s 24 governorates, visualizing local evidence density and municipal strain.',
     internalLinks: [
-      { href: '/the-files', label: 'The Six Files' },
+      { href: '/the-files', label: 'The Seven Files' },
       { href: '/timeline', label: 'Summer 2026 Timeline' },
       { href: '/gabes', label: 'Gabès Flagship File' }
     ],
@@ -238,22 +239,24 @@ export const SEO_REGISTRY = {
 
   '/presidency': {
     path: '/presidency',
-    title: 'Kais Saied Presidency (2019–2026): Power Concentration & Crisis Governance | 404TN',
-    description: 'Documentary chronology analyzing executive governance, institutional consolidation, and presidential management of Tunisia’s national crises.',
+    title: 'Kais Saied Presidency (2019–2026): Power, Promises and Responsibility | 404TN',
+    description: 'An evidence-based documentary audit of Tunisia’s executive governance, constitutional transformation, and crisis management across seven years of presidential authority.',
     canonical: 'https://404tn.com/presidency',
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'The Presidency (2019–2026): Executive Authority & Crisis Management',
+    h1: 'Kais Saied: Power, Promises and Responsibility (2019–2026)',
     breadcrumb: [
       { name: 'Home', path: '/' },
-      { name: 'Presidency Chronology', path: '/presidency' }
+      { name: 'The Files', path: '/the-files' },
+      { name: 'Presidency Dossier', path: '/presidency' }
     ],
-    editorialIntro: 'A documented chronology examining how the concentration of executive authority in Tunisia since July 2021 maps to administrative decisions, institutional restructuring, and crisis management.',
+    editorialIntro: 'An evidence-based documentary audit of Tunisia’s executive governance, constitutional transformation, and crisis management across seven years of presidential authority.',
     internalLinks: [
       { href: '/state-response', label: 'State Response Matrix' },
-      { href: '/issues/rights', label: 'Civil Liberties Dossier' },
-      { href: '/the-files', label: 'The Six Files' }
+      { href: '/issues/rights', label: 'File 07: Rights & Freedoms' },
+      { href: '/the-files', label: 'The Seven Files' },
+      { href: '/gabes', label: 'Gabès Special Report' }
     ],
     schemaTypes: ['Report', 'Article'],
     sitemap: { inSitemap: true, priority: 0.85, changefreq: 'weekly' },
@@ -277,7 +280,7 @@ export const SEO_REGISTRY = {
     editorialIntro: '404TN is an independent, non-partisan documentation platform dedicated to institutional memory, factual provenance, and evidence-first public-interest inquiry in Tunisia.',
     internalLinks: [
       { href: '/methodology', label: 'Verification Methodology' },
-      { href: '/the-files', label: 'The Six Files Archive' },
+      { href: '/the-files', label: 'The Seven Files Archive' },
       { href: '/', label: 'Primary Monitor' }
     ],
     schemaTypes: ['WebPage'],
@@ -340,6 +343,34 @@ export const SEO_REGISTRY = {
     isAlias: false
   },
 
+  '/issues/pollution': {
+    path: '/issues/pollution',
+    title: 'Tunisia Environmental Crisis: Industrial Pollution & Ecological Strain | 404TN',
+    description: 'Forensic documentation of chemical emissions, coastal phosphogypsum discharge, municipal waste crises, and environmental contamination across Tunisia.',
+    canonical: 'https://404tn.com/issues/pollution',
+    robots: 'index, follow',
+    lang: 'en',
+    pageType: 'article',
+    h1: 'File 03: Industrial Pollution, Chemical Emissions & Environmental Contamination',
+    breadcrumb: [
+      { name: 'Home', path: '/' },
+      { name: 'The Files', path: '/the-files' },
+      { name: 'Pollution & Environment', path: '/issues/pollution' }
+    ],
+    editorialIntro: 'This dossier documents industrial chemical emissions, coastal phosphogypsum dumping, air quality degradation, and environmental contamination across Tunisian regions, including Gabès, Sfax, and Gafsa.',
+    internalLinks: [
+      { href: '/gabes', label: 'Gabès Flagship Investigation' },
+      { href: '/the-files', label: 'All Monitored Files' },
+      { href: '/state-response', label: 'State Environmental Response' },
+      { href: '/evidence', label: 'Environmental Evidence Archive' },
+      { href: '/timeline', label: 'Summer 2026 Timeline' }
+    ],
+    schemaTypes: ['Report', 'CollectionPage'],
+    sitemap: { inSitemap: true, priority: 0.9, changefreq: 'daily' },
+    prerender: true,
+    isAlias: false
+  },
+
   '/issues/work': {
     path: '/issues/work',
     title: 'Tunisia Labor Market & Unemployment: Youth Joblessness & Economic Strain | 404TN',
@@ -348,7 +379,7 @@ export const SEO_REGISTRY = {
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'File 03: Labor Market Stagnation, Unemployment & Cost of Living',
+    h1: 'File 04: Labor Market Stagnation, Unemployment & Cost of Living',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
@@ -375,7 +406,7 @@ export const SEO_REGISTRY = {
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'File 04: Mediterranean Migration Routes, Coast Guard Interceptions & Transit Realities',
+    h1: 'File 05: Mediterranean Migration Routes, Coast Guard Interceptions & Transit Realities',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
@@ -402,7 +433,7 @@ export const SEO_REGISTRY = {
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'File 05: Public Services Breakdown: Healthcare, Transit & Municipal Infrastructure',
+    h1: 'File 06: Public Services Breakdown: Healthcare, Transit & Municipal Infrastructure',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
@@ -423,17 +454,17 @@ export const SEO_REGISTRY = {
 
   '/issues/rights': {
     path: '/issues/rights',
-    title: 'Tunisia Civil Liberties: Decree 54, Press Freedom & Institutional Rights | 404TN',
+    title: 'Tunisia Civil Liberties: Decree 54, Press Freedom & Rights | 404TN',
     description: 'Monitoring freedom of expression, Decree-Law 54 legal proceedings, journalist detentions, and judicial restructuring in Tunisia.',
     canonical: 'https://404tn.com/issues/rights',
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'File 06: Civil Liberties, Decree-Law 54 Proceedings & Institutional Checks',
+    h1: 'File 07: Civil Liberties, Decree-Law 54 Proceedings & Institutional Checks',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
-      { name: 'Rights & Institutions', path: '/issues/rights' }
+      { name: 'Rights & Freedoms', path: '/issues/rights' }
     ],
     editorialIntro: 'This dossier monitors documented legal proceedings under Decree-Law 54, journalist and political detentions, media freedom reports by SNJT, and institutional checks and balances in Tunisia.',
     internalLinks: [
@@ -444,34 +475,6 @@ export const SEO_REGISTRY = {
     ],
     schemaTypes: ['Report', 'CollectionPage'],
     sitemap: { inSitemap: true, priority: 0.85, changefreq: 'daily' },
-    prerender: true,
-    isAlias: false
-  },
-
-  '/issues/pollution': {
-    path: '/issues/pollution',
-    title: 'Tunisia Environmental Crisis: Industrial Pollution & Ecological Strain | 404TN',
-    description: 'Forensic documentation of chemical emissions, coastal phosphogypsum discharge, municipal waste crises, and environmental contamination across Tunisia.',
-    canonical: 'https://404tn.com/issues/pollution',
-    robots: 'index, follow',
-    lang: 'en',
-    pageType: 'article',
-    h1: 'File: Industrial Pollution, Chemical Emissions & Environmental Contamination',
-    breadcrumb: [
-      { name: 'Home', path: '/' },
-      { name: 'The Files', path: '/the-files' },
-      { name: 'Pollution', path: '/issues/pollution' }
-    ],
-    editorialIntro: 'This dossier documents industrial chemical emissions, coastal phosphogypsum dumping, air quality degradation, and environmental contamination across Tunisian regions, including Gabès, Sfax, and Gafsa.',
-    internalLinks: [
-      { href: '/gabes', label: 'Gabès Flagship Investigation' },
-      { href: '/the-files', label: 'All Monitored Files' },
-      { href: '/state-response', label: 'State Environmental Response' },
-      { href: '/evidence', label: 'Environmental Evidence Archive' },
-      { href: '/timeline', label: 'Summer 2026 Timeline' }
-    ],
-    schemaTypes: ['Report', 'CollectionPage'],
-    sitemap: { inSitemap: true, priority: 0.9, changefreq: 'daily' },
     prerender: true,
     isAlias: false
   },
@@ -511,13 +514,13 @@ export const SEO_REGISTRY = {
     robots: 'noindex, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'Rights & Institutions Dossier (Canonical: /issues/rights)',
+    h1: 'Rights & Freedoms Dossier (Canonical: /issues/rights)',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
-      { name: 'Rights', path: '/issues/rights' }
+      { name: 'Rights & Freedoms', path: '/issues/rights' }
     ],
-    editorialIntro: 'Alias route for File 06: Civil Liberties, Decree-Law 54 Proceedings & Institutional Checks.',
+    editorialIntro: 'Alias route for File 07: Civil Liberties, Decree-Law 54 Proceedings & Institutional Checks.',
     internalLinks: [
       { href: '/issues/rights', label: 'Open Primary Rights Dossier' }
     ],

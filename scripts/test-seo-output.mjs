@@ -165,7 +165,71 @@ function runTests() {
   assert(gabesHtml.includes('href="https://404tn.com/gabes"'), `/gabes canonical is https://404tn.com/gabes`);
   assert(!gabesHtml.includes('href="https://404tn.com/issues/pollution" rel="canonical"'), `/gabes does NOT canonicalize to /issues/pollution`);
 
-  // Gate 5: Sitemap.xml & Robots.txt Canonical Alignment
+
+  // Phase B: Issue Dossier Template & Gabès Flagship Assertions
+  console.log(`\nPhase B Dossier & Flagship Assertions:`);
+  const expectedFiles = [
+    { num: '01', key: 'water', route: '/issues/water', name: 'Water' },
+    { num: '02', key: 'electricity', route: '/issues/electricity', name: 'Electricity' },
+    { num: '03', key: 'pollution', route: '/issues/pollution', name: 'Pollution & Environment' },
+    { num: '04', key: 'work', route: '/issues/work', name: 'Work' },
+    { num: '05', key: 'migration', route: '/issues/migration', name: 'Migration' },
+    { num: '06', key: 'public-services', route: '/issues/public-services', name: 'Public Services' },
+    { num: '07', key: 'rights', route: '/issues/rights', name: 'Rights & Freedoms' }
+  ];
+
+  for (const fileDef of expectedFiles) {
+    const filePath = path.join(DIST_DIR, 'issues', fileDef.key, 'index.html');
+    assert(fs.existsSync(filePath), `Dossier ${fileDef.num} file exists at ${path.relative(ROOT_DIR, filePath)}`);
+    const fileHtml = fs.readFileSync(filePath, 'utf-8');
+
+    assert(fileHtml.includes(`404TN FILE ${fileDef.num}`), `Dossier ${fileDef.num} includes uppercase tag 404TN FILE ${fileDef.num}`);
+    assert(fileHtml.includes(`File ${fileDef.num}`), `Dossier ${fileDef.num} contains File ${fileDef.num} heading`);
+    assert(fileHtml.includes('What This File Documents'), `Dossier ${fileDef.num} has scope section`);
+    assert(fileHtml.includes('ACCOUNTABLE INSTITUTIONS'), `Dossier ${fileDef.num} has accountable institutions`);
+    assert(fileHtml.includes('EXPLICITLY IN SCOPE'), `Dossier ${fileDef.num} has in-scope list`);
+    assert(fileHtml.includes('DELIBERATELY OUTSIDE SCOPE'), `Dossier ${fileDef.num} has out-of-scope list`);
+    assert(fileHtml.includes('Key Documented Evidence'), `Dossier ${fileDef.num} has key evidence section`);
+    assert(fileHtml.includes('Chronology of Documented Events'), `Dossier ${fileDef.num} has timeline section`);
+    assert(fileHtml.includes('State Response & Known Outcomes') || fileHtml.includes('State Response &amp; Known Outcomes'), `Dossier ${fileDef.num} has state response section`);
+    assert(fileHtml.includes('RELATED INVESTIGATIVE FILES'), `Dossier ${fileDef.num} has related files section`);
+
+    // Prohibit alias link
+    assert(!fileHtml.includes('href="/issues/rights-institutions"'), `Dossier ${fileDef.num} has NO links to alias /issues/rights-institutions`);
+  }
+
+  // File 07 strict naming
+  const rightsHtml = fs.readFileSync(path.join(DIST_DIR, 'issues', 'rights', 'index.html'), 'utf-8');
+  assert(rightsHtml.includes('File 07: Rights &amp; Freedoms') || rightsHtml.includes('Rights &amp; Freedoms') || rightsHtml.includes('Rights & Freedoms'), `File 07 has exact title "Rights & Freedoms"`);
+  assert(!rightsHtml.includes('Rights &amp; Institutions') && !rightsHtml.includes('Rights & Institutions'), `File 07 does NOT use obsolete "Rights & Institutions" in header`);
+
+  // Gabès flagship deep dive content
+  assert(gabesHtml.includes('SPECIAL INVESTIGATION'), `/gabes contains SPECIAL INVESTIGATION tag`);
+  assert(gabesHtml.includes('14,000 tonnes/day') || gabesHtml.includes('14,000 tonnes') || gabesHtml.includes('14,000'), `/gabes contains baseline phosphogypsum estimate`);
+  assert(gabesHtml.includes('2017 Cabinet Decision') || gabesHtml.includes('June 2017') || gabesHtml.includes('2017'), `/gabes references 2017 cabinet decision`);
+  assert(gabesHtml.includes('Data Gaps') || gabesHtml.includes('Health'), `/gabes contains public health / data gaps section`);
+  assert(gabesHtml.includes('State Commitment vs Documented Reality'), `/gabes contains state commitment vs reality analysis`);
+  assert(!gabesHtml.includes('href="/issues/rights-institutions"'), `/gabes has NO links to alias /issues/rights-institutions`);
+
+  // Phase C: Presidency 2019–2026 & Editorial Design System Assertions
+  console.log(`\nPhase C Presidency & Design System Assertions:`);
+  const presidencyHtml = fs.readFileSync(path.join(DIST_DIR, 'presidency', 'index.html'), 'utf-8');
+  assert(presidencyHtml.includes('PRESIDENCY DOSSIER'), `/presidency contains PRESIDENCY DOSSIER tag`);
+  assert(presidencyHtml.includes('Kais Saied: Power, Promises and Responsibility'), `/presidency contains H1 title`);
+  assert(presidencyHtml.includes('2019 Baseline') || presidencyHtml.includes('The Anti-Establishment Mandate'), `/presidency contains 2019 baseline section`);
+  assert(presidencyHtml.includes('25 July 2021') || presidencyHtml.includes('The Exceptional Rupture'), `/presidency contains 2021 rupture section`);
+  assert(presidencyHtml.includes('2022') && presidencyHtml.includes('Constitution'), `/presidency contains 2022 system section`);
+  assert(presidencyHtml.includes('2024') && presidencyHtml.includes('Consolidation'), `/presidency contains 2024 consolidation section`);
+  assert(presidencyHtml.includes('WHAT WAS PROMISED'), `/presidency contains Promise cards`);
+  assert(presidencyHtml.includes('WHAT ACTION WAS TAKEN') || presidencyHtml.includes('WHAT WAS DONE'), `/presidency contains Action cards`);
+  assert(presidencyHtml.includes('WHAT THE EVIDENCE SHOWS'), `/presidency contains Evidence results`);
+  assert(presidencyHtml.includes('STATUS:'), `/presidency contains Status badges`);
+  assert(presidencyHtml.includes('Arab Barometer'), `/presidency contains Arab Barometer survey evidence`);
+  assert(presidencyHtml.includes('2019 BASELINE') && presidencyHtml.includes('2026 STATUS'), `/presidency contains historical comparison matrix`);
+  assert(presidencyHtml.includes('Moody') && presidencyHtml.includes('Fitch'), `/presidency contains sovereign ratings trajectory`);
+  assert(presidencyHtml.includes('ACCOUNTABILITY GRAMMAR'), `/presidency contains 6-question accountability grammar block`);
+  assert(!presidencyHtml.includes('href="/issues/rights-institutions"'), `/presidency has NO links to alias /issues/rights-institutions`);
+
   console.log(`\nGate 5 Assertions (sitemap.xml & robots.txt):`);
   const expectedCanonicalUrls = canonicalRoutes.map(r => SEO_REGISTRY[r].canonical);
 

@@ -40,6 +40,9 @@
     <loc>https://404tn.com/issues/electricity</loc>
   </url>
   <url>
+    <loc>https://404tn.com/issues/pollution</loc>
+  </url>
+  <url>
     <loc>https://404tn.com/issues/work</loc>
   </url>
   <url>
@@ -50,8 +53,5 @@
   </url>
   <url>
     <loc>https://404tn.com/issues/rights</loc>
-  </url>
-  <url>
-    <loc>https://404tn.com/issues/pollution</loc>
   </url>
 </urlset>

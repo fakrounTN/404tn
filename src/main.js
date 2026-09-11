@@ -5,19 +5,39 @@ import { initTimelineController } from './timeline.js';
 import { initAccountabilityController } from './accountability.js';
 import { getGabesDossier, getStats, getIssueBySlug, getIssues } from './api.js';
 import { escapeHtml, stripHtml } from './utils.js';
-import { initRouter, setIssueRouteHandler, updateActiveNavLinks } from './router.js';
+import { initRouter, setIssueRouteHandler, setGabesRouteHandler, setPresidencyRouteHandler, setStandardRouteHandler, updateActiveNavLinks } from './router.js';
+import { DOSSIER_REGISTRY, GABES_SPECIAL_REPORT, renderDossierViewHtml, renderGabesReportViewHtml, renderPresidencyReportViewHtml } from './dossier-data.js';
+
+let isDedicatedViewActive = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
   initHeader();
   initMobileMenu();
   initPoliticalChronology();
   initEvidenceDrawer();
-  initFilesDossierModal();
   initGeospatialMonitor();
   initTimelineController();
   initAccountabilityController();
   initSecureDropModal();
   initLanguageSelector();
+
+  // Connect Router Handlers for Dedicated In-Page Views
+  setIssueRouteHandler((issueKey) => {
+    showDossierView(issueKey);
+  });
+
+  setGabesRouteHandler(() => {
+    showGabesReportView();
+  });
+
+  setPresidencyRouteHandler(() => {
+    showPresidencyReportView();
+  });
+
+  setStandardRouteHandler((sectionId) => {
+    showStandardViews(sectionId);
+  });
+
   initRouter();
   loadGabesData();
   loadStatsData();
@@ -28,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    ========================================================================== */
 function initHeader() {
   const header = document.getElementById("main-header");
-  const sections = document.querySelectorAll("#content-views section[id], section[id]");
+  const sections = document.querySelectorAll("#content-views > section[id]:not(#issue-dossier-view):not(#gabes-report-view)");
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > 30) {
@@ -38,6 +58,9 @@ function initHeader() {
       header.classList.remove("bg-background/95", "shadow-2xl", "border-b", "border-surface-800");
       header.classList.add("bg-background/70");
     }
+
+    // Do not let background scrollspy override dedicated subpage view active link
+    if (isDedicatedViewActive) return;
 
     let current = "";
     sections.forEach((section) => {
@@ -110,236 +133,96 @@ function initMobileMenu() {
 }
 
 /* ==========================================================================
-   3. THE SEVEN FILES EDITORIAL METADATA & DYNAMIC DOSSIER MODAL
+   3. DEDICATED IN-PAGE VIEW CONTROLLERS (PHASE B & C)
    ========================================================================== */
-const FILE_EDITORIAL_METADATA = {
-  water: {
-    id: "01",
-    slug: "water",
-    title: "Water: Cuts, Restrictions, Infrastructure & Regional Inequality",
-    category: "RESOURCE COLLAPSE",
-    summary: "Investigation into hydraulic distribution infrastructure strain, reservoir levels, and SONEDE rationing across governorates.",
-    accountableInstitutions: [
-      "SONEDE (National Water Distribution Utility)",
-      "Ministry of Agriculture, Hydraulic Resources and Maritime Fisheries",
-      "National Observatory of Agriculture (ONAGRI)"
-    ]
-  },
-  electricity: {
-    id: "02",
-    slug: "electricity",
-    title: "Electricity: Outages, Network Load & Service Reliability",
-    category: "ENERGY SECURITY",
-    summary: "Documentation of national grid peak load, natural gas generation capacity, and STEG service disruptions.",
-    accountableInstitutions: [
-      "STEG (Tunisian Company of Electricity and Gas)",
-      "Ministry of Industry, Mines and Energy",
-      "Observatoire National de l'Énergie et des Mines"
-    ]
-  },
-  pollution: {
-    id: "03",
-    slug: "pollution",
-    title: "Pollution & Environment: Industrial Emissions, Chemical Waste & Environmental Contamination",
-    category: "ENVIRONMENTAL CRISIS",
-    summary: "Documentation of industrial chemical emissions, coastal phosphogypsum discharge, air quality deficits, and environmental contamination across Tunisian regions.",
-    accountableInstitutions: [
-      "Ministry of Environment (ANPE)",
-      "Groupe Chimique Tunisien (GCT)",
-      "Ministry of Industry, Mines and Energy"
-    ]
-  },
-  work: {
-    id: "04",
-    slug: "work",
-    title: "Work: Unemployment, Wages & Economic Pressure",
-    category: "ECONOMIC STAGNATION",
-    summary: "Analysis of official labor force data, graduate unemployment disparities, food inflation, and purchasing power.",
-    accountableInstitutions: [
-      "INS (National Institute of Statistics)",
-      "Ministry of Social Affairs",
-      "Ministry of Economy and Planning"
-    ]
-  },
-  migration: {
-    id: "05",
-    slug: "migration",
-    title: "Migration: Tunisians Leaving, African Migration & Border Policy",
-    category: "HUMAN MOBILITY",
-    summary: "Monitoring of maritime departures, interceptions at sea by the National Guard, and regional border management.",
-    accountableInstitutions: [
-      "Ministry of Interior (National Guard & Maritime Units)",
-      "Ministry of Foreign Affairs, Migration and Tunisians Abroad",
-      "FTDES (Tunisian Forum for Economic and Social Rights)"
-    ]
-  },
-  publicServices: {
-    id: "06",
-    slug: "public-services",
-    title: "Public Services: Healthcare, Transport & Municipal Infrastructure",
-    category: "CIVIC INFRASTRUCTURE",
-    summary: "Documentation of hospital equipment and medicine availability, public transit fleets (Transtu, SNCFT), and municipal sanitation.",
-    accountableInstitutions: [
-      "Ministry of Health & Pharmacie Centrale de Tunisie (PCT)",
-      "Ministry of Transport (Transtu & SNCFT)",
-      "Ministry of Environment (ANPE)"
-    ]
-  },
-  institutions: {
-    id: "07",
-    slug: "rights",
-    title: "Rights & Freedoms: Governance & Accountability",
-    category: "GOVERNANCE & ACCOUNTABILITY",
-    summary: "Monitoring institutional checks and balances, Decree 54 legal proceedings, press freedom, and judicial independence.",
-    accountableInstitutions: [
-      "Presidency of the Republic (Carthage)",
-      "Ministry of Justice",
-      "SNJT (National Union of Tunisian Journalists)"
-    ]
-  }
-};
+export function showDossierView(issueKey) {
+  isDedicatedViewActive = true;
+  const dossierView = document.getElementById("issue-dossier-view");
+  const gabesView = document.getElementById("gabes-report-view");
+  const presidencyView = document.getElementById("presidency-report-view");
+  const defaultSections = document.querySelectorAll("#content-views > section:not(#issue-dossier-view):not(#gabes-report-view):not(#presidency-report-view)");
 
-function initFilesDossierModal() {
-  const modal = document.getElementById("file-dossier-modal");
-  const closeBtn = document.getElementById("close-dossier-modal");
-  const triggerRows = document.querySelectorAll("[data-file-key]");
+  if (!dossierView) return;
 
-  if (!modal) return;
+  defaultSections.forEach(s => s.classList.add("hidden"));
+  if (gabesView) gabesView.classList.add("hidden");
+  if (presidencyView) presidencyView.classList.add("hidden");
+  dossierView.classList.remove("hidden");
 
-  const openDossier = async (key) => {
-    const meta = FILE_EDITORIAL_METADATA[key] || {
-      id: "00",
-      title: key.toUpperCase(),
-      category: "INVESTIGATIVE DOSSIER",
-      summary: "Live investigative dossier querying canonical evidence archive.",
-      accountableInstitutions: []
-    };
+  // Render baseline immediately for instant paint
+  dossierView.innerHTML = renderDossierViewHtml(issueKey);
+  window.scrollTo({ top: 0, behavior: 'instant' });
 
-    document.getElementById("modal-file-num").textContent = `FILE ${meta.id}`;
-    document.getElementById("modal-file-category").textContent = meta.category;
-    document.getElementById("modal-file-title").textContent = meta.title;
-    document.getElementById("modal-file-status").textContent = "QUERYING LIVE ARCHIVE...";
-    document.getElementById("modal-file-summary").textContent = meta.summary;
-
-    const metricsContainer = document.getElementById("modal-file-metrics");
-    metricsContainer.innerHTML = `<div class="col-span-full py-4 text-xs font-mono text-surface-500">Querying verified issue metrics...</div>`;
-
-    const instContainer = document.getElementById("modal-file-institutions");
-    instContainer.innerHTML = meta.accountableInstitutions.map(i => `
-      <li class="flex items-start text-xs text-surface-300 gap-2">
-        <span class="text-crimson font-mono select-none">■</span>
-        <span>${i}</span>
-      </li>
-    `).join("");
-
-    const eventsContainer = document.getElementById("modal-file-events");
-    eventsContainer.innerHTML = `<div class="py-4 text-xs font-mono text-surface-500">Querying real evidence records...</div>`;
-
-    const sourcesContainer = document.getElementById("modal-file-sources");
-    sourcesContainer.innerHTML = "";
-
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-
-    const liveDossier = await getIssueBySlug(meta.slug || key);
-    if (!liveDossier) {
-      document.getElementById("modal-file-status").textContent = "ARCHIVE OFFLINE";
-      metricsContainer.innerHTML = `
-        <div class="col-span-full p-4 bg-background-subtle border border-surface-800">
-          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">MONITORED METRIC STATUS</div>
-          <div class="text-lg font-editorial font-semibold text-surface-400 my-1">NO CURRENT VERIFIED METRIC</div>
-          <div class="text-xs text-surface-500 leading-relaxed font-light">Unable to query live telemetry from API. Verified baseline indicators require active connection.</div>
-        </div>
-      `;
-      eventsContainer.innerHTML = `<div class="text-xs font-mono text-surface-400">Live evidence stream unreachable.</div>`;
-      return;
+  // Hydrate live telemetry from API
+  const meta = DOSSIER_REGISTRY[issueKey];
+  const slug = meta ? meta.slug : issueKey;
+  getIssueBySlug(slug).then(liveData => {
+    if (liveData && dossierView.querySelector(".issue-dossier-page")) {
+      dossierView.innerHTML = renderDossierViewHtml(issueKey, liveData);
     }
-
-    document.getElementById("modal-file-status").textContent = `${liveDossier.status} · ${liveDossier.evidence_count} VERIFIED RECORDS`;
-
-    // Render Metrics: Look for actual sourced metrics in evidence records
-    const recordsWithMetrics = (liveDossier.evidence_records || []).filter(r => r.metric_value);
-    if (recordsWithMetrics.length > 0) {
-      metricsContainer.innerHTML = recordsWithMetrics.slice(0, 4).map(m => `
-        <div class="p-4 bg-background-subtle border border-surface-800 cursor-pointer hover:border-surface-600 transition-colors" data-evidence-id="${escapeHtml(m.id)}">
-          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">${escapeHtml(stripHtml(m.source_name || 'OFFICIAL REPORT'))}</div>
-          <div class="text-2xl font-editorial font-semibold text-bone-100 my-1 text-crimson">${escapeHtml(m.metric_value)} ${escapeHtml(m.metric_unit || '')}</div>
-          <div class="text-xs text-surface-400 leading-relaxed font-light truncate">${escapeHtml(stripHtml(m.headline || ''))}</div>
-        </div>
-      `).join("");
-    } else {
-      metricsContainer.innerHTML = `
-        <div class="col-span-full p-4 bg-background-subtle border border-surface-800">
-          <div class="text-[11px] font-mono text-surface-400 uppercase tracking-meta">MONITORED METRIC STATUS</div>
-          <div class="text-lg font-editorial font-semibold text-bone-100 my-1 text-surface-400">NO CURRENT VERIFIED METRIC</div>
-          <div class="text-xs text-surface-500 leading-relaxed font-light">Zero unverified numbers displayed. Real collected factual items stream continuously in the evidence list below.</div>
-        </div>
-      `;
-    }
-
-    // Render Real Documented Evidence Records
-    const evRecords = liveDossier.evidence_records || [];
-    if (evRecords.length > 0) {
-      eventsContainer.innerHTML = evRecords.slice(0, 5).map(e => `
-        <div class="relative pl-5 pb-4 border-l border-surface-800 last:border-l-0 cursor-pointer group" data-evidence-id="${escapeHtml(e.id)}">
-          <span class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-crimson group-hover:scale-125 transition-transform"></span>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-mono text-crimson uppercase font-medium">${escapeHtml(e.event_date || e.published_at || 'CURRENT')}</span>
-            <span class="text-[10px] font-mono px-1.5 py-0.2 bg-surface-900 text-surface-400 border border-surface-800">${escapeHtml(e.classification || 'FACT')}</span>
-          </div>
-          <p class="text-xs text-surface-200 mt-1 leading-relaxed font-sans group-hover:text-crimson transition-colors break-words">${escapeHtml(stripHtml(e.headline || ''))}</p>
-          <div class="text-[10px] font-mono text-surface-500 mt-1">SRC: ${escapeHtml(stripHtml(e.source_name || 'VERIFIED SOURCE'))}</div>
-        </div>
-      `).join("");
-
-      // Collect unique sources
-      const uniqueSources = {};
-      evRecords.forEach(e => {
-        if (e.source_name) {
-          uniqueSources[e.source_name] = e.source_url || '#';
-        }
-      });
-      sourcesContainer.innerHTML = Object.entries(uniqueSources).map(([name, url]) => `
-        <li class="flex items-start text-xs font-mono text-surface-400 gap-2 bg-surface-900/60 p-2.5 border border-surface-800">
-          <span class="text-sand select-none font-semibold">SRC:</span>
-          <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="text-surface-300 hover:text-crimson transition-colors truncate">${escapeHtml(stripHtml(name))}</a>
-        </li>
-      `).join("");
-    } else {
-      eventsContainer.innerHTML = `<div class="text-xs font-mono text-surface-400">No active evidence records for this category in current monitoring window.</div>`;
-      sourcesContainer.innerHTML = `<li class="text-xs font-mono text-surface-500">No verified sources active.</li>`;
-    }
-  };
-
-  const closeModal = () => {
-    modal.classList.remove("active");
-    document.body.style.overflow = "";
-  };
-
-  // Register route handler for deep issue routes (e.g. /issues/water)
-  setIssueRouteHandler((key) => {
-    openDossier(key);
-  });
-
-  triggerRows.forEach(row => {
-    row.addEventListener("click", () => {
-      const key = row.getAttribute("data-file-key");
-      openDossier(key);
-    });
-  });
-
-  if (closeBtn) closeBtn.addEventListener("click", closeModal);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.classList.contains("active")) closeModal();
   });
 }
 
+export function showGabesReportView() {
+  isDedicatedViewActive = true;
+  const dossierView = document.getElementById("issue-dossier-view");
+  const gabesView = document.getElementById("gabes-report-view");
+  const presidencyView = document.getElementById("presidency-report-view");
+  const defaultSections = document.querySelectorAll("#content-views > section:not(#issue-dossier-view):not(#gabes-report-view):not(#presidency-report-view)");
+
+  if (!gabesView) return;
+
+  defaultSections.forEach(s => s.classList.add("hidden"));
+  if (dossierView) dossierView.classList.add("hidden");
+  if (presidencyView) presidencyView.classList.add("hidden");
+  gabesView.classList.remove("hidden");
+
+  // Render baseline immediately
+  gabesView.innerHTML = renderGabesReportViewHtml();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // Hydrate live telemetry
+  getGabesDossier().then(liveData => {
+    if (liveData && gabesView.querySelector(".gabes-special-report")) {
+      gabesView.innerHTML = renderGabesReportViewHtml(liveData);
+    }
+  });
+}
+
+export function showPresidencyReportView() {
+  isDedicatedViewActive = true;
+  const dossierView = document.getElementById("issue-dossier-view");
+  const gabesView = document.getElementById("gabes-report-view");
+  const presidencyView = document.getElementById("presidency-report-view");
+  const defaultSections = document.querySelectorAll("#content-views > section:not(#issue-dossier-view):not(#gabes-report-view):not(#presidency-report-view)");
+
+  if (!presidencyView) return;
+
+  defaultSections.forEach(s => s.classList.add("hidden"));
+  if (dossierView) dossierView.classList.add("hidden");
+  if (gabesView) gabesView.classList.add("hidden");
+  presidencyView.classList.remove("hidden");
+
+  // Render baseline immediately
+  presidencyView.innerHTML = renderPresidencyReportViewHtml();
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+export function showStandardViews(targetSectionId = null) {
+  isDedicatedViewActive = false;
+  const dossierView = document.getElementById("issue-dossier-view");
+  const gabesView = document.getElementById("gabes-report-view");
+  const presidencyView = document.getElementById("presidency-report-view");
+  const defaultSections = document.querySelectorAll("#content-views > section:not(#issue-dossier-view):not(#gabes-report-view):not(#presidency-report-view)");
+
+  if (dossierView) dossierView.classList.add("hidden");
+  if (gabesView) gabesView.classList.add("hidden");
+  if (presidencyView) presidencyView.classList.add("hidden");
+  defaultSections.forEach(s => s.classList.remove("hidden"));
+}
+
 /* ==========================================================================
-   4. GABÈS FLAGSHIP DATA LOADER
+   4. GABÈS HOMEPAGE DATA LOADER
    ========================================================================== */
 async function loadGabesData() {
   const gabes = await getGabesDossier();
@@ -498,7 +381,7 @@ function initPoliticalChronology() {
 
 /* ==========================================================================
    7. SECURE DROP / WHISTLEBLOWER MODAL
-   ========================================================================= */
+   ========================================================================== */
 function initSecureDropModal() {
   const modal = document.getElementById("secure-drop-modal");
   const openBtns = document.querySelectorAll("[data-open-securedrop]");
@@ -528,7 +411,7 @@ function initSecureDropModal() {
 }
 
 /* ==========================================================================
-   8. ARABIC LANGUAGE PLACEHOLDER
+   8. ARABIC LANGUAGE NOTICE MODAL
    ========================================================================== */
 function initLanguageSelector() {
   const btn = document.getElementById("lang-ar-btn");

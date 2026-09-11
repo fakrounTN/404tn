@@ -240,6 +240,82 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   opacity: 1;
 }
 
+/* Phase C Editorial Design System Components */
+.editorial-rule {
+  border-top: 1px solid rgba(241, 240, 236, 0.08);
+}
+
+.editorial-rule-strong {
+  border-top: 1px solid rgba(241, 240, 236, 0.16);
+}
+
+/* Epistemic Classifications */
+.epistemic-fact {
+  background-color: #F1F0EC;
+  color: #0B0C0D;
+  font-weight: 700;
+}
+
+.epistemic-claim {
+  background-color: rgba(212, 197, 176, 0.15);
+  border: 1px solid rgba(212, 197, 176, 0.4);
+  color: #D4C5B0;
+  font-weight: 600;
+}
+
+.epistemic-analysis {
+  background-color: rgba(201, 54, 54, 0.15);
+  border: 1px solid rgba(201, 54, 54, 0.4);
+  color: #C93636;
+  font-weight: 600;
+}
+
+/* Status Badges for Promises & Accountability */
+.status-fulfilled {
+  background-color: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: #34D399;
+}
+
+.status-partial {
+  background-color: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #FBBF24;
+}
+
+.status-unresolved {
+  background-color: rgba(201, 54, 54, 0.1);
+  border: 1px solid rgba(201, 54, 54, 0.35);
+  color: #C93636;
+}
+
+.status-disputed {
+  background-color: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  color: #A78BFA;
+}
+
+/* Polling & Data Visualization */
+.poll-bar-track {
+  width: 100%;
+  height: 6px;
+  background-color: #1E2023;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.poll-bar-fill {
+  height: 100%;
+  background-color: #D4C5B0;
+  transition: width 0.4s ease;
+}
+
+.poll-bar-fill-red {
+  height: 100%;
+  background-color: #C93636;
+  transition: width 0.4s ease;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

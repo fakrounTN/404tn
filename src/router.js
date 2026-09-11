@@ -3,28 +3,28 @@
 import { SEO_REGISTRY } from './seo-registry.js';
 
 export const ROUTE_MAP = {
-  '/': { sectionId: 'hero', navRoute: '/' },
-  '/summer-2026': { sectionId: 'summer-2026', navRoute: '/summer-2026' },
-  '/the-files': { sectionId: 'the-files', navRoute: '/the-files' },
-  '/geospatial-monitor': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor' },
-  '/geospatial': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor' },
-  '/gabes': { sectionId: 'gabes', navRoute: '/gabes' },
-  '/state-response': { sectionId: 'state-response', navRoute: '/state-response' },
-  '/presidency': { sectionId: 'presidency', navRoute: '/presidency' },
-  '/timeline': { sectionId: 'timeline', navRoute: '/timeline' },
-  '/evidence': { sectionId: 'methodology', navRoute: '/methodology' },
-  '/methodology': { sectionId: 'methodology', navRoute: '/methodology' },
-  '/statement': { sectionId: 'statement', navRoute: '/statement' },
+  '/': { sectionId: 'hero', navRoute: '/', isStandard: true },
+  '/summer-2026': { sectionId: 'summer-2026', navRoute: '/summer-2026', isStandard: true },
+  '/the-files': { sectionId: 'the-files', navRoute: '/the-files', isStandard: true },
+  '/geospatial-monitor': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor', isStandard: true },
+  '/geospatial': { sectionId: 'geospatial-monitor', navRoute: '/geospatial-monitor', isStandard: true },
+  '/gabes': { sectionId: 'gabes-report-view', navRoute: '/the-files', isGabes: true },
+  '/state-response': { sectionId: 'state-response', navRoute: '/state-response', isStandard: true },
+  '/presidency': { sectionId: 'presidency-report-view', navRoute: '/presidency', isPresidency: true },
+  '/timeline': { sectionId: 'timeline', navRoute: '/timeline', isStandard: true },
+  '/evidence': { sectionId: 'methodology', navRoute: '/methodology', isStandard: true },
+  '/methodology': { sectionId: 'methodology', navRoute: '/methodology', isStandard: true },
+  '/statement': { sectionId: 'statement', navRoute: '/statement', isStandard: true },
 
   // Issue routes
-  '/issues/water': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'water' },
-  '/issues/electricity': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'electricity' },
-  '/issues/work': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'work' },
-  '/issues/migration': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'migration' },
-  '/issues/public-services': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'publicServices' },
-  '/issues/rights': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
-  '/issues/rights-institutions': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'institutions' },
-  '/issues/pollution': { sectionId: 'the-files', navRoute: '/the-files', issueKey: 'pollution' }
+  '/issues/water': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'water' },
+  '/issues/electricity': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'electricity' },
+  '/issues/work': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'work' },
+  '/issues/migration': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'migration' },
+  '/issues/public-services': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'publicServices' },
+  '/issues/rights': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/rights-institutions': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'institutions' },
+  '/issues/pollution': { sectionId: 'issue-dossier-view', navRoute: '/the-files', issueKey: 'pollution' }
 };
 
 export const LEGACY_HASH_MAP = {
@@ -43,9 +43,24 @@ export const LEGACY_HASH_MAP = {
 };
 
 let onIssueRouteHandler = null;
+let onGabesRouteHandler = null;
+let onPresidencyRouteHandler = null;
+let onStandardRouteHandler = null;
 
 export function setIssueRouteHandler(handler) {
   onIssueRouteHandler = handler;
+}
+
+export function setGabesRouteHandler(handler) {
+  onGabesRouteHandler = handler;
+}
+
+export function setPresidencyRouteHandler(handler) {
+  onPresidencyRouteHandler = handler;
+}
+
+export function setStandardRouteHandler(handler) {
+  onStandardRouteHandler = handler;
 }
 
 export function resolveRoute(pathname, hash = '') {
@@ -93,7 +108,8 @@ export function updateActiveNavLinks(activeNavRoute) {
         (dataRoute === activeNavRoute) ||
         (activeNavRoute === '/evidence' && (dataRoute === '/methodology' || dataRoute === '/evidence')) ||
         (activeNavRoute === '/methodology' && (dataRoute === '/methodology' || dataRoute === '/evidence')) ||
-        (activeNavRoute.startsWith('/issues/') && dataRoute === '/the-files')
+        (activeNavRoute.startsWith('/issues/') && dataRoute === '/the-files') ||
+        (activeNavRoute === '/gabes' && dataRoute === '/the-files')
       );
 
       if (isActive) {
@@ -215,9 +231,16 @@ export function handleNavigation(pathWithHash, pushState = true) {
     showNotFoundView(false);
     updateHeadMetadata(resolution.targetPath);
     updateActiveNavLinks(resolution.routeConfig.navRoute);
-    scrollToTarget(resolution.routeConfig.sectionId, null);
+
     if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
       onIssueRouteHandler(resolution.routeConfig.issueKey);
+    } else if (resolution.routeConfig.isGabes && onGabesRouteHandler) {
+      onGabesRouteHandler();
+    } else if (resolution.routeConfig.isPresidency && onPresidencyRouteHandler) {
+      onPresidencyRouteHandler();
+    } else {
+      if (onStandardRouteHandler) onStandardRouteHandler(resolution.routeConfig.sectionId);
+      scrollToTarget(resolution.routeConfig.sectionId, null);
     }
     return;
   }
@@ -240,10 +263,16 @@ export function handleNavigation(pathWithHash, pushState = true) {
   showNotFoundView(false);
   updateHeadMetadata(resolution.cleanPath);
   updateActiveNavLinks(resolution.routeConfig.navRoute);
-  scrollToTarget(resolution.routeConfig.sectionId, hash);
 
   if (resolution.routeConfig.issueKey && onIssueRouteHandler) {
     onIssueRouteHandler(resolution.routeConfig.issueKey);
+  } else if (resolution.routeConfig.isGabes && onGabesRouteHandler) {
+    onGabesRouteHandler();
+  } else if (resolution.routeConfig.isPresidency && onPresidencyRouteHandler) {
+    onPresidencyRouteHandler();
+  } else {
+    if (onStandardRouteHandler) onStandardRouteHandler(resolution.routeConfig.sectionId);
+    scrollToTarget(resolution.routeConfig.sectionId, hash);
   }
 }
 

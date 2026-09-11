@@ -1,0 +1,252 @@
+[
+  {
+    "claim_id": "CLM-PRES-2019ELEC",
+    "route": "/presidency",
+    "claim": "Kais Saied won the October 13, 2019 presidential election with 72.71% of the vote (2.77M ballots) vs Nabil Karoui (27.29%).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-ISIE-ELEC2019"],
+    "qualification": "Official ISIE definitive results published in JORT n° 85 (2019).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-2021JULY",
+    "route": "/presidency",
+    "claim": "On July 25, 2021, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament (ARP), and dismissed Prime Minister Hichem Mechichi.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-DEC117"],
+    "qualification": "Presidential Decrees 2021-80 and 2021-81 in JORT n° 64 (2021).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-DEC117",
+    "route": "/presidency",
+    "claim": "Presidential Decree 117 of September 22, 2021 concentrated legislative and executive powers in the presidency and suspended conflicting chapters of the 2014 Constitution.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-DEC117"],
+    "qualification": "Published in JORT n° 86 (2021).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-CSM",
+    "route": "/presidency",
+    "claim": "The High Judicial Council (CSM) was dissolved via Decree-Law 2022-11 and replaced by a provisional council.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-DEC516"],
+    "qualification": "Promulgated in JORT n° 16 (Feb 12, 2022).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-JUDGES57",
+    "route": "/presidency",
+    "claim": "Presidential Decree 2022-516 revoked 57 magistrates on June 1, 2022; the Administrative Court issued a suspension order for 49 on August 9, 2022.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-DEC516"],
+    "qualification": "Decree in JORT n° 60 (2022); Administrative Court injunction unexecuted by Ministry of Justice.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-CONST2022",
+    "route": "/presidency",
+    "claim": "The 2022 Constitution was approved on July 25, 2022 with 94.6% yes votes on 30.5% turnout.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-CONST2022"],
+    "qualification": "Promulgated in JORT n° 89 (August 17, 2022).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-DEC54",
+    "route": "/presidency",
+    "claim": "Decree-Law 2022-54 Article 24 penalizes publishing false news or rumors with up to 5 years imprisonment (10 years if public officials targeted).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-DEC54"],
+    "qualification": "Promulgated in JORT n° 103 (September 13, 2022).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-PRES-2024ELEC",
+    "route": "/presidency",
+    "claim": "Kais Saied was re-elected on October 6, 2024 with 90.69% of the vote on 28.8% turnout.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-ISIE-ELEC2024"],
+    "qualification": "Official ISIE definitive results bulletin published October 11, 2024.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-GDP",
+    "route": "/presidency",
+    "claim": "Real GDP growth was +1.5% in 2019 vs +0.8% in Q2 2026 (YoY).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED_WITH_QUALIFICATION",
+    "source_ids": ["SRC-INS-ACC2019", "SRC-INS-ACC2026Q2"],
+    "qualification": "2019 is annual full-year result; 2026 is preliminary quarterly year-on-year annualized observation.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-UNEMP",
+    "route": "/presidency",
+    "claim": "Overall unemployment rate was 14.9% in 2019 vs 16.0% in Q2 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-INS-EMP2019", "SRC-INS-EMP2026Q2"],
+    "qualification": "INS Labour Force Survey (Enquête Nationale sur l'Emploi).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-UNEMP-GRAD",
+    "route": "/presidency",
+    "claim": "Higher education graduate unemployment was 28.0% in 2019 vs 38.8% in 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-INS-EMP2019", "SRC-INS-EMP2026Q2"],
+    "qualification": "INS Quarterly Employment Survey, higher education degree holders.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-INFLATION",
+    "route": "/presidency",
+    "claim": "Headline consumer inflation was 6.7% in 2019 vs 7.0% in Summer 2026 (Food inflation: 9.8%).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-INS-IPC2019", "SRC-INS-IPC202608"],
+    "qualification": "INS Consumer Price Index (IPC) monthly bulletins.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-DEBT",
+    "route": "/presidency",
+    "claim": "Public debt expanded from 67.8% of GDP in 2019 to 80.2% of GDP in mid-2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-MF-DEBT2019", "SRC-MF-DEBT2026Q2"],
+    "qualification": "Ministry of Finance official debt execution reports.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-BCT",
+    "route": "/presidency",
+    "claim": "BCT policy interest rate was 7.75% in 2019 vs 8.00% in 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-BCT-RATE"],
+    "qualification": "Banque Centrale de Tunisie Monetary Policy Committee official decisions.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-RESERVES",
+    "route": "/presidency",
+    "claim": "Foreign exchange reserves covered 109 days in 2019 vs 112 days in Summer 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-BCT-FX2026"],
+    "qualification": "Banque Centrale de Tunisie daily financial indicators.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-ECO-ENERGYDEF",
+    "route": "/presidency",
+    "claim": "Primary energy trade deficit was 49% in 2019 vs 52% in Summer 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-ONME-DEF2026"],
+    "qualification": "National Energy Observatory (ONME) monthly energy balance.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-RAT-MOODYS",
+    "route": "/presidency",
+    "claim": "Moody's rated Tunisia B2 (2019), B3 (Feb 2021), Caa1 (Oct 2021), Caa2 (Jan 2023), affirmed at Caa2 Stable on March 22, 2024 through 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-MOODYS-2024"],
+    "qualification": "Moody's official sovereign rating notices.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-RAT-FITCH",
+    "route": "/presidency",
+    "claim": "Fitch rated Tunisia B+ (2019), B- (2021), CCC (2022), CCC- (2023), and upgraded to CCC+ on March 29, 2024 through 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-FITCH-2024"],
+    "qualification": "Fitch Ratings official credit action releases.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-POLL-PRES-TRUST",
+    "route": "/presidency",
+    "claim": "Trust in the President was 62% in Wave VII (2022) and declined to 43% in Wave VIII (2024).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED_WITH_QUALIFICATION",
+    "source_ids": ["SRC-AB-WAVEVII", "SRC-AB-WAVEVIII"],
+    "qualification": "Arab Barometer probability samples (n=2,424 in 2022; n=2,406 in 2024; ±2.5% MoE).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-POLL-YOUTH-MIGRATION",
+    "route": "/presidency",
+    "claim": "Youth migration intention (ages 18–29) was 42% in 2018/19, 46% in 2022, and 53% in 2024.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-AB-WAVEV", "SRC-AB-WAVEVII", "SRC-AB-WAVEVIII"],
+    "qualification": "Arab Barometer youth demographic subgroup (ages 18–29).",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-INT-EUMOU",
+    "route": "/presidency",
+    "claim": "EU-Tunisia MoU was signed on July 16, 2023 in Tunis; allocated €105M for border management and €150M in direct budgetary aid (disbursed March 2024).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-EU-MOU2023"],
+    "qualification": "Official European Commission Press Release IP/23/3887.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-INT-IMF",
+    "route": "/presidency",
+    "claim": "IMF staff-level agreement for $1.9B was reached on October 15, 2022, but execution stalled without Executive Board submission.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-IMF-PR22353"],
+    "qualification": "IMF Press Release No. 22/353.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-INT-ELMED",
+    "route": "/presidency",
+    "claim": "ELMED is a 600 MW, 200 km HVDC undersea cable co-financed by €307.6M EU CEF grant and $268.4M World Bank financing.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-WB-ELMED2023"],
+    "qualification": "World Bank Project P179247 / European Commission CEF.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-GAB-PHOSPHO",
+    "route": "/gabes",
+    "claim": "Historical nominal phosphogypsum discharge into the Gulf of Gabès is ~14,000 tonnes per day (dry-solid basis).",
+    "classification": "FACT",
+    "audit_status": "VERIFIED_WITH_QUALIFICATION",
+    "source_ids": ["SRC-ANPE-GABES2018"],
+    "qualification": "Source is 2018 ANPE/World Bank PGSE audit. Clearly labeled as Historical Baseline.",
+    "action": "KEEP"
+  },
+  {
+    "claim_id": "CLM-GAB-DECREE2017",
+    "route": "/gabes",
+    "claim": "Cabinet communiqué of June 29, 2017 pledged the dismantling and relocation of GCT chemical units; zero units have been relocated by Summer 2026.",
+    "classification": "FACT",
+    "audit_status": "VERIFIED",
+    "source_ids": ["SRC-JORT-GABES2017"],
+    "qualification": "Prime Ministry Cabinet Communiqué of June 29, 2017.",
+    "action": "KEEP"
+  }
+]

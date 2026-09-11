@@ -6,12 +6,24 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SEO_REGISTRY, CANONICAL_ORIGIN } from '../src/seo-registry.js';
+import { renderDossierViewHtml, renderGabesReportViewHtml, renderPresidencyReportViewHtml } from '../src/dossier-data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.resolve(ROOT_DIR, 'dist');
 const BASE_HTML_PATH = path.resolve(DIST_DIR, 'index.html');
+
+const ISSUE_PATH_MAP = {
+  '/issues/water': 'water',
+  '/issues/electricity': 'electricity',
+  '/issues/pollution': 'pollution',
+  '/issues/work': 'work',
+  '/issues/migration': 'migration',
+  '/issues/public-services': 'publicServices',
+  '/issues/rights': 'institutions',
+  '/issues/rights-institutions': 'institutions'
+};
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -138,11 +150,34 @@ function prerenderRoute(baseHtml, entry) {
       `<h2$1>$2</h2>`
     );
 
-    // Build the subpage semantic header banner containing its single H1, breadcrumbs, editorial intro, and internal links
-    const breadcrumbHtml = renderBreadcrumbHtml(entry.breadcrumb);
-    const internalLinksHtml = renderInternalLinksHtml(entry.internalLinks);
+    if (ISSUE_PATH_MAP[entry.path]) {
+      // Full rich issue dossier injection with single H1
+      const issueKey = ISSUE_PATH_MAP[entry.path];
+      const dossierHtml = renderDossierViewHtml(issueKey);
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${dossierHtml}`
+      );
+    } else if (entry.path === '/gabes') {
+      // Full rich Gabès flagship special report injection with single H1
+      const gabesHtml = renderGabesReportViewHtml();
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${gabesHtml}`
+      );
+    } else if (entry.path === '/presidency') {
+      // Full rich Kais Saied presidency special investigation with single H1
+      const presidencyHtml = renderPresidencyReportViewHtml();
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${presidencyHtml}`
+      );
+    } else {
+      // Other Subpages: Subpage semantic header banner containing its single H1, breadcrumbs, editorial intro, and internal links
+      const breadcrumbHtml = renderBreadcrumbHtml(entry.breadcrumb);
+      const internalLinksHtml = renderInternalLinksHtml(entry.internalLinks);
 
-    const subpageBannerHtml = `
+      const subpageBannerHtml = `
     <!-- Prerendered Semantic Dossier/Route Header for Non-JS Crawlers & Deep Links -->
     <section id="prerendered-route-header" class="border-b border-surface-800 bg-surface-900/90 py-10 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto space-y-5">
@@ -162,11 +197,11 @@ function prerenderRoute(baseHtml, entry) {
     </section>
 `;
 
-    // Inject banner at top of #content-views
-    html = html.replace(
-      /(<div\s+id="content-views">)/i,
-      `$1\n${subpageBannerHtml}`
-    );
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${subpageBannerHtml}`
+      );
+    }
   }
 
   return html;
@@ -182,7 +217,7 @@ export function runPrerender() {
   const routes = Object.keys(SEO_REGISTRY);
 
   console.log(`\n============================================================`);
-  console.log(`404TN DETERMINISTIC SSG PRERENDER (Gate 3)`);
+  console.log(`404TN DETERMINISTIC SSG PRERENDER (Phase B)`);
   console.log(`Target origin: ${CANONICAL_ORIGIN}`);
   console.log(`Total routes in SEO Registry: ${routes.length}`);
   console.log(`============================================================\n`);

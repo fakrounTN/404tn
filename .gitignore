@@ -50,5 +50,5 @@ Thumbs.db
 desktop.ini
 .idea/
 .vscode/
-*.swp
 *.swo
+scratch/
