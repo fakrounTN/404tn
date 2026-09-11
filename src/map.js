@@ -130,6 +130,7 @@ export async function initGeospatialMonitor() {
   // Initialize MapLibre GL
   mapInstance = new maplibregl.Map({
     container: 'maplibre-canvas-container',
+    cooperativeGestures: true,
     style: {
       version: 8,
       sources: {

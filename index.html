@@ -69,16 +69,12 @@
         <div id="api-status-badge" class="hidden sm:block ml-2"></div>
       </div>
 
-      <!-- Desktop Nav -->
+      <!-- Desktop Nav (Streamlined Primary Directory) -->
       <nav class="hidden md:flex items-center gap-7 text-xs font-mono tracking-meta uppercase text-surface-400" aria-label="Main Navigation">
-        <a href="/summer-2026" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/summer-2026">Summer 2026</a>
-        <a href="/the-files" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/the-files">Issues</a>
-        <a href="/geospatial-monitor" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/geospatial-monitor">Geospatial</a>
-        <a href="/gabes" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/gabes">Gabès</a>
-        <a href="/state-response" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/state-response">State Response</a>
-        <a href="/presidency" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/presidency">Presidency</a>
+        <a href="/the-files" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/the-files">The Files</a>
         <a href="/timeline" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/timeline">Timeline</a>
-        <a href="/methodology" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/methodology">Evidence</a>
+        <a href="/evidence" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/evidence">Evidence</a>
+        <a href="/methodology" class="nav-link hover:text-bone-100 transition-colors py-1" data-route="/methodology">Methodology</a>
       </nav>
 
       <!-- Right utility -->
@@ -86,7 +82,7 @@
         <button id="lang-ar-btn" class="px-2.5 py-1 text-[11px] font-mono border border-surface-800 hover:border-surface-600 bg-surface-900/60 text-sand hover:text-bone-100 transition-colors focus:outline-none focus:ring-1 focus:ring-crimson" title="Arabic investigative edition notice">
           AR
         </button>
-        <button id="mobile-menu-toggle" class="md:hidden p-1.5 text-surface-400 hover:text-bone-100 focus:outline-none focus:ring-1 focus:ring-crimson" aria-label="Open Mobile Menu">
+        <button id="mobile-menu-toggle" class="md:hidden min-h-[44px] min-w-[44px] p-2 text-surface-400 hover:text-bone-100 focus:outline-none focus:ring-1 focus:ring-crimson flex items-center justify-center" aria-expanded="false" aria-controls="mobile-menu-drawer" aria-label="Open Navigation Menu">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
       </div>
@@ -96,22 +92,22 @@
 
   <!-- Mobile Menu Drawer -->
   <div id="mobile-menu-backdrop" class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
-  <div id="mobile-menu-drawer" class="fixed top-0 right-0 bottom-0 w-72 bg-background-elevated border-l border-surface-800 z-50 transform translate-x-full transition-transform duration-300 p-6 flex flex-col justify-between md:hidden">
+  <div id="mobile-menu-drawer" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Mobile Navigation" class="fixed top-0 right-0 bottom-0 w-72 bg-background-elevated border-l border-surface-800 z-50 transform translate-x-full transition-transform duration-300 p-6 flex flex-col justify-between md:hidden">
     <div>
       <div class="flex items-center justify-between pb-6 border-b border-surface-800">
         <span class="font-sans font-bold text-lg text-bone-100"><span class="text-crimson">404</span>TN</span>
-        <button id="mobile-menu-close" class="text-surface-400 hover:text-bone-100 p-1 font-mono text-sm">[✕]</button>
+        <button id="mobile-menu-close" class="min-h-[44px] min-w-[44px] text-surface-400 hover:text-bone-100 p-2 font-mono text-sm flex items-center justify-center" aria-label="Close Navigation Menu">[✕]</button>
       </div>
-      <nav class="flex flex-col gap-4 mt-6 text-sm font-mono tracking-meta uppercase text-surface-300">
-        <a href="/summer-2026" class="hover:text-crimson py-1" data-route="/summer-2026">Summer 2026</a>
-        <a href="/the-files" class="hover:text-crimson py-1" data-route="/the-files">The Six Files</a>
-        <a href="/geospatial-monitor" class="hover:text-crimson py-1" data-route="/geospatial-monitor">Geospatial Monitor</a>
-        <a href="/gabes" class="hover:text-crimson py-1" data-route="/gabes">Gabès Investigation</a>
-        <a href="/state-response" class="hover:text-crimson py-1" data-route="/state-response">State Response</a>
-        <a href="/presidency" class="hover:text-crimson py-1" data-route="/presidency">Kais Saied / Presidency</a>
-        <a href="/timeline" class="hover:text-crimson py-1" data-route="/timeline">Summer 2026 Timeline</a>
-        <a href="/methodology" class="hover:text-crimson py-1" data-route="/methodology">Evidence & Sources</a>
-        <a href="/statement" class="hover:text-crimson py-1" data-route="/statement">Mission & Statement</a>
+      <nav class="flex flex-col gap-1 mt-6 text-sm font-mono tracking-meta uppercase text-surface-300" aria-label="Mobile Directory">
+        <a href="/summer-2026" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/summer-2026">Summer 2026</a>
+        <a href="/the-files" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/the-files">The Seven Files</a>
+        <a href="/geospatial-monitor" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/geospatial-monitor">Geospatial Monitor</a>
+        <a href="/gabes" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/gabes">Gabès Investigation</a>
+        <a href="/state-response" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/state-response">State Response</a>
+        <a href="/presidency" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/presidency">Kais Saied / Presidency</a>
+        <a href="/timeline" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/timeline">Summer 2026 Timeline</a>
+        <a href="/methodology" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/methodology">Evidence & Sources</a>
+        <a href="/statement" class="hover:text-crimson py-2.5 min-h-[44px] flex items-center" data-route="/statement">Mission & Statement</a>
       </nav>
     </div>
     <div class="pt-6 border-t border-surface-800 text-xs font-mono text-surface-500">
@@ -166,15 +162,15 @@
             <div class="pt-6 border-t border-surface-800/60 grid grid-cols-3 gap-4 text-left">
               <div>
                 <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">MONITORED DOSSIERS</span>
-                <span class="font-editorial text-xl font-bold text-bone-100">06 Files</span>
+                <span class="font-editorial text-xl font-bold text-bone-100">07 Files</span>
               </div>
               <div>
                 <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">PRIMARY EVIDENCE</span>
-                <span id="stats-total-evidence" class="font-editorial text-xl font-bold text-crimson">50+ Records</span>
+                <span id="stats-total-evidence" class="font-editorial text-xl font-bold text-crimson">—</span>
               </div>
               <div>
                 <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">SOURCE REGISTRY</span>
-                <span id="stats-monitored-sources" class="font-editorial text-xl font-bold text-sand">18 Sources</span>
+                <span id="stats-monitored-sources" class="font-editorial text-xl font-bold text-sand">—</span>
               </div>
             </div>
 
@@ -206,7 +202,7 @@
                 </div>
               </div>
               <div class="pt-3 border-t border-surface-800 flex items-center justify-between text-[10px] font-mono text-surface-500">
-                <span>PROVENANCE: 100% SOURCED</span>
+                <span>PROVENANCE: VERIFIED SOURCES</span>
                 <a href="/geospatial-monitor" class="text-crimson hover:underline">OPEN MAP ↗</a>
               </div>
             </div>
@@ -231,7 +227,7 @@
           Summer 2026 is not one crisis.
         </h2>
 
-        <div class="space-y-6 text-base sm:text-lg text-surface-300 font-light leading-relaxed">
+        <div class="space-y-6 text-base sm:text-lg text-surface-300 font-light leading-relaxed max-w-prose">
           <p>
             It is the intersection of infrastructure, employment, purchasing power, migration, environmental damage, public services and political accountability.
           </p>
@@ -242,20 +238,20 @@
 
         <div class="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono border-t border-surface-800">
           <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-crimson block font-bold mb-1">NO ADVERTISING</span>
-            <span class="text-surface-400 font-light">Zero commercial or political party funding</span>
+            <span class="text-crimson block font-bold mb-1">EVIDENCE FIRST</span>
+            <span class="text-surface-400 font-light">Every fact paired with verifiable source records</span>
           </div>
           <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-crimson block font-bold mb-1">EVIDENCE-FIRST</span>
-            <span class="text-surface-400 font-light">Every fact paired with verifiable source</span>
+            <span class="text-crimson block font-bold mb-1">SOURCE TRANSPARENCY</span>
+            <span class="text-surface-400 font-light">Explicit attribution and source provenance</span>
           </div>
           <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-crimson block font-bold mb-1">FACT / CLAIM / ANALYSIS</span>
-            <span class="text-surface-400 font-light">Strict epistemic categorization</span>
+            <span class="text-crimson block font-bold mb-1">CLAIM DISCIPLINE</span>
+            <span class="text-surface-400 font-light">Strict epistemic categorization (Fact / Claim / Analysis)</span>
           </div>
           <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-crimson block font-bold mb-1">OPEN TELEMETRY</span>
-            <span class="text-surface-400 font-light">Real geospatial coordinates & audits</span>
+            <span class="text-crimson block font-bold mb-1">EDITORIAL INDEPENDENCE</span>
+            <span class="text-surface-400 font-light">Independent documentation and institutional accountability</span>
           </div>
         </div>
 
@@ -263,7 +259,7 @@
     </section>
 
     <!-- =========================================================================
-         4. THE SIX INVESTIGATIVE FILES (EDITORIAL INDEX)
+         4. THE SEVEN INVESTIGATIVE FILES (EDITORIAL INDEX)
          ========================================================================= -->
     <section id="the-files" class="py-20 sm:py-28 border-b border-surface-800/80">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -271,7 +267,7 @@
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-surface-800">
           <div>
             <span class="text-xs font-mono uppercase tracking-widest text-crimson block mb-2 font-medium">INDEX OF INVESTIGATIONS</span>
-            <h2 class="font-editorial text-3xl sm:text-4xl text-bone-100">The Six Files</h2>
+            <h2 class="font-editorial text-3xl sm:text-4xl text-bone-100">The Seven Files</h2>
           </div>
           <p class="text-xs font-mono text-surface-400 max-w-sm">
             Structured ongoing documentation of systemic pressure across Tunisia in 2026. Click any row to inspect verified metrics.
@@ -300,42 +296,52 @@
             </div>
           </a>
 
-          <!-- File 03: Work -->
-          <a href="/issues/work" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="work" aria-label="Open File 03: Work">
+          <!-- File 03: Pollution & Environment -->
+          <a href="/issues/pollution" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="pollution" aria-label="Open File 03: Pollution & Environment">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
               <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">03</div>
+              <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Pollution & Environment</div>
+              <div class="md:col-span-6 text-sm text-surface-300 font-light">Industrial chemical emissions, phosphogypsum coastal runoff, atmospheric data deficits and regional ecology.</div>
+              <div class="md:col-span-1 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">→</div>
+            </div>
+          </a>
+
+          <!-- File 04: Work -->
+          <a href="/issues/work" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="work" aria-label="Open File 04: Work">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
+              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">04</div>
               <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Work</div>
               <div class="md:col-span-6 text-sm text-surface-300 font-light">Unemployment, wages, youth prospects and economic pressure. 38.6% graduate joblessness.</div>
               <div class="md:col-span-1 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">→</div>
             </div>
           </a>
 
-          <!-- File 04: Migration -->
-          <a href="/issues/migration" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="migration" aria-label="Open File 04: Migration">
+          <!-- File 05: Migration -->
+          <a href="/issues/migration" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="migration" aria-label="Open File 05: Migration">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">04</div>
+              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">05</div>
               <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Migration</div>
               <div class="md:col-span-6 text-sm text-surface-300 font-light">Tunisians leaving, African migration through Tunisia and Mediterranean border policy.</div>
               <div class="md:col-span-1 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">→</div>
             </div>
           </a>
 
-          <!-- File 05: Public Services -->
-          <a href="/issues/public-services" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="publicServices" aria-label="Open File 05: Public Services">
+          <!-- File 06: Public Services -->
+          <a href="/issues/public-services" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="publicServices" aria-label="Open File 06: Public Services">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">05</div>
+              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">06</div>
               <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Public Services</div>
               <div class="md:col-span-6 text-sm text-surface-300 font-light">Healthcare, transport, municipalities and everyday infrastructure breakdown.</div>
               <div class="md:col-span-1 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">→</div>
             </div>
           </a>
 
-          <!-- File 06: Rights & Institutions -->
-          <a href="/issues/rights" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="institutions" aria-label="Open File 06: Rights & Institutions">
+          <!-- File 07: Rights & Freedoms -->
+          <a href="/issues/rights" class="file-row block py-8 group cursor-pointer transition-colors duration-150 px-3 sm:px-4 no-underline" data-file-key="institutions" aria-label="Open File 07: Rights & Freedoms">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-baseline">
-              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">06</div>
-              <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Rights & Institutions</div>
-              <div class="md:col-span-6 text-sm text-surface-300 font-light">Political power, institutions, freedoms, Decree 54 and state accountability.</div>
+              <div class="md:col-span-2 font-mono text-2xl font-light text-surface-500 group-hover:text-crimson transition-colors">07</div>
+              <div class="md:col-span-3 font-sans font-bold text-xl text-bone-100 group-hover:text-crimson transition-colors">Rights & Freedoms</div>
+              <div class="md:col-span-6 text-sm text-surface-300 font-light">Political power, freedoms, legal decrees, Decree 54 and state accountability.</div>
               <div class="md:col-span-1 text-right font-mono text-xs text-surface-400 group-hover:text-bone-100 group-hover:translate-x-1 transition-all">→</div>
             </div>
           </a>
@@ -461,10 +467,10 @@
 
             <div class="space-y-4 text-xs font-sans text-surface-300 font-light leading-relaxed">
               <p>
-                The Groupe Chimique Tunisien (GCT) industrial complex at Chatt Essalam produces phosphoric acid and fertilizer essential to Tunisia's export balance. The resulting by-product, phosphogypsum, has created a dead zone across the inner Gulf of Gabès.
+                The Groupe Chimique Tunisien (GCT) industrial complex at Chatt Essalam produces phosphoric acid and fertilizer. Its by-product, phosphogypsum, has historically been discharged into the maritime coastal zone of the Gulf of Gabès.
               </p>
               <p>
-                In June 2017, the Cabinet approved a formal dismantling and relocation decision. In Summer 2026, all coastal units remain operational. Continuous real-time atmospheric sensor data is not publicly published by state agencies.
+                In June 2017, the Cabinet approved a formal dismantling and relocation decision. In Summer 2026, coastal units remain operational. Continuous real-time atmospheric sensor data is not publicly published by state agencies.
               </p>
             </div>
 
@@ -493,15 +499,11 @@
               <div class="space-y-3">
                 <div class="border-l-2 border-crimson pl-3">
                   <div class="text-bone-100 font-bold">2017 · CABINET DECISION</div>
-                  <div class="text-[11px] text-surface-400 font-light">Government pledges complete relocation of GCT units away from residential coast.</div>
-                </div>
-                <div class="border-l-2 border-sand pl-3">
-                  <div class="text-bone-100 font-bold">2023 · PRESIDENTIAL VISIT</div>
-                  <div class="text-[11px] text-surface-400 font-light">Pollution declared 'a crime against humanity'; fast-track committee established.</div>
+                  <div class="text-[11px] text-surface-400 font-light">Government pledges relocation of GCT units away from residential coast (Cabinet Communiqué June 29, 2017).</div>
                 </div>
                 <div class="border-l-2 border-surface-700 pl-3">
                   <div class="text-bone-100 font-bold">SUMMER 2026 · CURRENT STATUS</div>
-                  <div class="text-[11px] text-surface-400 font-light">Zero chemical units dismantled; zero public online sensor data feeds.</div>
+                  <div class="text-[11px] text-surface-400 font-light">Zero chemical units dismantled or relocated; no public online sensor data feeds.</div>
                 </div>
               </div>
             </div>
@@ -804,9 +806,9 @@
           <a href="/the-files" class="px-8 py-3.5 bg-crimson hover:bg-crimson-light text-white text-xs font-mono uppercase tracking-meta font-semibold transition-colors">
             Explore the archive
           </a>
-          <button data-open-securedrop class="px-8 py-3.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 text-xs font-mono uppercase tracking-meta transition-colors">
-            Submit Documented Evidence
-          </button>
+          <a href="/methodology" class="px-8 py-3.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 text-xs font-mono uppercase tracking-meta transition-colors">
+            Documentation Methodology
+          </a>
         </div>
 
       </div>
@@ -861,16 +863,14 @@
             <a href="/summer-2026" class="hover:text-crimson transition-colors">About Project</a>
             <a href="/methodology" class="hover:text-crimson transition-colors">Methodology</a>
             <a href="/evidence" class="hover:text-crimson transition-colors">Sources Registry</a>
-            <a href="/methodology" class="hover:text-crimson transition-colors">Corrections Policy</a>
-            <button data-open-securedrop class="text-left hover:text-crimson transition-colors">Secure Drop</button>
+            <a href="/the-files" class="hover:text-crimson transition-colors">The Seven Files</a>
             <button id="lang-ar-footer-btn" class="text-left text-sand hover:underline">النسخة العربية</button>
           </div>
         </div>
 
         <div class="md:col-span-3 space-y-2">
-          <span class="text-[10px] uppercase text-surface-400 tracking-meta block mb-2">SECURE CONTACT</span>
+          <span class="text-[10px] uppercase text-surface-400 tracking-meta block mb-2">CONTACT</span>
           <div class="text-surface-400 text-[11px] space-y-1">
-            <div>Signal: +1 (202) 404-TN26</div>
             <div>Email: contact@404tn.com</div>
           </div>
         </div>
@@ -878,8 +878,8 @@
       </div>
 
       <div class="pt-8 border-t border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-surface-400">
-        <div>© 2026 404TN · Independent Investigative Platform. Published under Creative Commons BY-NC-ND 4.0.</div>
-        <div class="text-surface-400">404TN.COM · REUTERS / FORENSIC ARCHITECTURE EDITORIAL STANDARD</div>
+        <div>© 2026 404TN · Independent Investigative Platform.</div>
+        <div class="text-surface-400">404TN.COM · TUNISIA 2026</div>
       </div>
 
     </div>

@@ -213,7 +213,24 @@ export function runPrerender() {
     console.log(`[prerender] ✓ ${routePath.padEnd(28)} -> ${relDisplay} (${renderedHtml.length} bytes)`);
   }
 
+  // Generate and write sitemap.xml derived from authoritative SEO_REGISTRY
+  const sitemapXml = generateSitemapXml();
+  const publicSitemapPath = path.resolve(ROOT_DIR, 'public', 'sitemap.xml');
+  const distSitemapPath = path.resolve(DIST_DIR, 'sitemap.xml');
+  fs.writeFileSync(publicSitemapPath, sitemapXml, 'utf-8');
+  if (fs.existsSync(DIST_DIR)) {
+    fs.writeFileSync(distSitemapPath, sitemapXml, 'utf-8');
+  }
+  const canonicalCount = Object.values(SEO_REGISTRY).filter(r => !r.isAlias).length;
+  console.log(`[prerender] ✓ Synced sitemap.xml with ${canonicalCount} canonical URLs.`);
+
   console.log(`\n[prerender] Completed: Successfully prerendered ${generatedCount}/${routes.length} routes.\n`);
+}
+
+export function generateSitemapXml() {
+  const canonicalEntries = Object.values(SEO_REGISTRY).filter(r => !r.isAlias);
+  const urlsXml = canonicalEntries.map(entry => `  <url>\n    <loc>${entry.canonical}</loc>\n  </url>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urlsXml}\n</urlset>\n`;
 }
 
 // Execute when run directly

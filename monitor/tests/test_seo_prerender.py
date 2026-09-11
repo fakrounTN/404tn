@@ -181,6 +181,76 @@ class TestSeoPrerender(unittest.TestCase):
             for deferred_type in ["Report", "Dataset", "CollectionPage", "Article", "BreadcrumbList"]:
                 self.assertNotIn(deferred_type, graph_types, f"Deferred type {deferred_type} should not appear in Phase 1 JSON-LD")
 
+    def test_sitemap_xml_canonical_alignment(self):
+        """Gate 5: Confirm public/sitemap.xml contains exactly the 18 canonical URLs and no aliases/obsolete prefixes."""
+        sitemap_path = os.path.join(self.repo_root, "public", "sitemap.xml")
+        self.assertTrue(os.path.exists(sitemap_path), "public/sitemap.xml must exist")
+
+        with open(sitemap_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        locs = re.findall(r"<loc>(.*?)</loc>", content)
+        self.assertEqual(len(locs), 18, f"Expected exactly 18 <loc> entries in sitemap, found {len(locs)}")
+        self.assertEqual(len(set(locs)), 18, "Sitemap must not contain duplicate URLs")
+
+        expected_canonical_urls = [
+            "https://404tn.com/",
+            "https://404tn.com/summer-2026",
+            "https://404tn.com/the-files",
+            "https://404tn.com/gabes",
+            "https://404tn.com/timeline",
+            "https://404tn.com/state-response",
+            "https://404tn.com/evidence",
+            "https://404tn.com/methodology",
+            "https://404tn.com/geospatial-monitor",
+            "https://404tn.com/presidency",
+            "https://404tn.com/statement",
+            "https://404tn.com/issues/water",
+            "https://404tn.com/issues/electricity",
+            "https://404tn.com/issues/pollution",
+            "https://404tn.com/issues/work",
+            "https://404tn.com/issues/migration",
+            "https://404tn.com/issues/public-services",
+            "https://404tn.com/issues/rights"
+        ]
+
+        self.assertEqual(set(locs), set(expected_canonical_urls), "Sitemap URLs must exactly match 18 canonical registry entries")
+
+        # Prohibited items check
+        self.assertNotIn("https://404tn.com/geospatial", locs, "Alias /geospatial must not be in sitemap")
+        self.assertNotIn("https://404tn.com/issues/rights-institutions", locs, "Alias /issues/rights-institutions must not be in sitemap")
+        self.assertNotIn("/en/", content, "No /en/ prefix in sitemap")
+        self.assertNotIn("/ar/", content, "No /ar/ prefix in sitemap")
+        self.assertNotIn("404.html", content, "No 404.html in sitemap")
+        self.assertNotIn("/api/", content, "No /api/ in sitemap")
+        for u in locs:
+            self.assertNotIn("?", u, f"No query strings allowed in sitemap URL {u}")
+            self.assertNotIn("#", u, f"No fragments allowed in sitemap URL {u}")
+
+        # Non-root trailing slashes
+        for u in locs:
+            if u != "https://404tn.com/":
+                self.assertFalse(u.endswith("/"), f"URL {u} should not have a trailing slash")
+
+    def test_robots_txt_directives(self):
+        """Gate 5: Confirm public/robots.txt contains correct public crawl directives."""
+        robots_path = os.path.join(self.repo_root, "public", "robots.txt")
+        self.assertTrue(os.path.exists(robots_path), "public/robots.txt must exist")
+
+        with open(robots_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        self.assertIn("User-agent: *", content)
+        self.assertIn("Allow: /", content)
+        self.assertIn("Disallow: /api/", content)
+        self.assertIn("Disallow: /backups/", content)
+        self.assertIn("Disallow: /404.html", content)
+        self.assertIn("Sitemap: https://404tn.com/sitemap.xml", content)
+        self.assertNotIn("/en/", content)
+        self.assertNotIn("/ar/", content)
+        self.assertNotIn("Disallow: /gabes", content)
+        self.assertNotIn("Disallow: /issues/", content)
+
 
 if __name__ == "__main__":
     unittest.main()

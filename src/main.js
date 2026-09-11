@@ -66,8 +66,11 @@ function initMobileMenu() {
   const links = drawer ? drawer.querySelectorAll("a") : [];
 
   const openDrawer = () => {
+    if (!drawer) return;
     drawer.classList.remove("translate-x-full");
     drawer.classList.add("translate-x-0");
+    drawer.setAttribute("aria-hidden", "false");
+    if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "true");
     if (backdrop) {
       backdrop.classList.remove("opacity-0", "pointer-events-none");
       backdrop.classList.add("opacity-100", "pointer-events-auto");
@@ -76,8 +79,11 @@ function initMobileMenu() {
   };
 
   const closeDrawer = () => {
+    if (!drawer) return;
     drawer.classList.add("translate-x-full");
     drawer.classList.remove("translate-x-0");
+    drawer.setAttribute("aria-hidden", "true");
+    if (toggleBtn) toggleBtn.setAttribute("aria-expanded", "false");
     if (backdrop) {
       backdrop.classList.add("opacity-0", "pointer-events-none");
       backdrop.classList.remove("opacity-100", "pointer-events-auto");
@@ -89,10 +95,22 @@ function initMobileMenu() {
   if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
   if (backdrop) backdrop.addEventListener("click", closeDrawer);
   links.forEach(l => l.addEventListener("click", closeDrawer));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && drawer && !drawer.classList.contains("translate-x-full")) {
+      closeDrawer();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth >= 768 && drawer && !drawer.classList.contains("translate-x-full")) {
+      closeDrawer();
+    }
+  }, { passive: true });
 }
 
 /* ==========================================================================
-   3. THE SIX FILES EDITORIAL METADATA & DYNAMIC DOSSIER MODAL
+   3. THE SEVEN FILES EDITORIAL METADATA & DYNAMIC DOSSIER MODAL
    ========================================================================== */
 const FILE_EDITORIAL_METADATA = {
   water: {
@@ -119,8 +137,20 @@ const FILE_EDITORIAL_METADATA = {
       "Observatoire National de l'Énergie et des Mines"
     ]
   },
-  work: {
+  pollution: {
     id: "03",
+    slug: "pollution",
+    title: "Pollution & Environment: Industrial Emissions, Chemical Waste & Environmental Contamination",
+    category: "ENVIRONMENTAL CRISIS",
+    summary: "Documentation of industrial chemical emissions, coastal phosphogypsum discharge, air quality deficits, and environmental contamination across Tunisian regions.",
+    accountableInstitutions: [
+      "Ministry of Environment (ANPE)",
+      "Groupe Chimique Tunisien (GCT)",
+      "Ministry of Industry, Mines and Energy"
+    ]
+  },
+  work: {
+    id: "04",
     slug: "work",
     title: "Work: Unemployment, Wages & Economic Pressure",
     category: "ECONOMIC STAGNATION",
@@ -132,7 +162,7 @@ const FILE_EDITORIAL_METADATA = {
     ]
   },
   migration: {
-    id: "04",
+    id: "05",
     slug: "migration",
     title: "Migration: Tunisians Leaving, African Migration & Border Policy",
     category: "HUMAN MOBILITY",
@@ -144,7 +174,7 @@ const FILE_EDITORIAL_METADATA = {
     ]
   },
   publicServices: {
-    id: "05",
+    id: "06",
     slug: "public-services",
     title: "Public Services: Healthcare, Transport & Municipal Infrastructure",
     category: "CIVIC INFRASTRUCTURE",
@@ -156,27 +186,15 @@ const FILE_EDITORIAL_METADATA = {
     ]
   },
   institutions: {
-    id: "06",
+    id: "07",
     slug: "rights",
-    title: "Rights & Institutions: Governance & Accountability",
+    title: "Rights & Freedoms: Governance & Accountability",
     category: "GOVERNANCE & ACCOUNTABILITY",
     summary: "Monitoring institutional checks and balances, Decree 54 legal proceedings, press freedom, and judicial independence.",
     accountableInstitutions: [
       "Presidency of the Republic (Carthage)",
       "Ministry of Justice",
       "SNJT (National Union of Tunisian Journalists)"
-    ]
-  },
-  pollution: {
-    id: "07",
-    slug: "gabes",
-    title: "Pollution: Industrial Emissions, Chemical Waste & Environmental Contamination",
-    category: "ENVIRONMENTAL CRISIS",
-    summary: "Documentation of industrial chemical emissions, coastal phosphogypsum discharge, air quality deficits, and environmental contamination across Tunisian regions.",
-    accountableInstitutions: [
-      "Ministry of Environment (ANPE)",
-      "Groupe Chimique Tunisien (GCT)",
-      "Ministry of Industry, Mines and Energy"
     ]
   }
 };
@@ -357,8 +375,12 @@ async function loadStatsData() {
 
   const totalEl = document.getElementById("stats-total-evidence");
   const sourcesEl = document.getElementById("stats-monitored-sources");
-  if (totalEl && stats.total_evidence_records) totalEl.textContent = `${stats.total_evidence_records}+`;
-  if (sourcesEl && stats.monitored_sources_count) sourcesEl.textContent = stats.monitored_sources_count;
+  if (totalEl && stats.total_evidence_records != null) {
+    totalEl.textContent = `${stats.total_evidence_records} Records`;
+  }
+  if (sourcesEl && stats.monitored_sources_count != null) {
+    sourcesEl.textContent = `${stats.monitored_sources_count} Sources`;
+  }
 }
 
 /* ==========================================================================

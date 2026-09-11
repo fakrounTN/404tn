@@ -165,6 +165,68 @@ function runTests() {
   assert(gabesHtml.includes('href="https://404tn.com/gabes"'), `/gabes canonical is https://404tn.com/gabes`);
   assert(!gabesHtml.includes('href="https://404tn.com/issues/pollution" rel="canonical"'), `/gabes does NOT canonicalize to /issues/pollution`);
 
+  // Gate 5: Sitemap.xml & Robots.txt Canonical Alignment
+  console.log(`\nGate 5 Assertions (sitemap.xml & robots.txt):`);
+  const expectedCanonicalUrls = canonicalRoutes.map(r => SEO_REGISTRY[r].canonical);
+
+  for (const sitemapLocation of [path.join(ROOT_DIR, 'public', 'sitemap.xml'), path.join(DIST_DIR, 'sitemap.xml')]) {
+    const sitemapRel = path.relative(ROOT_DIR, sitemapLocation);
+    assert(fs.existsSync(sitemapLocation), `${sitemapRel} exists`);
+    if (!fs.existsSync(sitemapLocation)) continue;
+
+    const sitemapContent = fs.readFileSync(sitemapLocation, 'utf-8');
+    const locMatches = [...sitemapContent.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
+
+    assert(locMatches.length === 18, `${sitemapRel} contains exactly 18 URLs (found ${locMatches.length})`);
+    assert(new Set(locMatches).size === 18, `${sitemapRel} contains zero duplicate URLs`);
+
+    // Check set equality with canonical registry
+    const matchesCanonicalSet = expectedCanonicalUrls.every(u => locMatches.includes(u)) && locMatches.every(u => expectedCanonicalUrls.includes(u));
+    assert(matchesCanonicalSet, `${sitemapRel} URL set exactly equals canonical indexable registry set`);
+
+    // Prohibited sitemap items
+    assert(!locMatches.includes('https://404tn.com/geospatial'), `${sitemapRel} does NOT contain alias /geospatial`);
+    assert(!locMatches.includes('https://404tn.com/issues/rights-institutions'), `${sitemapRel} does NOT contain alias /issues/rights-institutions`);
+    assert(!sitemapContent.includes('/en/'), `${sitemapRel} contains zero /en/ URLs`);
+    assert(!sitemapContent.includes('/ar/'), `${sitemapRel} contains zero /ar/ URLs`);
+    assert(!sitemapContent.includes('404.html'), `${sitemapRel} does NOT contain 404.html`);
+    assert(!sitemapContent.includes('/api/'), `${sitemapRel} does NOT contain /api/`);
+    assert(locMatches.every(u => !u.includes('?')), `${sitemapRel} URLs contain zero query strings`);
+    assert(locMatches.every(u => !u.includes('#')), `${sitemapRel} URLs contain zero fragments`);
+
+    // Non-root trailing slash check
+    const invalidTrailingSlash = locMatches.filter(u => u !== 'https://404tn.com/' && u.endsWith('/'));
+    assert(invalidTrailingSlash.length === 0, `${sitemapRel} has no trailing slash on subpaths (found: ${invalidTrailingSlash.join(', ')})`);
+
+    // Prerender consistency: Every sitemap URL must exist as a prerendered HTML file on disk
+    for (const url of locMatches) {
+      const subpath = url.replace('https://404tn.com', '');
+      const diskPath = subpath === '/' || subpath === ''
+        ? path.join(DIST_DIR, 'index.html')
+        : path.join(DIST_DIR, subpath.replace(/^\//, ''), 'index.html');
+      assert(fs.existsSync(diskPath), `Sitemap URL ${url} corresponds to prerendered file at ${path.relative(ROOT_DIR, diskPath)}`);
+    }
+  }
+
+  // Robots.txt verification
+  for (const robotsLocation of [path.join(ROOT_DIR, 'public', 'robots.txt'), path.join(DIST_DIR, 'robots.txt')]) {
+    const robotsRel = path.relative(ROOT_DIR, robotsLocation);
+    assert(fs.existsSync(robotsLocation), `${robotsRel} exists`);
+    if (!fs.existsSync(robotsLocation)) continue;
+
+    const robotsContent = fs.readFileSync(robotsLocation, 'utf-8');
+    assert(robotsContent.includes('User-agent: *'), `${robotsRel} contains User-agent: *`);
+    assert(robotsContent.includes('Allow: /'), `${robotsRel} allows public root crawl (Allow: /)`);
+    assert(robotsContent.includes('Disallow: /api/'), `${robotsRel} disallows /api/`);
+    assert(robotsContent.includes('Disallow: /backups/'), `${robotsRel} disallows /backups/`);
+    assert(robotsContent.includes('Disallow: /404.html'), `${robotsRel} disallows /404.html`);
+    assert(robotsContent.includes('Sitemap: https://404tn.com/sitemap.xml'), `${robotsRel} references authoritative sitemap`);
+    assert(!robotsContent.includes('/en/'), `${robotsRel} does NOT advertise or reference /en/`);
+    assert(!robotsContent.includes('/ar/'), `${robotsRel} does NOT advertise or reference /ar/`);
+    assert(!robotsContent.includes('Disallow: /gabes'), `${robotsRel} does not disallow /gabes`);
+    assert(!robotsContent.includes('Disallow: /issues/'), `${robotsRel} does not disallow canonical /issues/`);
+  }
+
   console.log(`\n============================================================`);
   console.log(`SEO TEST SUMMARY`);
   console.log(`Passed: ${passedTests}`);

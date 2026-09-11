@@ -91,8 +91,8 @@ export function updateActiveNavLinks(activeNavRoute) {
 
       const isActive = activeNavRoute && (
         (dataRoute === activeNavRoute) ||
-        (activeNavRoute === '/evidence' && dataRoute === '/methodology') ||
-        (activeNavRoute === '/methodology' && dataRoute === '/methodology') ||
+        (activeNavRoute === '/evidence' && (dataRoute === '/methodology' || dataRoute === '/evidence')) ||
+        (activeNavRoute === '/methodology' && (dataRoute === '/methodology' || dataRoute === '/evidence')) ||
         (activeNavRoute.startsWith('/issues/') && dataRoute === '/the-files')
       );
 
