@@ -48,15 +48,15 @@ function resolveInstitutionName(institutionId) {
  */
 function renderClassificationBadge(classification) {
   if (classification === EPISTEMIC_CLASSIFICATION.FACT) {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-700 text-bone-100 font-bold uppercase tracking-wider">FACT</span>`;
+    return `<span class="stamp-badge stamp-fact">FACT</span>`;
   }
   if (classification === EPISTEMIC_CLASSIFICATION.CLAIM) {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-sand/10 border border-sand/30 text-sand font-semibold uppercase tracking-wider" title="Attributed statement or allegation not independently established as fact">CLAIM · ATTRIBUTED</span>`;
+    return `<span class="stamp-badge stamp-claim" title="Attributed statement or allegation not independently established as fact">CLAIM · ATTRIBUTED</span>`;
   }
   if (classification === EPISTEMIC_CLASSIFICATION.ANALYSIS) {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson font-semibold uppercase tracking-wider" title="404TN investigative interpretation">ANALYSIS</span>`;
+    return `<span class="stamp-badge stamp-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
   }
-  return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-800 text-surface-400 uppercase">${escapeHtml(classification)}</span>`;
+  return `<span class="stamp-badge bg-surface-800 text-surface-400 border-surface-700">${escapeHtml(classification)}</span>`;
 }
 
 /**
@@ -144,7 +144,7 @@ function renderSourceSlip(sourceIds) {
  * Renders a primary chronology record row/card.
  */
 function renderChronologyItem(rec) {
-  const typeBadge = `<span class="text-[9px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-800 text-surface-400 uppercase font-semibold">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
+  const typeBadge = `<span class="stamp-badge bg-surface-900 border-surface-700 text-surface-300 font-semibold uppercase">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
   const classBadge = renderClassificationBadge(rec.classification);
   const statusBadge = rec.status ? renderStatusBadge(rec.status) : '';
   const dateStr = rec.date_start ? (rec.date_start.length === 10 ? rec.date_start : rec.date_start) : '2019–2026';
@@ -156,20 +156,20 @@ function renderChronologyItem(rec) {
     specificDetailsHtml = `
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
         ${rec.stated_purpose ? `
-          <div class="p-2.5 bg-surface-900/40 border border-surface-800 space-y-1">
+          <div class="p-3 bg-surface-900/50 border border-surface-800 space-y-1">
             <span class="text-[9px] font-mono text-sand uppercase font-bold block">STATED LEGISLATIVE PURPOSE</span>
             <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(rec.stated_purpose)}</p>
           </div>
         ` : ''}
         ${rec.documented_effect ? `
-          <div class="p-2.5 bg-surface-900/40 border border-surface-800 space-y-1">
+          <div class="p-3 bg-surface-900/50 border border-surface-800 space-y-1">
             <span class="text-[9px] font-mono text-crimson uppercase font-bold block">DOCUMENTED INSTITUTIONAL EFFECT</span>
             <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(rec.documented_effect)}</p>
           </div>
         ` : ''}
       </div>
       ${rec.legal_challenges ? `
-        <div class="mt-2 text-xs font-sans p-2.5 bg-background border border-surface-800">
+        <div class="mt-2 text-xs font-sans p-3 bg-background border border-surface-800">
           <span class="text-[9px] font-mono text-sand uppercase font-bold block">LEGAL CHALLENGES &amp; OBJECTIONS</span>
           <p class="text-surface-400 font-light mt-0.5">${escapeHtml(rec.legal_challenges)}</p>
         </div>
@@ -187,13 +187,13 @@ function renderChronologyItem(rec) {
   else if (rec.record_type === RECORD_TYPES.DECISION) {
     specificDetailsHtml = `
       ${rec.stated_reason ? `
-        <div class="mt-2 text-xs font-sans p-2.5 bg-surface-900/40 border border-surface-800">
+        <div class="mt-2 text-xs font-sans p-3 bg-surface-900/50 border border-surface-800">
           <span class="text-[9px] font-mono text-sand uppercase font-bold block">STATED ADMINISTRATIVE REASON</span>
           <p class="text-surface-300 font-light mt-0.5">${escapeHtml(rec.stated_reason)}</p>
         </div>
       ` : ''}
       ${rec.contested_interpretations ? `
-        <div class="mt-2 text-xs font-sans p-2.5 bg-background border border-surface-800">
+        <div class="mt-2 text-xs font-sans p-3 bg-background border border-surface-800">
           <span class="text-[9px] font-mono text-crimson uppercase font-bold block">CONTESTED INTERPRETATION &amp; COURT INJUNCTIONS</span>
           <p class="text-surface-300 font-light mt-0.5">${escapeHtml(rec.contested_interpretations)}</p>
         </div>
@@ -210,17 +210,17 @@ function renderChronologyItem(rec) {
   else if (rec.record_type === RECORD_TYPES.INDICATOR) {
     specificDetailsHtml = `
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
-        <div class="p-2.5 bg-surface-900/60 border border-surface-800 text-center">
+        <div class="p-3 bg-surface-900/60 border border-surface-800 text-center">
           <span class="text-[9px] font-mono uppercase text-surface-400 block">RECORDED VALUE</span>
-          <span class="text-xl font-editorial font-bold text-crimson block my-1">${escapeHtml(rec.value)}</span>
+          <span class="text-2xl font-editorial font-bold text-crimson block my-1">${escapeHtml(rec.value)}</span>
           <span class="text-[9px] font-mono text-surface-400">${escapeHtml(rec.unit || '')}</span>
         </div>
-        <div class="p-2.5 bg-surface-900/40 border border-surface-800 space-y-1">
+        <div class="p-3 bg-surface-900/40 border border-surface-800 space-y-1">
           <span class="text-[9px] font-mono uppercase text-sand font-bold block">OBSERVATION TYPE</span>
           <div class="font-mono text-xs font-bold text-bone-100">${escapeHtml(rec.observation_type || '')}</div>
           <div class="text-[10px] text-surface-400">Ref: ${escapeHtml(rec.reference_period || '')}</div>
         </div>
-        <div class="p-2.5 bg-surface-900/40 border border-surface-800 space-y-1">
+        <div class="p-3 bg-surface-900/40 border border-surface-800 space-y-1">
           <span class="text-[9px] font-mono uppercase text-surface-400 font-bold block">METHODOLOGY &amp; BASE</span>
           <p class="text-[10px] text-surface-300 leading-tight">${escapeHtml(rec.methodology || '')}</p>
         </div>
@@ -237,15 +237,15 @@ function renderChronologyItem(rec) {
   else if (rec.record_type === RECORD_TYPES.OUTCOME) {
     specificDetailsHtml = `
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 pt-3 border-t border-surface-800 text-xs font-sans">
-        <div class="p-2.5 bg-surface-900/60 border border-surface-800">
+        <div class="p-3 bg-surface-900/60 border border-surface-800">
           <span class="text-[9px] font-mono uppercase text-surface-400 block font-bold">MEASURED RESULT</span>
-          <span class="text-sm font-mono font-bold text-crimson block mt-1">${escapeHtml(rec.measurement || rec.result || '')}</span>
+          <span class="text-base font-mono font-bold text-crimson block mt-1">${escapeHtml(rec.measurement || rec.result || '')}</span>
         </div>
-        <div class="p-2.5 bg-surface-900/40 border border-surface-800">
+        <div class="p-3 bg-surface-900/40 border border-surface-800">
           <span class="text-[9px] font-mono uppercase text-surface-400 block font-bold">BASELINE ANCHOR</span>
           <span class="text-xs font-mono text-bone-100 block mt-1">${escapeHtml(rec.baseline || 'Pre-2019 Normal')}</span>
         </div>
-        <div class="p-2.5 bg-surface-900/40 border border-surface-800">
+        <div class="p-3 bg-surface-900/40 border border-surface-800">
           <span class="text-[9px] font-mono uppercase text-sand block font-bold">CAUSATION STATUS</span>
           <span class="text-xs font-mono font-bold text-bone-100 block mt-1">${escapeHtml((rec.causation_status || '').replace(/_/g, ' '))}</span>
         </div>
@@ -266,11 +266,11 @@ function renderChronologyItem(rec) {
           ${statusBadge}
         </div>
         <div class="text-[10px] font-mono text-surface-500">
-          ID: <span class="text-surface-400">${escapeHtml(rec.id)}</span>
+          ID: <span class="text-surface-400 font-mono">${escapeHtml(rec.id)}</span>
         </div>
       </div>
 
-      <h3 class="font-sans font-bold text-bone-100 text-base sm:text-lg leading-snug">
+      <h3 class="font-editorial font-bold text-bone-100 text-lg sm:text-xl leading-snug">
         ${escapeHtml(rec.title)}
       </h3>
 
@@ -699,10 +699,10 @@ export function renderPresidencyReportViewHtml() {
           deck: "Elected on October 13, 2019 with 72.71% of the vote (2.77 million ballots) on a platform pledging direct grassroots democracy, anti-corruption restitution, and text-based economic sovereignty."
         })}
 
-        <div class="space-y-6">
-          ${elec2019 ? renderChronologyItem(elec2019) : ''}
-          ${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}
-          ${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}
+        <div class="chronology-spine-container space-y-6 pt-2">
+          ${elec2019 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(elec2019)}</div>` : ''}
+          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}</div>
+          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}</div>
         </div>
       </section>
 
@@ -716,10 +716,10 @@ export function renderPresidencyReportViewHtml() {
           deck: "Following severe pandemic healthcare distress and nationwide unrest, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament, and concentrated executive and legislative powers."
         })}
 
-        <div class="space-y-6">
-          ${elec2021 ? renderChronologyItem(elec2021) : ''}
-          ${renderStateComparisonModule()}
-          ${dec2021 ? renderChronologyItem(dec2021) : ''}
+        <div class="chronology-spine-container space-y-6 pt-2">
+          ${elec2021 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(elec2021)}</div>` : ''}
+          <div class="chronology-node"><span class="chronology-node-dot"></span>${renderStateComparisonModule()}</div>
+          ${dec2021 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(dec2021)}</div>` : ''}
         </div>
       </section>
 
@@ -733,11 +733,11 @@ export function renderPresidencyReportViewHtml() {
           deck: "Structural transition to an executive-dominant republic: dissolution of the High Judicial Council, executive revocation of 57 magistrates, promulgation of the 2022 Constitution via referendum, and enactment of Decree-Law 54."
         })}
 
-        <div class="space-y-6">
-          ${csm2022 ? renderChronologyItem(csm2022) : ''}
-          ${judges2022 ? renderChronologyItem(judges2022) : ''}
-          ${const2022 ? renderChronologyItem(const2022) : ''}
-          ${law54 ? renderChronologyItem(law54) : ''}
+        <div class="chronology-spine-container space-y-6 pt-2">
+          ${csm2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(csm2022)}</div>` : ''}
+          ${judges2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(judges2022)}</div>` : ''}
+          ${const2022 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(const2022)}</div>` : ''}
+          ${law54 ? `<div class="chronology-node"><span class="chronology-node-dot"></span>${renderChronologyItem(law54)}</div>` : ''}
         </div>
       </section>
 
@@ -751,8 +751,11 @@ export function renderPresidencyReportViewHtml() {
           deck: "Kais Saied secured re-election on October 6, 2024 with 90.69% of the vote on a 28.8% turnout in a ballot characterized by candidate disqualifications and non-execution of Administrative Court reinstatement orders."
         })}
 
-        <div class="space-y-6">
-          ${renderCertifiedVsContestedModule()}
+        <div class="chronology-spine-container space-y-6 pt-2">
+          <div class="chronology-node">
+            <span class="chronology-node-dot"></span>
+            ${renderCertifiedVsContestedModule()}
+          </div>
         </div>
       </section>
 

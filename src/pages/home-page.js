@@ -19,43 +19,50 @@ export function renderHomepageHtml() {
     <!-- =========================================================================
          1. HERO SECTION (PUBLICATION FRONT PAGE LEAD)
          ========================================================================= -->
-    <section id="hero" class="relative pt-10 pb-16 sm:pt-16 sm:pb-24 border-b border-surface-800">
+    <section id="hero" class="relative pt-8 pb-16 sm:pt-14 sm:pb-24 border-b border-surface-800">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
-        <!-- Header Ribbon -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-surface-800 text-xs font-mono">
-          <div class="flex items-center gap-2">
+        <!-- Master Archival Masthead Ribbon -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-surface-800/90 text-xs font-mono">
+          <div class="flex items-center gap-3">
             <span class="inline-block w-2 h-2 rounded-full bg-crimson animate-pulse"></span>
             <span class="uppercase tracking-widest text-crimson font-bold">404TN · INDEPENDENT INVESTIGATIVE PUBLICATION</span>
+            <span class="text-surface-600 hidden sm:inline">|</span>
+            <span class="text-surface-400 text-[11px] hidden sm:inline">EDITION: SUMMER 2026</span>
           </div>
-          <div class="text-surface-400 text-[11px]">
-            TUNISIA · SUMMER 2026 INVESTIGATION ARCHIVE
+          <div class="text-surface-400 text-[11px] tracking-wider uppercase">
+            TUNISIA ARCHIVE · VOL. 2026.01 · UNCLASSIFIED
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-start">
           
-          <!-- Main Headline Column (Asymmetric 7-col) -->
+          <!-- Main Broadsheet Lead Column (Asymmetric 7-col) -->
           <div class="lg:col-span-7 space-y-6">
-            <h1 class="font-editorial text-4xl sm:text-6xl lg:text-7xl text-bone-100 font-normal leading-[1.08] tracking-tight">
-              A country under pressure.
-            </h1>
+            <div class="space-y-3">
+              <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold block">
+                NATIONAL DOCUMENTARY INVESTIGATION
+              </span>
+              <h1 class="font-editorial text-4xl sm:text-6xl lg:text-7xl text-bone-100 font-normal leading-[1.06] tracking-tight">
+                A country under pressure.
+              </h1>
+            </div>
 
-            <p class="font-editorial text-xl sm:text-2xl text-surface-300 font-normal italic leading-relaxed">
+            <p class="font-editorial text-xl sm:text-2xl text-surface-200 font-normal italic leading-relaxed border-l-2 border-crimson pl-4 py-1">
               Serious evidence. Serious questions. Tunisia, documented.
             </p>
 
             <div class="space-y-4 text-sm sm:text-base text-surface-300 font-light leading-relaxed max-w-2xl font-sans">
               <p>
-                Water cuts. Grid instability. Disappearing youth employment. Compounding institutional centralisation. Environmental degradation in Gabès. And the steady erosion of constitutional counter-powers.
+                Water cuts across major urban centers. Grid instability during extreme heat waves. Disappearing graduate youth employment. Compounding institutional centralisation. Chronic industrial contamination in Gabès. And the steady erosion of constitutional counter-powers.
               </p>
               <p class="text-surface-400 text-xs sm:text-sm">
-                <strong class="text-bone-100 font-medium">404TN</strong> operates as an independent opposition and accountability platform. Every record published is anchored in primary gazette texts, official statistical bulletins, verified court decisions, or field investigation.
+                <strong class="text-bone-100 font-medium">404TN</strong> operates as an independent opposition and accountability platform. Every record published is anchored in primary gazette texts, official statistical bulletins, verified court decisions, or direct field investigations.
               </p>
             </div>
 
-            <!-- Primary CTAs -->
-            <div class="pt-4 flex flex-wrap items-center gap-4 text-xs font-mono">
+            <!-- Primary Editorial Actions -->
+            <div class="pt-3 flex flex-wrap items-center gap-4 text-xs font-mono">
               <a href="/the-files" class="px-6 py-3.5 bg-crimson hover:bg-crimson-muted text-white uppercase tracking-meta font-bold transition-colors inline-flex items-center gap-2">
                 <span>Inspect The Seven Files</span>
                 <span>→</span>
@@ -68,17 +75,17 @@ export function renderHomepageHtml() {
 
             <!-- Quantitative Telemetry Strip -->
             <div class="pt-6 border-t border-surface-800 grid grid-cols-3 gap-4 text-left font-mono">
-              <div>
+              <div class="p-3 bg-surface-900/40 border border-surface-800/80">
                 <span class="text-[10px] text-surface-400 uppercase tracking-meta block">MONITORED DOSSIERS</span>
-                <span class="font-editorial text-2xl font-bold text-bone-100">07 Files</span>
+                <span class="font-editorial text-2xl font-bold text-bone-100 mt-1 block">07 Files</span>
               </div>
-              <div>
+              <div class="p-3 bg-surface-900/40 border border-surface-800/80">
                 <span class="text-[10px] text-surface-400 uppercase tracking-meta block">VERIFIED EVIDENCE</span>
-                <span id="stats-total-evidence" class="font-editorial text-2xl font-bold text-crimson">105 Records</span>
+                <span id="stats-total-evidence" class="font-editorial text-2xl font-bold text-crimson mt-1 block">105 Records</span>
               </div>
-              <div>
+              <div class="p-3 bg-surface-900/40 border border-surface-800/80">
                 <span class="text-[10px] text-surface-400 uppercase tracking-meta block">PRIMARY SOURCES</span>
-                <span id="stats-monitored-sources" class="font-editorial text-2xl font-bold text-sand">27 Sources</span>
+                <span id="stats-monitored-sources" class="font-editorial text-2xl font-bold text-sand mt-1 block">27 Sources</span>
               </div>
             </div>
 
@@ -94,7 +101,7 @@ export function renderHomepageHtml() {
                 <span class="text-surface-400">33.88°N 10.10°E</span>
               </div>
               <div class="space-y-2">
-                <h3 class="font-editorial text-2xl text-bone-100">Gabès: The Cost of Industrial Impunity</h3>
+                <h3 class="font-editorial text-2xl text-bone-100 leading-snug">Gabès: The Cost of Industrial Impunity</h3>
                 <p class="text-xs text-surface-300 font-light leading-relaxed font-sans">
                   Nine years after the 2017 Cabinet decision pledging the dismantling of coastal chemical units, phosphogypsum continues to discharge into the Gulf of Gabès. Zero units relocated. No continuous public ambient emissions data.
                 </p>
@@ -105,25 +112,40 @@ export function renderHomepageHtml() {
               </div>
             </div>
 
-            <!-- Quick Access Indices -->
+            <!-- Key Investigative Pillars (Broadsheet Pull Stats) -->
             <div class="p-5 bg-surface-900/40 border border-surface-800 space-y-3 font-mono text-xs">
-              <span class="text-[10px] text-surface-400 uppercase tracking-meta block border-b border-surface-800 pb-2">INVESTIGATIVE PILLARS</span>
+              <div class="flex items-center justify-between border-b border-surface-800 pb-2 text-[10px]">
+                <span class="text-surface-400 uppercase tracking-meta">INVESTIGATIVE PILLARS</span>
+                <span class="text-sand uppercase">SUMMER 2026 AUDIT</span>
+              </div>
               <div class="divide-y divide-surface-800/60 text-surface-300">
-                <div class="py-2 flex items-center justify-between">
-                  <span>1. Hydraulic Saturation Deficit</span>
-                  <span class="text-crimson font-bold">21.4%</span>
+                <div class="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-bone-100 font-medium block">1. Hydraulic Saturation Deficit</span>
+                    <span class="text-[10px] text-surface-500 font-sans">National dam capacity across Northern/Central basins</span>
+                  </div>
+                  <span class="text-crimson font-bold text-sm">21.4%</span>
                 </div>
-                <div class="py-2 flex items-center justify-between">
-                  <span>2. Graduate Youth Unemployment</span>
-                  <span class="text-crimson font-bold">38.8%</span>
+                <div class="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-bone-100 font-medium block">2. Graduate Youth Unemployment</span>
+                    <span class="text-[10px] text-surface-500 font-sans">INS labor force survey for tertiary diploma holders</span>
+                  </div>
+                  <span class="text-crimson font-bold text-sm">38.8%</span>
                 </div>
-                <div class="py-2 flex items-center justify-between">
-                  <span>3. Summer Peak Electrical Demand</span>
-                  <span class="text-sand font-bold">4,825 MW</span>
+                <div class="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-bone-100 font-medium block">3. Summer Peak Electrical Demand</span>
+                    <span class="text-[10px] text-surface-500 font-sans">STEG dispatching load during extreme heatwave</span>
+                  </div>
+                  <span class="text-sand font-bold text-sm">4,825 MW</span>
                 </div>
-                <div class="py-2 flex items-center justify-between">
-                  <span>4. Sovereign Debt / GDP Burden</span>
-                  <span class="text-sand font-bold">80.2%</span>
+                <div class="py-2.5 flex items-center justify-between">
+                  <div>
+                    <span class="text-bone-100 font-medium block">4. Sovereign Debt / GDP Burden</span>
+                    <span class="text-[10px] text-surface-500 font-sans">Central government public debt ratio</span>
+                  </div>
+                  <span class="text-sand font-bold text-sm">80.2%</span>
                 </div>
               </div>
             </div>

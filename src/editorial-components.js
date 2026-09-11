@@ -633,15 +633,15 @@ export const stateResponseBlock = renderStateCommitmentBlock;
 
 export function classificationBadge(classification) {
   if (classification === 'FACT') {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-700 text-bone-100 font-bold uppercase tracking-wider">FACT</span>`;
+    return `<span class="stamp-badge stamp-fact">FACT</span>`;
   }
   if (classification === 'CLAIM' || classification === 'CLAIM · ATTRIBUTED') {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-sand/10 border border-sand/30 text-sand font-semibold uppercase tracking-wider" title="Attributed statement or allegation">CLAIM · ATTRIBUTED</span>`;
+    return `<span class="stamp-badge stamp-claim" title="Attributed statement or allegation">CLAIM · ATTRIBUTED</span>`;
   }
   if (classification === 'ANALYSIS') {
-    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson font-semibold uppercase tracking-wider" title="404TN investigative interpretation">ANALYSIS</span>`;
+    return `<span class="stamp-badge stamp-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
   }
-  return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-800 text-surface-400 uppercase">${escapeHtml(classification)}</span>`;
+  return `<span class="stamp-badge bg-surface-800 text-surface-400 border-surface-700">${escapeHtml(classification)}</span>`;
 }
 
 export function sourceReference(src) {

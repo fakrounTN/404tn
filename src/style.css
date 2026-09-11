@@ -631,3 +631,161 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   DOCUMENT PAPER SURFACE & TWO-SURFACE SYSTEM
+   ========================================================================== */
+.surface-paper {
+  background-color: #F7F6F2;
+  color: #141517;
+}
+
+.surface-paper-elevated {
+  background-color: #EFECE6;
+  color: #141517;
+}
+
+.surface-paper-card {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(20, 21, 23, 0.1);
+  color: #141517;
+}
+
+.border-paper {
+  border-color: rgba(20, 21, 23, 0.12);
+}
+
+.border-paper-strong {
+  border-color: rgba(20, 21, 23, 0.24);
+}
+
+.text-paper-main {
+  color: #141517;
+}
+
+.text-paper-muted {
+  color: #55534E;
+}
+
+.text-paper-dim {
+  color: #85827A;
+}
+
+/* ==========================================================================
+   CHRONOLOGY CONTINUOUS TIMELINE SPINE
+   ========================================================================== */
+.chronology-spine-container {
+  position: relative;
+}
+
+.chronology-spine-container::before {
+  content: '';
+  position: absolute;
+  top: 1.5rem;
+  bottom: 2rem;
+  left: 1.25rem;
+  width: 1px;
+  background-color: var(--border-strong);
+  z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .chronology-spine-container::before {
+    left: 2rem;
+  }
+}
+
+.chronology-node {
+  position: relative;
+  z-index: 2;
+  padding-left: 3rem;
+}
+
+@media (min-width: 640px) {
+  .chronology-node {
+    padding-left: 4.5rem;
+  }
+}
+
+.chronology-node-dot {
+  position: absolute;
+  left: 1rem;
+  top: 1.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--accent-red);
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 4px var(--bg-primary);
+}
+
+@media (min-width: 640px) {
+  .chronology-node-dot {
+    left: 2rem;
+  }
+}
+
+/* ==========================================================================
+   EDITORIAL ESSAY & BROADSHEET PRIMITIVES
+   ========================================================================== */
+.editorial-essay-lead::first-letter {
+  float: left;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: 3.75rem;
+  line-height: 0.8;
+  padding-right: 0.75rem;
+  padding-top: 0.25rem;
+  color: var(--accent-red);
+  font-weight: 400;
+}
+
+.pull-stat-editorial {
+  font-family: "Newsreader", Georgia, serif;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.documentary-frame {
+  position: relative;
+  border-left: 2px solid var(--accent-red);
+  padding: 1.25rem 1.5rem;
+  background-color: rgba(23, 25, 27, 0.6);
+}
+
+.stamp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-width: 1px;
+}
+
+.stamp-fact {
+  background-color: rgba(241, 240, 236, 0.95);
+  border-color: #F1F0EC;
+  color: #0B0C0D;
+}
+
+.stamp-claim {
+  background-color: rgba(212, 197, 176, 0.12);
+  border-color: rgba(212, 197, 176, 0.4);
+  color: #D4C5B0;
+}
+
+.stamp-analysis {
+  background-color: rgba(201, 54, 54, 0.12);
+  border-color: rgba(201, 54, 54, 0.4);
+  color: #C93636;
+}
+
+.stamp-datagap {
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #FBBF24;
+}
+
