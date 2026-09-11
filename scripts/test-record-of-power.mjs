@@ -301,6 +301,71 @@ test("Validation Engine Catches Malformed Data, Broken Refs, Invalid Date Ranges
   assert.ok(selfLoop.errors.some(e => e.includes("self-referential")));
 });
 
+// ============================================================
+// PHASE R2.2 UI INTEGRATION TESTS
+// ============================================================
+import { renderPresidencyReportViewHtml } from '../src/presidency-data.js';
+
+test("R2.2 UI: renderPresidencyReportViewHtml generates semantic HTML with single H1", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.ok(typeof html === 'string', "Output must be a string");
+  assert.ok(html.length > 5000, "HTML must be substantial");
+
+  // Single H1 Check
+  const h1Matches = html.match(/<h1[\s\S]*?<\/h1>/gi) || [];
+  assert.strictEqual(h1Matches.length, 1, "Must contain exactly one <h1> tag");
+  assert.ok(h1Matches[0].includes("Tunisia under Kais Saied, 2019–2026"), "H1 must match canonical title");
+});
+
+test("R2.2 UI: Contains all 5 Chronological Era Anchor IDs", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.ok(html.includes('id="year-2019"'), "Must have #year-2019 anchor");
+  assert.ok(html.includes('id="year-2021"'), "Must have #year-2021 anchor");
+  assert.ok(html.includes('id="year-2022"'), "Must have #year-2022 anchor");
+  assert.ok(html.includes('id="year-2024"'), "Must have #year-2024 anchor");
+  assert.ok(html.includes('id="year-2026"'), "Must have #year-2026 anchor");
+});
+
+test("R2.2 UI: Renders all 18 Seed Records in the Chronology", () => {
+  const html = renderPresidencyReportViewHtml();
+  for (const rec of SEED_RECORDS) {
+    assert.ok(html.includes(rec.id), `UI HTML must contain reference to seed record ${rec.id}`);
+  }
+});
+
+test("R2.2 UI: Epistemic Distinctions (FACT, CLAIM · ATTRIBUTED, ANALYSIS)", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.ok(html.includes("FACT"), "Must include FACT badge");
+  assert.ok(html.includes("CLAIM · ATTRIBUTED"), "Must include CLAIM badge");
+  assert.ok(html.includes("ANALYSIS"), "Must include ANALYSIS badge");
+  assert.ok(html.includes("404TN EPISTEMIC STANDARD"), "Must have epistemic methodology header");
+});
+
+test("R2.2 UI: Promise Accountability Trace Rendering", () => {
+  const html = renderPresidencyReportViewHtml();
+  // Trace for Penal Reconciliation
+  assert.ok(html.includes("Penal Reconciliation &amp; 13.5 Billion TND Recovery Pledge"), "Must render promise title");
+  assert.ok(html.includes("ROP-OUT-2026-RECON-001"), "Must render outcome in trace");
+  assert.ok(html.includes("ROP-GAP-2026-RECON-RECEIPTS-001"), "Must render data gap in trace");
+  assert.ok(html.includes("Ministry of Finance"), "Must resolve Ministry of Finance in trace");
+});
+
+test("R2.2 UI: Observation Types Explicitly Rendered for Macro Indicators", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.ok(html.includes("PRELIMINARY"), "Must render PRELIMINARY for Q2 2026 GDP YoY");
+  assert.ok(html.includes("QUARTERLY"), "Must render QUARTERLY for Graduate Unemployment");
+});
+
+test("R2.2 UI: Institutions are Human-Resolved (No Orphaned Raw Codes in Main Text)", () => {
+  const html = renderPresidencyReportViewHtml();
+  // Verify human readable names are present
+  assert.ok(html.includes("Presidency of the Republic"), "Must contain full name for INST-PRESIDENCY");
+  assert.ok(html.includes("National Water Distribution Utility"), "Must contain full name for INST-SONEDE");
+  assert.ok(html.includes("SONEDE"), "Must contain short name for SONEDE");
+  assert.ok(html.includes("Independent High Authority for Elections"), "Must contain full name for INST-ISIE");
+  assert.ok(html.includes("High Judicial Council"), "Must contain full name for INST-CSM");
+});
+
 console.log("\n============================================================");
 console.log(`RECORD OF POWER TEST SUMMARY: All ${passed} tests PASSED!`);
 console.log("============================================================\n");

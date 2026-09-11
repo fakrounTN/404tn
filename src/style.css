@@ -576,3 +576,58 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   overflow: hidden;
 }
 
+/* ==========================================================================
+   404TN SIGNATURES & NEWSPAPER PRIMITIVES
+   ========================================================================== */
+.rule-404 {
+  display: inline-block;
+  width: 2rem;
+  height: 2px;
+  background-color: var(--accent-red);
+}
+
+.rule-404-lg {
+  display: block;
+  width: 3.5rem;
+  height: 2px;
+  background-color: var(--accent-red);
+}
+
+.num-archival {
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  opacity: 0.45;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.group:hover .num-archival {
+  opacity: 1;
+  color: var(--accent-red);
+}
+
+.doc-margin-note {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.newspaper-rule {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.newspaper-rule-strong {
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.source-slip {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.5rem;
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+}
+

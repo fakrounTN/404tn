@@ -305,7 +305,7 @@ class TestSeoPrerender(unittest.TestCase):
         self.assertNotIn('href="/issues/rights-institutions"', gabes_html)
 
     def test_phase_c_presidency_and_editorial_design_system(self):
-        """Phase C: Verify /presidency deep investigation structure, Promise/Action/Result blocks, and editorial design components."""
+        """Phase R2.2: Verify /presidency Record of Power structure, Promise/Action/Result blocks, and editorial design components."""
         if not os.path.exists(self.dist_dir):
             self.skipTest("dist/ directory not yet generated; skipping dist template assertions.")
 
@@ -314,19 +314,16 @@ class TestSeoPrerender(unittest.TestCase):
         with open(presidency_path, "r", encoding="utf-8") as f:
             pres_html = f.read()
 
-        self.assertIn("PRESIDENCY DOSSIER", pres_html)
-        self.assertIn("Kais Saied: Power, Promises and Responsibility", pres_html)
-        self.assertTrue("2019 Baseline" in pres_html or "The Anti-Establishment Mandate" in pres_html)
-        self.assertTrue("25 July 2021" in pres_html or "The Exceptional Rupture" in pres_html)
-        self.assertIn("2022", pres_html)
-        self.assertIn("2024", pres_html)
+        self.assertIn("THE RECORD OF POWER", pres_html)
+        self.assertIn("Tunisia under Kais Saied, 2019", pres_html)
+        self.assertIn("year-2019", pres_html)
+        self.assertIn("year-2021", pres_html)
+        self.assertIn("year-2022", pres_html)
+        self.assertIn("year-2024", pres_html)
+        self.assertIn("year-2026", pres_html)
         self.assertIn("WHAT WAS PROMISED", pres_html)
-        self.assertTrue("WHAT ACTION WAS TAKEN" in pres_html or "WHAT WAS DONE" in pres_html)
-        self.assertIn("WHAT THE EVIDENCE SHOWS", pres_html)
-        self.assertIn("STATUS:", pres_html)
+        self.assertIn("WHAT EVIDENCE SHOWS", pres_html)
         self.assertIn("Arab Barometer", pres_html)
-        self.assertIn("2019 BASELINE", pres_html)
-        self.assertIn("2026 STATUS", pres_html)
         self.assertTrue("Moody" in pres_html and "Fitch" in pres_html)
         self.assertIn("ACCOUNTABILITY GRAMMAR", pres_html)
         self.assertNotIn('href="/issues/rights-institutions"', pres_html)

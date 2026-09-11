@@ -74,7 +74,7 @@ export function renderSectionOpener({
 
 /**
  * 3. Evidence Row
- * Renders verified evidence card with epistemic tagging, source attribution, and cryptographic audit link.
+ * Renders verified evidence card with epistemic tagging, source attribution, and verification audit link.
  */
 export function renderEvidenceRow(item) {
   const evId = escapeHtml(item.id || '');
@@ -570,6 +570,201 @@ export function renderSourceFootnote({
       </div>
       <p class="text-surface-300 font-light">${escapeHtml(text)}</p>
       ${source ? `<div class="text-surface-500">SRC: ${escapeHtml(source)}</div>` : ''}
+    </div>
+  `;
+}
+
+/* ==========================================================================
+   16. SECTION 10 STANDARD REUSABLE EDITORIAL PRIMITIVES
+   ========================================================================== */
+
+export const investigationHero = renderInvestigationOpener;
+export const editorialPageIntro = ({ kicker = '', h1 = '', deck = '', breadcrumbHtml = '' }) => `
+  <header class="space-y-4 pb-8 border-b border-surface-800">
+    ${breadcrumbHtml}
+    ${kicker ? `<div class="flex items-center gap-2"><span class="rule-404"></span><span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(kicker)}</span></div>` : ''}
+    <h1 class="font-editorial text-3xl sm:text-5xl text-bone-100 font-normal leading-tight">${escapeHtml(h1)}</h1>
+    ${deck ? `<p class="text-base sm:text-xl text-surface-300 font-light leading-relaxed max-w-4xl">${escapeHtml(deck)}</p>` : ''}
+  </header>
+`;
+
+export const sectionKicker = (text, hasRule = true) => `
+  <div class="flex items-center gap-2">
+    ${hasRule ? '<span class="rule-404"></span>' : ''}
+    <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(text)}</span>
+  </div>
+`;
+
+export const sectionHeading = (title, deck = '') => `
+  <div class="space-y-1">
+    <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">${escapeHtml(title)}</h2>
+    ${deck ? `<p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed max-w-2xl">${escapeHtml(deck)}</p>` : ''}
+  </div>
+`;
+
+export const editorialRule = (hasAccent = true) => `
+  <div class="relative py-4">
+    <div class="border-b border-surface-800"></div>
+    ${hasAccent ? '<span class="absolute left-0 top-4 rule-404"></span>' : ''}
+  </div>
+`;
+
+export const recordRow = (rec) => `
+  <div class="py-4 border-b border-surface-800/80 hover:bg-surface-900/30 transition-colors flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 text-xs font-sans" id="${escapeHtml(rec.id || '')}">
+    <div class="flex items-baseline gap-3">
+      <span class="num-archival text-sm sm:text-base font-mono shrink-0">${escapeHtml(rec.number || '00')}</span>
+      <div class="space-y-0.5">
+        <div class="font-bold text-bone-100 text-sm">${escapeHtml(rec.title || '')}</div>
+        <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(rec.summary || '')}</p>
+      </div>
+    </div>
+    <div class="shrink-0 flex items-center gap-2 font-mono text-[10px]">
+      ${rec.classification ? classificationBadge(rec.classification) : ''}
+      <span class="text-surface-400">${escapeHtml(rec.date || '')}</span>
+    </div>
+  </div>
+`;
+
+export const chronologyRow = renderTimelineEvent;
+export const evidenceFootnote = renderSourceFootnote;
+export const keyStatistic = renderKeyStat;
+export const pullQuote = renderAttributedQuote;
+export const stateResponseBlock = renderStateCommitmentBlock;
+
+export function classificationBadge(classification) {
+  if (classification === 'FACT') {
+    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-700 text-bone-100 font-bold uppercase tracking-wider">FACT</span>`;
+  }
+  if (classification === 'CLAIM' || classification === 'CLAIM · ATTRIBUTED') {
+    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-sand/10 border border-sand/30 text-sand font-semibold uppercase tracking-wider" title="Attributed statement or allegation">CLAIM · ATTRIBUTED</span>`;
+  }
+  if (classification === 'ANALYSIS') {
+    return `<span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson font-semibold uppercase tracking-wider" title="404TN investigative interpretation">ANALYSIS</span>`;
+  }
+  return `<span class="text-[10px] font-mono px-2 py-0.5 bg-surface-800 text-surface-400 uppercase">${escapeHtml(classification)}</span>`;
+}
+
+export function sourceReference(src) {
+  if (!src) return '';
+  return `
+    <div class="source-slip flex flex-wrap items-center justify-between gap-2">
+      <div>
+        <span class="text-surface-500 uppercase">SOURCE:</span>
+        <span class="text-bone-100 font-medium ml-1">${escapeHtml(src.organization || src.publisher || '')}</span>
+        ${src.title ? `<span class="text-surface-500"> — </span><span class="text-surface-300 italic">"${escapeHtml(src.title)}"</span>` : ''}
+        ${src.date ? `<span class="text-surface-500">(${escapeHtml(src.date)})</span>` : ''}
+      </div>
+      <div>
+        ${src.url ? `<a href="${escapeHtml(src.url)}" target="_blank" rel="noopener noreferrer" class="text-sand hover:underline font-bold">Document Link ↗</a>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+export function responsibilityBlock({ institution = '', type = '', legalBasis = '' }) {
+  return `
+    <div class="p-3 bg-surface-900/50 border border-surface-800 text-xs font-mono space-y-1">
+      <span class="text-[9px] uppercase tracking-meta text-surface-400 block font-bold">INSTITUTIONAL RESPONSIBILITY</span>
+      <div class="flex items-baseline gap-2">
+        <span class="text-sand font-bold">${escapeHtml(institution)}</span>
+        <span class="text-surface-500">—</span>
+        <span class="text-bone-100 uppercase text-[10px]">${escapeHtml(type)}</span>
+      </div>
+      ${legalBasis ? `<div class="text-surface-400 text-[10px] font-light">Basis: ${escapeHtml(legalBasis)}</div>` : ''}
+    </div>
+  `;
+}
+
+export function dataGapBlock({ title = 'Documented Data Gap', summary = '', expectedInstitution = '', relevance = '' }) {
+  return `
+    <div class="p-5 bg-surface-900/40 border border-sand/30 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sand"></span>
+          <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold">DATA GAP: ${escapeHtml(title)}</span>
+        </div>
+        <span class="text-[9px] font-mono px-2 py-0.5 bg-crimson/15 text-crimson border border-crimson/30 uppercase font-bold">NOT PUBLISHED</span>
+      </div>
+      <p class="text-xs text-surface-300 font-light leading-relaxed">${escapeHtml(summary)}</p>
+      ${expectedInstitution ? `
+        <div class="pt-2 border-t border-surface-800 text-xs font-mono text-surface-400">
+          Expected Institution: <span class="text-bone-100">${escapeHtml(expectedInstitution)}</span>
+        </div>
+      ` : ''}
+      ${relevance ? `
+        <div class="text-[11px] text-surface-400 font-sans font-light">Why it matters: ${escapeHtml(relevance)}</div>
+      ` : ''}
+    </div>
+  `;
+}
+
+export function comparisonBlock({ label = 'COMPARISON', claimed = {}, record = {} }) {
+  return `
+    <div class="p-6 bg-background-elevated border border-surface-800 space-y-5">
+      <div class="pb-3 border-b border-surface-800">
+        <span class="text-[10px] font-mono uppercase tracking-meta text-crimson font-bold block">${escapeHtml(label)}</span>
+        <h3 class="font-editorial text-2xl text-bone-100 mt-1">What Was Claimed vs What The Record Shows</h3>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-sand/30 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-sand font-bold">1. WHAT WAS CLAIMED</span>
+            ${classificationBadge('CLAIM')}
+          </div>
+          <p class="font-editorial text-sm sm:text-base text-bone-100 italic leading-relaxed">"${escapeHtml(claimed.text || '')}"</p>
+          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
+            Source: <span class="text-bone-100">${escapeHtml(claimed.source || '')}</span> (${escapeHtml(claimed.date || '')})
+          </div>
+        </div>
+        <div class="lg:col-span-6 p-5 bg-surface-900/60 border border-surface-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-crimson font-bold">2. WHAT THE RECORD SHOWS</span>
+            ${classificationBadge('FACT')}
+          </div>
+          <p class="text-xs text-surface-300 font-light leading-relaxed">${escapeHtml(record.text || '')}</p>
+          <div class="text-[10px] font-mono text-surface-400 pt-2 border-t border-surface-800">
+            Verified Record: <span class="text-bone-100">${escapeHtml(record.source || '')}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function issueNavigation(activeSlug = '') {
+  const issues = [
+    { slug: 'water', num: '01', title: 'Water' },
+    { slug: 'electricity', num: '02', title: 'Electricity' },
+    { slug: 'pollution', num: '03', title: 'Pollution' },
+    { slug: 'work', num: '04', title: 'Work' },
+    { slug: 'migration', num: '05', title: 'Migration' },
+    { slug: 'public-services', num: '06', title: 'Public Services' },
+    { slug: 'rights', num: '07', title: 'Rights & Freedoms' },
+  ];
+
+  return `
+    <nav aria-label="Seven Files Navigation" class="py-3 border-y border-surface-800 overflow-x-auto flex items-center gap-2 text-xs font-mono">
+      <span class="text-[10px] text-surface-500 uppercase tracking-meta mr-2 shrink-0">THE SEVEN FILES:</span>
+      ${issues.map(iss => {
+        const isActive = iss.slug === activeSlug;
+        const cls = isActive
+          ? 'bg-crimson text-white font-bold'
+          : 'bg-surface-900 text-surface-300 hover:text-bone-100 border border-surface-800 hover:border-surface-700';
+        return `
+          <a href="/issues/${iss.slug}" class="px-3 py-1 shrink-0 ${cls} transition-colors">
+            <span class="text-surface-500 mr-1">${iss.num}</span>${escapeHtml(iss.title)}
+          </a>
+        `;
+      }).join('')}
+    </nav>
+  `;
+}
+
+export function methodologyNote(text) {
+  return `
+    <div class="p-4 bg-surface-900/30 border-l-2 border-sand text-xs font-mono text-surface-400 space-y-1">
+      <span class="text-[10px] text-sand uppercase font-bold tracking-meta block">METHODOLOGY &amp; SOURCING DISCIPLINE</span>
+      <p class="text-surface-300 font-light font-sans leading-relaxed">${escapeHtml(text)}</p>
     </div>
   `;
 }

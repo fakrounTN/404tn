@@ -239,19 +239,19 @@ export const SEO_REGISTRY = {
 
   '/presidency': {
     path: '/presidency',
-    title: 'Kais Saied Presidency (2019–2026): Power, Promises and Responsibility | 404TN',
-    description: 'An evidence-based documentary audit of Tunisia’s executive governance, constitutional transformation, and crisis management across seven years of presidential authority.',
+    title: 'Tunisia under Kais Saied (2019–2026): The Record of Power | 404TN',
+    description: 'A documented chronology of mandate, exceptional measures, institutional restructuring, political consolidation and measurable outcomes.',
     canonical: 'https://404tn.com/presidency',
     robots: 'index, follow',
     lang: 'en',
     pageType: 'article',
-    h1: 'Kais Saied: Power, Promises and Responsibility (2019–2026)',
+    h1: 'Tunisia under Kais Saied, 2019–2026',
     breadcrumb: [
       { name: 'Home', path: '/' },
       { name: 'The Files', path: '/the-files' },
-      { name: 'Presidency Dossier', path: '/presidency' }
+      { name: 'The Record of Power', path: '/presidency' }
     ],
-    editorialIntro: 'An evidence-based documentary audit of Tunisia’s executive governance, constitutional transformation, and crisis management across seven years of presidential authority.',
+    editorialIntro: 'A documented chronology of mandate, exceptional measures, institutional restructuring, political consolidation and measurable outcomes.',
     internalLinks: [
       { href: '/state-response', label: 'State Response Matrix' },
       { href: '/issues/rights', label: 'File 07: Rights & Freedoms' },

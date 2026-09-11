@@ -6,7 +6,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SEO_REGISTRY, CANONICAL_ORIGIN } from '../src/seo-registry.js';
-import { renderDossierViewHtml, renderGabesReportViewHtml, renderPresidencyReportViewHtml } from '../src/dossier-data.js';
+import {
+  renderDossierViewHtml,
+  renderGabesReportViewHtml,
+  renderPresidencyReportViewHtml,
+  renderSummer2026Html,
+  renderTheFilesHtml,
+  renderTimelineHtml,
+  renderStateResponseHtml,
+  renderEvidenceHtml,
+  renderMethodologyHtml,
+  renderStatementHtml,
+  renderGeospatialHtml
+} from '../src/dossier-data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -171,6 +183,54 @@ function prerenderRoute(baseHtml, entry) {
       html = html.replace(
         /(<div\s+id="content-views">)/i,
         `$1\n${presidencyHtml}`
+      );
+    } else if (entry.path === '/summer-2026') {
+      const summerHtml = renderSummer2026Html({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${summerHtml}`
+      );
+    } else if (entry.path === '/the-files') {
+      const filesHtml = renderTheFilesHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${filesHtml}`
+      );
+    } else if (entry.path === '/timeline') {
+      const timelineHtml = renderTimelineHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${timelineHtml}`
+      );
+    } else if (entry.path === '/state-response') {
+      const stateResponseHtml = renderStateResponseHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${stateResponseHtml}`
+      );
+    } else if (entry.path === '/evidence') {
+      const evidenceHtml = renderEvidenceHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${evidenceHtml}`
+      );
+    } else if (entry.path === '/methodology') {
+      const methodologyHtml = renderMethodologyHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${methodologyHtml}`
+      );
+    } else if (entry.path === '/statement') {
+      const statementHtml = renderStatementHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${statementHtml}`
+      );
+    } else if (entry.path === '/geospatial-monitor' || entry.path === '/geospatial') {
+      const geoHtml = renderGeospatialHtml({ isPrerender: true });
+      html = html.replace(
+        /(<div\s+id="content-views">)/i,
+        `$1\n${geoHtml}`
       );
     } else {
       // Other Subpages: Subpage semantic header banner containing its single H1, breadcrumbs, editorial intro, and internal links

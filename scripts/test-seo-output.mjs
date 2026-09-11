@@ -211,24 +211,52 @@ function runTests() {
   assert(gabesHtml.includes('State Commitment vs Documented Reality'), `/gabes contains state commitment vs reality analysis`);
   assert(!gabesHtml.includes('href="/issues/rights-institutions"'), `/gabes has NO links to alias /issues/rights-institutions`);
 
-  // Phase C: Presidency 2019–2026 & Editorial Design System Assertions
-  console.log(`\nPhase C Presidency & Design System Assertions:`);
+  // Phase R2.2: The Record of Power (Presidency 2019–2026) Chronology UI Assertions
+  console.log(`\nPhase R2.2 The Record of Power (Presidency 2019–2026) Assertions:`);
   const presidencyHtml = fs.readFileSync(path.join(DIST_DIR, 'presidency', 'index.html'), 'utf-8');
-  assert(presidencyHtml.includes('PRESIDENCY DOSSIER'), `/presidency contains PRESIDENCY DOSSIER tag`);
-  assert(presidencyHtml.includes('Kais Saied: Power, Promises and Responsibility'), `/presidency contains H1 title`);
-  assert(presidencyHtml.includes('2019 Baseline') || presidencyHtml.includes('The Anti-Establishment Mandate'), `/presidency contains 2019 baseline section`);
-  assert(presidencyHtml.includes('25 July 2021') || presidencyHtml.includes('The Exceptional Rupture'), `/presidency contains 2021 rupture section`);
+  assert(presidencyHtml.includes('THE RECORD OF POWER'), `/presidency contains THE RECORD OF POWER tag`);
+  assert(presidencyHtml.includes('Tunisia under Kais Saied, 2019–2026'), `/presidency contains H1 title`);
+  assert(presidencyHtml.includes('2019') && (presidencyHtml.includes('Mandate') || presidencyHtml.includes('MANDATE')), `/presidency contains 2019 mandate section`);
+  assert(presidencyHtml.includes('2021') && (presidencyHtml.includes('Rupture') || presidencyHtml.includes('RUPTURE')), `/presidency contains 2021 rupture section`);
   assert(presidencyHtml.includes('2022') && presidencyHtml.includes('Constitution'), `/presidency contains 2022 system section`);
-  assert(presidencyHtml.includes('2024') && presidencyHtml.includes('Consolidation'), `/presidency contains 2024 consolidation section`);
-  assert(presidencyHtml.includes('WHAT WAS PROMISED'), `/presidency contains Promise cards`);
-  assert(presidencyHtml.includes('WHAT ACTION WAS TAKEN') || presidencyHtml.includes('WHAT WAS DONE'), `/presidency contains Action cards`);
-  assert(presidencyHtml.includes('WHAT THE EVIDENCE SHOWS'), `/presidency contains Evidence results`);
-  assert(presidencyHtml.includes('STATUS:'), `/presidency contains Status badges`);
+  assert(presidencyHtml.includes('2024') && (presidencyHtml.includes('Consolidation') || presidencyHtml.includes('CONSOLIDATION')), `/presidency contains 2024 consolidation section`);
+  assert(presidencyHtml.includes('2026') && (presidencyHtml.includes('Outcomes') || presidencyHtml.includes('OUTCOMES')), `/presidency contains 2026 outcomes section`);
+  assert(presidencyHtml.includes('WHAT WAS PROMISED'), `/presidency contains Promise accountability chains`);
+  assert(presidencyHtml.includes('WHAT THE PRESIDENCY SAID') || presidencyHtml.includes('WHAT THE RECORD SHOWS'), `/presidency contains state comparison module`);
+  assert(presidencyHtml.includes('WHAT THE RECORD SHOWS'), `/presidency contains verified record comparison block`);
+  assert(presidencyHtml.includes('DOCUMENTED DATA GAP') || presidencyHtml.includes('DATA GAPS'), `/presidency contains data gap cards`);
   assert(presidencyHtml.includes('Arab Barometer'), `/presidency contains Arab Barometer survey evidence`);
-  assert(presidencyHtml.includes('2019 BASELINE') && presidencyHtml.includes('2026 STATUS'), `/presidency contains historical comparison matrix`);
   assert(presidencyHtml.includes('Moody') && presidencyHtml.includes('Fitch'), `/presidency contains sovereign ratings trajectory`);
   assert(presidencyHtml.includes('ACCOUNTABILITY GRAMMAR'), `/presidency contains 6-question accountability grammar block`);
   assert(!presidencyHtml.includes('href="/issues/rights-institutions"'), `/presidency has NO links to alias /issues/rights-institutions`);
+
+  // Subpage Modular Content Assertions
+  console.log(`\nModular Subpage Content Assertions:`);
+  const summerHtml = fs.readFileSync(path.join(DIST_DIR, 'summer-2026', 'index.html'), 'utf-8');
+  assert(summerHtml.includes('SUMMER 2026') || summerHtml.includes('Summer 2026'), `/summer-2026 contains Summer 2026 dossier header`);
+  assert(summerHtml.includes('21.4%') || summerHtml.includes('38.8%'), `/summer-2026 contains verified metrics`);
+
+  const theFilesHtml = fs.readFileSync(path.join(DIST_DIR, 'the-files', 'index.html'), 'utf-8');
+  assert(theFilesHtml.includes('The Seven Files') || theFilesHtml.includes('THE SEVEN FILES'), `/the-files contains Seven Files title`);
+
+  const timelineHtml = fs.readFileSync(path.join(DIST_DIR, 'timeline', 'index.html'), 'utf-8');
+  assert(timelineHtml.includes('Timeline') || timelineHtml.includes('TIMELINE'), `/timeline contains Timeline header`);
+
+  const stateResponseHtml = fs.readFileSync(path.join(DIST_DIR, 'state-response', 'index.html'), 'utf-8');
+  assert(stateResponseHtml.includes('State Response') || stateResponseHtml.includes('STATE RESPONSE'), `/state-response contains State Response header`);
+
+  const evidenceHtml = fs.readFileSync(path.join(DIST_DIR, 'evidence', 'index.html'), 'utf-8');
+  assert(evidenceHtml.includes('Evidence Register') || evidenceHtml.includes('EVIDENCE REGISTER'), `/evidence contains Evidence Register header`);
+
+  const methodologyHtml = fs.readFileSync(path.join(DIST_DIR, 'methodology', 'index.html'), 'utf-8');
+  assert(methodologyHtml.includes('Methodology') || methodologyHtml.includes('METHODOLOGY'), `/methodology contains Methodology header`);
+
+  const statementHtml = fs.readFileSync(path.join(DIST_DIR, 'statement', 'index.html'), 'utf-8');
+  assert(statementHtml.includes('Mission') || statementHtml.includes('STATEMENT'), `/statement contains Mission Statement header`);
+
+  const geoHtml = fs.readFileSync(path.join(DIST_DIR, 'geospatial-monitor', 'index.html'), 'utf-8');
+  assert(geoHtml.includes('Geospatial') || geoHtml.includes('GEOSPATIAL'), `/geospatial-monitor contains Geospatial Monitor header`);
+  assert(geoHtml.includes('24 Governorates') || geoHtml.includes('Governorate'), `/geospatial-monitor contains 24 Governorates telemetry`);
 
   console.log(`\nGate 5 Assertions (sitemap.xml & robots.txt):`);
   const expectedCanonicalUrls = canonicalRoutes.map(r => SEO_REGISTRY[r].canonical);

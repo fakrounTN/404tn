@@ -7,6 +7,7 @@ import { escapeHtml, stripHtml } from './utils.js';
 export * from './editorial-components.js';
 export * from './editorial-architecture.js';
 export * from './presidency-data.js';
+export * from './pages/index.js';
 
 export const DOSSIER_REGISTRY = {
   water: {
@@ -264,7 +265,7 @@ export const DOSSIER_REGISTRY = {
       href: "/gabes",
       label: "FLAGSHIP SPECIAL INVESTIGATION",
       title: "Gabès: The City Paying the Price of Industrial Pollution",
-      description: "Deep forensic special report into the Groupe Chimique Tunisien (GCT) industrial complex, ~14,000 T/day phosphogypsum coastal dumping, and unfulfilled 2017 cabinet relocation decrees."
+      description: "Deep forensic special report into the Groupe Chimique Tunisien (GCT) industrial complex, ~14,000 T/day phosphogypsum coastal dumping, and unfulfilled 2017 Cabinet relocation decision."
     },
     editorialScope: {
       scopeIntro: "Monitors nationwide industrial chemical emissions, phosphate mining runoff in Gafsa, municipal waste accumulation in Sfax, coastal pollution, and atmospheric monitoring data deficits across Tunisia.",
@@ -385,7 +386,7 @@ export const DOSSIER_REGISTRY = {
       scopeIntro: "Monitors official INS employment surveys, higher education graduate joblessness, informal labor expansion, and purchasing power erosion documented across Tunisia in 2026.",
       inScope: [
         "National unemployment rate tracking (~16.0% baseline in INS quarterly reports)",
-        "Higher education graduate unemployment disparities (~38.6% female graduate peak)",
+        "Higher education graduate unemployment disparities (~38.8% national graduate rate)",
         "Food and essential commodity price inflation impacting household purchasing power",
         "Regional interior unemployment disparities (Gafsa, Kasserine, Sidi Bouzid, Tataouine)",
         "Informal sector employment growth and labor precarity"
@@ -399,15 +400,15 @@ export const DOSSIER_REGISTRY = {
     keyEvidence: [
       {
         id: "EV-AUTO-20260910-WRK01",
-        headline: "INS Reports National Unemployment at 16.0%, Graduate Joblessness at 38.6%",
+        headline: "INS Reports National Unemployment at 16.0%, Graduate Joblessness at 38.8%",
         source_name: "INS Quarterly Employment Survey",
         source_url: "http://www.ins.tn",
         published_at: "2026-08-15",
         event_date: "2026-08-01",
         classification: "FACT",
         status: "VERIFIED",
-        summary: "National Institute of Statistics Q2 2026 bulletin records national joblessness at 16.0%, with tertiary education graduate unemployment remaining persistently high at 38.6% for women.",
-        metric_value: "38.6%",
+        summary: "National Institute of Statistics Q2 2026 bulletin records national joblessness at 16.0%, with tertiary education graduate unemployment recorded at 38.8% across higher education diploma holders.",
+        metric_value: "38.8%",
         metric_unit: "graduate jobless rate"
       },
       {
@@ -830,7 +831,7 @@ export const GABES_SPECIAL_REPORT = {
   routePath: "/gabes",
   eyebrow: "404TN SPECIAL INVESTIGATION · ENVIRONMENT & STATE ACCOUNTABILITY",
   h1: "Gabès: The City Paying the Price of Industrial Pollution",
-  deck: "For decades, Gabès has carried the environmental and public health cost of chemical processing in Tunisia. 404TN documents phosphogypsum coastal discharge, unfulfilled relocation decrees, and official data gaps (2017–2026).",
+  deck: "For decades, Gabès has carried the environmental and public health cost of chemical processing in Tunisia. 404TN documents phosphogypsum coastal discharge, unfulfilled 2017 Cabinet relocation decision, and official data gaps (2017–2026).",
   status: "ACTIVE FILE",
   statusType: "badge-active",
   location: "Gabès / Gulf of Gabès (33°53'N 10°05'E)",
@@ -882,7 +883,7 @@ export const GABES_SPECIAL_REPORT = {
     {
       year: "2017",
       title: "Cabinet Pledges Dismantling and Relocation of Coastal Units",
-      desc: "Prime Ministerial decree commits to moving GCT units away from Gabès coastline following massive citizen mobilization (June 29, 2017 Communiqué).",
+      desc: "Government ministerial council decision (CMR June 29, 2017) commits to dismantling and relocating GCT units away from Gabès coastline following massive citizen mobilization.",
       classification: "CLAIM",
       source: "Cabinet Communiqué (JORT)"
     },
@@ -1156,7 +1157,7 @@ export function renderDossierViewHtml(key, liveData = null) {
             <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">Key Documented Evidence</h2>
           </div>
           <div class="text-xs font-mono text-surface-400">
-            Click any row to inspect complete cryptographic source audit slip.
+            Click any row to inspect complete verification source audit slip.
           </div>
         </div>
 
