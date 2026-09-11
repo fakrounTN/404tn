@@ -1124,7 +1124,7 @@ export function renderDossierViewHtml(key, liveData = null) {
       </div>
 
       <!-- B. DOSSIER REPORT VIEW (WARM ARCHIVAL PAPER SURFACE) -->
-      <div class="surface-paper py-10 sm:py-16">
+      <div class="surface-paper py-12 sm:py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
           ${flagshipBannerHtml}
@@ -1137,7 +1137,7 @@ export function renderDossierViewHtml(key, liveData = null) {
                 <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">TAXONOMY &amp; BOUNDARIES</span>
               </div>
               <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">What This File Documents</h2>
-              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+              <p class="text-sm sm:text-base text-paper-muted font-light leading-relaxed">
                 ${escapeHtml(meta.editorialScope.scopeIntro)}
               </p>
               <div class="pt-4 border-t border-paper space-y-2">
@@ -1146,7 +1146,7 @@ export function renderDossierViewHtml(key, liveData = null) {
               </div>
             </div>
 
-            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-white border border-paper shadow-sm">
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 sm:p-8 bg-white border border-paper shadow-sm">
               <div class="space-y-3">
                 <span class="text-[11px] font-mono uppercase tracking-wider text-paper-primary block font-bold border-b border-paper pb-2">EXPLICITLY IN SCOPE</span>
                 <ul class="space-y-2.5">${inScopeHtml}</ul>
@@ -1189,7 +1189,7 @@ export function renderDossierViewHtml(key, liveData = null) {
             </div>
 
             <div class="p-6 sm:p-8 bg-white border border-paper shadow-sm">
-              <div class="space-y-6">
+              <div class="space-y-8">
                 ${timelineHtml}
               </div>
             </div>
@@ -1211,7 +1211,7 @@ export function renderDossierViewHtml(key, liveData = null) {
           </section>
 
           <!-- F. METHODOLOGY & EPISTEMIC STANDARDS -->
-          <section class="p-6 sm:p-8 bg-paper-subtle border border-paper space-y-4">
+          <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-xs font-mono uppercase tracking-widest text-paper-primary font-bold">404TN VERIFICATION PROTOCOL</span>
               <a href="/methodology" class="text-xs font-mono text-paper-crimson font-bold hover:underline">Full Methodology →</a>
@@ -1283,15 +1283,15 @@ export function renderGabesReportViewHtml(liveData = null) {
     <article class="gabes-special-report">
       
       <!-- A. SPECIAL REPORT OPENING (DARK CHASSIS) -->
-      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+      <div class="bg-background text-bone-100 py-10 sm:py-16 border-b border-surface-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <header id="prerendered-route-header" class="space-y-6 pb-6 border-b border-surface-800">
+          <header id="prerendered-route-header" class="space-y-6">
             ${breadcrumbHtml}
 
             <div class="space-y-3">
               <div class="flex items-center gap-3">
                 <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(g.eyebrow)}</span>
-                <span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson uppercase font-semibold">ACTIVE FILE</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson uppercase font-semibold">ACTIVE SPECIAL REPORT</span>
               </div>
 
               <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl text-bone-100 font-normal leading-[1.12] tracking-tight">
@@ -1307,33 +1307,33 @@ export function renderGabesReportViewHtml(liveData = null) {
               ${metricsHtml}
             </div>
           </header>
-
-          <!-- RECIPROCAL NATIONAL CONTEXT CALLOUT -->
-          <div class="p-4 sm:p-5 bg-surface-900/60 border border-surface-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold block">${escapeHtml(g.reciprocalLink.label)}</span>
-              <span class="text-sm font-sans text-bone-100 font-medium">This report is part of 404TN's broader national environmental documentation.</span>
-            </div>
-            <a href="${escapeHtml(g.reciprocalLink.href)}" class="px-5 py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 hover:text-white text-xs font-mono uppercase tracking-meta transition-colors shrink-0">
-              ${escapeHtml(g.reciprocalLink.text)}
-            </a>
-          </div>
         </div>
       </div>
 
       <!-- B. SPECIAL REPORT BODY (WARM ARCHIVAL PAPER SURFACE) -->
-      <div class="surface-paper py-10 sm:py-16">
+      <div class="surface-paper py-12 sm:py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
+          <!-- RECIPROCAL NATIONAL CONTEXT CALLOUT (WARM PAPER) -->
+          <div class="p-5 bg-white border border-paper shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-paper-crimson font-bold block">${escapeHtml(g.reciprocalLink.label)}</span>
+              <span class="text-sm font-sans text-paper-primary font-medium">This special report is part of 404TN's broader national environmental &amp; industrial documentation.</span>
+            </div>
+            <a href="${escapeHtml(g.reciprocalLink.href)}" class="px-5 py-2.5 bg-paper-primary text-paper-bg hover:bg-black text-xs font-mono uppercase tracking-meta transition-colors shrink-0">
+              ${escapeHtml(g.reciprocalLink.text)}
+            </a>
+          </div>
+
           <!-- B. WHY GABÈS MATTERS & C. INDUSTRIAL CONTEXT -->
-          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div class="lg:col-span-6 space-y-4 p-6 sm:p-8 bg-white border border-paper shadow-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
                 <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">ECOLOGICAL CONTEXT</span>
               </div>
               <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Why Gabès Matters</h2>
-              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+              <p class="text-sm sm:text-base text-paper-muted font-light leading-relaxed">
                 ${escapeHtml(g.contextSections.whyItMatters)}
               </p>
             </div>
@@ -1344,7 +1344,7 @@ export function renderGabesReportViewHtml(liveData = null) {
                 <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">INDUSTRIAL PLATFORM</span>
               </div>
               <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">The Industrial Complex</h2>
-              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+              <p class="text-sm sm:text-base text-paper-muted font-light leading-relaxed">
                 ${escapeHtml(g.contextSections.industrialContext)}
               </p>
             </div>
@@ -1379,15 +1379,15 @@ export function renderGabesReportViewHtml(liveData = null) {
 
             <div class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
-                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                <div class="p-5 bg-paper-subtle border border-paper space-y-2">
                   <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">WHAT WAS PLEDGED (2017)</span>
                   <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.statement)}</p>
                 </div>
-                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                <div class="p-5 bg-paper-subtle border border-paper space-y-2">
                   <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">DOCUMENTED STATUS (2026)</span>
                   <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.reality)}</p>
                 </div>
-                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                <div class="p-5 bg-paper-subtle border border-paper space-y-2">
                   <span class="text-[10px] font-mono text-paper-crimson uppercase tracking-wider block font-bold">VERIFIED CONCLUSION</span>
                   <p class="text-paper-primary font-medium leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.outcome)}</p>
                 </div>
@@ -1396,18 +1396,18 @@ export function renderGabesReportViewHtml(liveData = null) {
           </section>
 
           <!-- G. DATA GAPS & H. HEALTH CONTEXT -->
-          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-6 p-6 sm:p-8 bg-paper-subtle border border-paper space-y-3">
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-6 p-6 sm:p-8 bg-[#FFFDF9] border-l-4 border-amber-500 border border-paper space-y-3 shadow-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                <span class="text-[10px] font-mono uppercase tracking-widest text-paper-dim font-bold">${escapeHtml(g.contextSections.dataGaps.title)}</span>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-amber-900 font-bold">${escapeHtml(g.contextSections.dataGaps.title)}</span>
               </div>
               <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
                 ${escapeHtml(g.contextSections.dataGaps.description)}
               </p>
             </div>
 
-            <div class="lg:col-span-6 p-6 sm:p-8 bg-paper-subtle border border-paper space-y-3">
+            <div class="lg:col-span-6 p-6 sm:p-8 bg-[#FFFDF9] border-l-4 border-paper-crimson border border-paper space-y-3 shadow-sm">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-paper-red"></span>
                 <span class="text-[10px] font-mono uppercase tracking-widest text-paper-crimson font-bold">${escapeHtml(g.contextSections.healthContext.title)}</span>

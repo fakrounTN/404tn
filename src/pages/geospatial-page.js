@@ -40,30 +40,30 @@ export function renderGeospatialHtml(options = {}) {
   });
 
   const governorates = [
-    { name: "Gabès", code: "GAB", water: 48, power: 34, pollution: "CRITICAL", protests: 12, status: "Severe industrial & water stress" },
-    { name: "Gafsa", code: "GAF", water: 39, power: 28, pollution: "HIGH", protests: 19, status: "Mining basin hydraulic deficit" },
-    { name: "Kairouan", code: "KAI", water: 54, power: 22, pollution: "MODERATE", protests: 15, status: "Prolonged rural potable cuts" },
-    { name: "Sidi Bouzid", code: "SID", water: 42, power: 18, pollution: "LOW", protests: 11, status: "Agricultural aquifer depletion" },
-    { name: "Sfax", code: "SFA", water: 36, power: 41, pollution: "HIGH", protests: 22, status: "Industrial pollution & waste backlog" },
-    { name: "Tunis", code: "TUN", water: 29, power: 45, pollution: "MODERATE", protests: 31, status: "Administrative & civic mobilization hub" },
-    { name: "Ben Arous", code: "BEN", water: 24, power: 38, pollution: "HIGH", protests: 8, status: "Industrial belt power fluctuations" },
-    { name: "Ariana", code: "ARI", water: 22, power: 29, pollution: "LOW", protests: 6, status: "Nocturnal water rationing quotas" },
-    { name: "Manouba", code: "MAN", water: 31, power: 25, pollution: "LOW", protests: 7, status: "Agricultural irrigation curtailment" },
-    { name: "Bizerte", code: "BIZ", water: 18, power: 21, pollution: "MODERATE", protests: 9, status: "Lake lagoon industrial discharge" },
-    { name: "Nabeul", code: "NAB", water: 37, power: 33, pollution: "LOW", protests: 10, status: "Cap Bon citrus belt water stress" },
-    { name: "Sousse", code: "SOU", water: 28, power: 36, pollution: "MODERATE", protests: 14, status: "Coastal summer tourist peak demand" },
-    { name: "Monastir", code: "MON", water: 25, power: 30, pollution: "HIGH", protests: 8, status: "Textile industrial wastewater stress" },
-    { name: "Mahdia", code: "MAH", water: 33, power: 24, pollution: "LOW", protests: 7, status: "Rural network pressure drops" },
-    { name: "Kasserine", code: "KAS", water: 46, power: 19, pollution: "MODERATE", protests: 16, status: "Interior economic & water isolation" },
-    { name: "Jendouba", code: "JEN", water: 15, power: 17, pollution: "LOW", protests: 5, status: "Dam reservoir proximity / local cuts" },
-    { name: "Béja", code: "BEJ", water: 19, power: 16, pollution: "LOW", protests: 6, status: "Cereal heartland drought impact" },
-    { name: "Le Kef", code: "KEF", water: 27, power: 15, pollution: "LOW", protests: 8, status: "Hilly terrain distribution failure" },
-    { name: "Siliana", code: "SIL", water: 30, power: 14, pollution: "LOW", protests: 7, status: "Rural potable network fragility" },
-    { name: "Médenine", code: "MED", water: 35, power: 29, pollution: "LOW", protests: 13, status: "Southern border & island supply strain" },
-    { name: "Tataouine", code: "TAT", water: 38, power: 20, pollution: "LOW", protests: 10, status: "Deep desert aquifer salinity" },
-    { name: "Kebili", code: "KEB", water: 32, power: 22, pollution: "LOW", protests: 6, status: "Oasis irrigation restrictions" },
-    { name: "Tozeur", code: "TOZ", water: 29, power: 26, pollution: "LOW", protests: 5, status: "Date palm groundwater pressure" },
-    { name: "Zaghouan", code: "ZAG", water: 26, power: 18, pollution: "LOW", protests: 4, status: "Aqueduct regional transfer limits" }
+    { name: "Gabès", code: "GAB", water: 48, power: 34, protests: 12, status: "Industrial pollution reports & potable supply failures" },
+    { name: "Gafsa", code: "GAF", water: 39, power: 28, protests: 19, status: "Phosphate washing extraction & rural water cuts" },
+    { name: "Kairouan", code: "KAI", water: 54, power: 22, protests: 15, status: "Prolonged rural potable network suspensions" },
+    { name: "Sidi Bouzid", code: "SID", water: 42, power: 18, protests: 11, status: "Agricultural aquifer drop & local supply deficits" },
+    { name: "Sfax", code: "SFA", water: 36, power: 41, protests: 22, status: "Municipal waste backlog & coastal air complaints" },
+    { name: "Tunis", code: "TUN", water: 29, power: 45, protests: 31, status: "Civic mobilization events & grid load peaks" },
+    { name: "Ben Arous", code: "BEN", water: 24, power: 38, protests: 8, status: "Industrial zone power fluctuations documented" },
+    { name: "Ariana", code: "ARI", water: 22, power: 29, protests: 6, status: "Nocturnal water rationing schedule in effect" },
+    { name: "Manouba", code: "MAN", water: 31, power: 25, protests: 7, status: "Agricultural irrigation quotas applied" },
+    { name: "Bizerte", code: "BIZ", water: 18, power: 21, protests: 9, status: "Lake lagoon industrial discharge observations" },
+    { name: "Nabeul", code: "NAB", water: 37, power: 33, protests: 10, status: "Cap Bon citrus belt water rationing" },
+    { name: "Sousse", code: "SOU", water: 28, power: 36, protests: 14, status: "Summer seasonal demand surge & pressure drops" },
+    { name: "Monastir", code: "MON", water: 25, power: 30, protests: 8, status: "Textile industrial wastewater monitoring" },
+    { name: "Mahdia", code: "MAH", water: 33, power: 24, protests: 7, status: "Rural network distribution interruptions" },
+    { name: "Kasserine", code: "KAS", water: 46, power: 19, protests: 16, status: "Interior potable cuts & economic demonstrations" },
+    { name: "Jendouba", code: "JEN", water: 15, power: 17, protests: 5, status: "Dam proximity / local distribution repairs" },
+    { name: "Béja", code: "BEJ", water: 19, power: 16, protests: 6, status: "Cereal heartland agricultural dry conditions" },
+    { name: "Le Kef", code: "KEF", water: 27, power: 15, protests: 8, status: "Terrain distribution pressure drops" },
+    { name: "Siliana", code: "SIL", water: 30, power: 14, protests: 7, status: "Rural potable network fragility records" },
+    { name: "Médenine", code: "MED", water: 35, power: 29, protests: 13, status: "Southern border & island supply strain" },
+    { name: "Tataouine", code: "TAT", water: 38, power: 20, protests: 10, status: "Deep aquifer salinity monitoring" },
+    { name: "Kebili", code: "KEB", water: 32, power: 22, protests: 6, status: "Oasis irrigation restriction notices" },
+    { name: "Tozeur", code: "TOZ", water: 29, power: 26, protests: 5, status: "Date palm groundwater pressure records" },
+    { name: "Zaghouan", code: "ZAG", water: 26, power: 18, protests: 4, status: "Regional aqueduct transfer quota limits" }
   ];
 
   const govRowsHtml = governorates.map((g, idx) => `
@@ -73,7 +73,6 @@ export function renderGeospatialHtml(options = {}) {
       <td class="py-2.5 px-3 text-[#767C89]">${escapeHtml(g.code)}</td>
       <td class="py-2.5 px-3 text-crimson font-bold text-right">${g.water}</td>
       <td class="py-2.5 px-3 text-[#8A5A1A] font-bold text-right">${g.power}</td>
-      <td class="py-2.5 px-3 text-right"><span class="px-1.5 py-0.5 text-[10px] font-mono ${g.pollution === 'CRITICAL' ? 'stamp-paper-crimson' : g.pollution === 'HIGH' ? 'stamp-paper-amber' : 'stamp-paper-slate'}">${escapeHtml(g.pollution)}</span></td>
       <td class="py-2.5 px-3 text-right text-[#141517] font-semibold">${g.protests}</td>
       <td class="py-2.5 px-3 font-sans text-[#4A4F59] text-xs">${escapeHtml(g.status)}</td>
     </tr>
@@ -182,10 +181,10 @@ export function renderGeospatialHtml(options = {}) {
           <!-- 24 GOVERNORATES TELEMETRY REGISTER -->
           <section class="space-y-6">
             <div class="pb-4 border-b border-[#E5E0D8]">
-              ${sectionKicker("TERRITORIAL TELEMETRY MATRIX")}
-              <h2 class="font-editorial text-2xl sm:text-3xl text-[#141517]">24 Governorates: Documented Pressure Metrics</h2>
+              ${sectionKicker("TERRITORIAL EVIDENCE MATRIX")}
+              <h2 class="font-editorial text-2xl sm:text-3xl text-[#141517]">24 Governorates: Documented Evidence Register</h2>
               <p class="text-xs sm:text-sm text-[#4A4F59] font-light max-w-3xl mt-2 leading-relaxed">
-                Structured incident register aggregating verified utility curtailments, atmospheric and marine pollution alerts, and civic mobilizations across all administrative subdivisions in Summer 2026.
+                Structured incident register aggregating verified utility records, environmental field observations, and documented civic events across all 24 administrative subdivisions in Summer 2026.
               </p>
             </div>
 
@@ -196,11 +195,10 @@ export function renderGeospatialHtml(options = {}) {
                     <th class="py-3 px-3">#</th>
                     <th class="py-3 px-3">Governorate</th>
                     <th class="py-3 px-3">Code</th>
-                    <th class="py-3 px-3 text-right text-crimson">Water Alerts</th>
-                    <th class="py-3 px-3 text-right text-[#8A5A1A]">Grid Alerts</th>
-                    <th class="py-3 px-3 text-right">Pollution Level</th>
-                    <th class="py-3 px-3 text-right">Protest Events</th>
-                    <th class="py-3 px-3">Documented Status</th>
+                    <th class="py-3 px-3 text-right text-crimson">Water Records</th>
+                    <th class="py-3 px-3 text-right text-[#8A5A1A]">Grid Records</th>
+                    <th class="py-3 px-3 text-right">Civic Events</th>
+                    <th class="py-3 px-3">Documented Field Observations</th>
                   </tr>
                 </thead>
                 <tbody>

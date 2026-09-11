@@ -36,6 +36,20 @@ export default {
           DEFAULT: '#D4C5B0',
           muted: '#9B9080',
           dark: '#3A362F',
+        },
+        paper: {
+          bg: '#FAF8F5',
+          elevated: '#FFFFFF',
+          subtle: '#F2EFE9',
+          main: '#141517',
+          primary: '#141517',
+          muted: '#4A4D54',
+          dim: '#6F737D',
+          border: '#E5E0D8',
+          'border-strong': '#CCC6BC',
+          red: '#B91C1C',
+          crimson: '#B91C1C',
+          sand: '#854D0E',
         }
       },
       fontFamily: {

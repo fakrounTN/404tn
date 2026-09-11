@@ -636,14 +636,19 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
    ========================================================================== */
 :root {
   --paper-bg: #FAF8F5;
+  --paper-base: #FAF8F5;
   --paper-bg-elevated: #FFFFFF;
+  --paper-elevated: #FFFFFF;
   --paper-bg-subtle: #F2EFE9;
+  --paper-subtle: #F2EFE9;
   --paper-text-main: #141517;
+  --paper-text-primary: #141517;
   --paper-text-muted: #4A4D54;
   --paper-text-dim: #6F737D;
   --paper-border: #E5E0D8;
   --paper-border-strong: #CCC6BC;
   --paper-red: #B91C1C;
+  --paper-crimson: #B91C1C;
   --paper-sand: #854D0E;
 }
 
@@ -676,7 +681,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   border-color: var(--paper-border-strong);
 }
 
-.text-paper-main {
+.text-paper-main,
+.text-paper-primary {
   color: var(--paper-text-main);
 }
 
@@ -688,12 +694,31 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: var(--paper-text-dim);
 }
 
-.text-paper-red {
+.text-paper-red,
+.text-paper-crimson {
   color: var(--paper-red);
 }
 
 .text-paper-sand {
   color: var(--paper-sand);
+}
+
+.bg-paper-primary,
+.bg-paper-main {
+  background-color: var(--paper-text-main);
+  color: var(--paper-bg);
+}
+
+.bg-paper-subtle {
+  background-color: var(--paper-bg-subtle);
+}
+
+.bg-paper-elevated {
+  background-color: var(--paper-bg-elevated);
+}
+
+.shadow-paper {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .newspaper-rule-paper {

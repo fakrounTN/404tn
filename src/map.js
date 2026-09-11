@@ -95,7 +95,7 @@ export async function initGeospatialMonitor() {
 
       <!-- Mandatory Disclaimer & Legend Footer -->
       <div class="map-disclaimer-banner absolute bottom-1 left-2 right-2 z-10 bg-background/90 border border-surface-800 px-2 py-1 text-[8px] font-mono text-surface-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-        <span><strong class="text-sand">DOCUMENTED PRESSURE / EVIDENCE DENSITY:</strong> Density reflects documented evidence collected by 404TN, not a definitive measurement of real-world severity.</span>
+        <span><strong class="text-sand">EVIDENCE DENSITY:</strong> Density reflects documented evidence collected by 404TN, not a definitive measurement of real-world severity.</span>
         <span class="text-surface-500 whitespace-nowrap">24 GOVERNORATES MONITORED</span>
       </div>
 
@@ -106,7 +106,7 @@ export async function initGeospatialMonitor() {
 
       <!-- Evidence Density Legend -->
       <div class="map-density-legend">
-        <div class="text-[8px] uppercase tracking-widest text-surface-400 font-bold">DOCUMENTED PRESSURE</div>
+        <div class="text-[8px] uppercase tracking-widest text-surface-400 font-bold">EVIDENCE DENSITY</div>
         <div class="map-density-gradient"></div>
         <div class="flex justify-between text-[7px] text-surface-500">
           <span>LOW DENSITY</span>
