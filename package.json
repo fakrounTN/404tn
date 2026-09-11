@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "test:seo": "node scripts/test-seo-output.mjs"
+    "test:seo": "node scripts/test-seo-output.mjs",
+    "test:rop": "node scripts/test-record-of-power.mjs",
+    "test": "npm run test:seo && npm run test:rop"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
