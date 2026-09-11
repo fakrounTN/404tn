@@ -81,36 +81,85 @@ export function renderEvidenceHtml() {
   ];
 
   return `
-    <article class="evidence-register-page py-10 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="evidence-register-page">
       
-      <!-- HERO -->
-      ${heroHtml}
-
-      <!-- FILTER & METHODOLOGY CALLOUT -->
-      <section class="space-y-6" aria-label="Evidence Register Table">
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-surface-800">
-          <div class="space-y-1">
-            ${sectionKicker('VERIFIED REPOSITORY')}
-            ${sectionHeading('Audited Evidence Stream', 'Click any row to inspect complete provenance metadata, verification audit slips, and direct gazette links.')}
-          </div>
-          <div class="flex items-center gap-2 font-mono text-xs">
-            <span class="text-surface-400">FILTER:</span>
-            <span class="px-2.5 py-1 bg-surface-800 text-bone-100 border border-crimson font-bold">ALL</span>
-            <span class="px-2.5 py-1 bg-surface-900 border border-surface-800 text-surface-400">FACT</span>
-            <span class="px-2.5 py-1 bg-surface-900 border border-surface-800 text-surface-400">CLAIM</span>
-          </div>
+      <!-- A. EVIDENCE ARCHIVE OPENER (DARK CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${heroHtml}
         </div>
+      </div>
 
-        <!-- EVIDENCE ROWS -->
-        <div class="divide-y divide-surface-800 border-y border-surface-800 bg-background-elevated">
-          ${evidenceList.map(item => renderEvidenceRow(item)).join('')}
+      <!-- B. EVIDENCE REGISTER DESK (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+
+          <!-- FILTER & REPOSITORY HEADER -->
+          <section class="space-y-6" aria-label="Evidence Register Table">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-paper">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                  <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold">VERIFIED REPOSITORY</span>
+                </div>
+                <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Audited Evidence Stream</h2>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                  Click any row to inspect complete provenance metadata, verification audit slips, and direct gazette links.
+                </p>
+              </div>
+              <div class="flex items-center gap-2 font-mono text-xs">
+                <span class="text-paper-dim">FILTER:</span>
+                <span class="px-3 py-1 bg-paper-primary text-paper-bg-base border border-paper-primary font-bold">ALL</span>
+                <span class="px-3 py-1 bg-white border border-paper text-paper-muted">FACT</span>
+                <span class="px-3 py-1 bg-white border border-paper text-paper-muted">CLAIM</span>
+              </div>
+            </div>
+
+            <!-- STRUCTURED ARCHIVAL EVIDENCE REGISTER (ZERO CARD WALLS) -->
+            <div class="divide-y divide-paper border-y border-paper bg-white shadow-sm font-sans">
+              ${evidenceList.map(item => `
+                <article class="p-5 sm:p-6 hover:bg-paper-subtle/50 transition-colors group cursor-pointer" data-evidence-id="${escapeHtml(item.id)}">
+                  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-2">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                      ${classificationBadge(item.classification, true)}
+                      <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider">${escapeHtml(item.status)}</span>
+                      <span class="text-xs font-mono text-paper-crimson font-bold">${escapeHtml(item.event_date)}</span>
+                    </div>
+                    <div class="text-[10px] font-mono text-paper-dim">
+                      ID: <span class="text-paper-muted font-bold">${escapeHtml(item.id)}</span>
+                    </div>
+                  </div>
+
+                  <h3 class="font-editorial font-bold text-paper-primary text-base sm:text-lg leading-snug group-hover:text-paper-crimson transition-colors mt-1">
+                    ${escapeHtml(item.headline)}
+                  </h3>
+
+                  <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed mt-2 max-w-4xl">
+                    ${escapeHtml(item.summary)}
+                  </p>
+
+                  <div class="mt-4 pt-3 border-t border-paper/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-paper-dim">
+                    <div>
+                      SRC: <span class="text-paper-primary font-medium">${escapeHtml(item.source_name)}</span>
+                      ${item.metric_value ? ` · <span class="text-paper-crimson font-bold">${escapeHtml(item.metric_value)} (${escapeHtml(item.metric_unit)})</span>` : ''}
+                    </div>
+                    <div class="text-paper-crimson group-hover:underline flex items-center gap-1 font-bold">
+                      <span>Inspect Provenance Slip</span>
+                      <span>↗</span>
+                    </div>
+                  </div>
+                </article>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- NAVIGATION FOOTER -->
+          <div class="pt-8 border-t border-paper flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+            <a href="/state-response" class="text-paper-muted hover:text-paper-primary hover:underline">← State Response Matrix</a>
+            <a href="/methodology" class="text-paper-crimson hover:underline font-bold">Read Verification Methodology →</a>
+          </div>
+
         </div>
-      </section>
-
-      <!-- NAVIGATION FOOTER -->
-      <div class="pt-8 border-t border-surface-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <a href="/state-response" class="text-sand hover:underline">← State Response Matrix</a>
-        <a href="/methodology" class="text-crimson hover:underline font-bold">Read Verification Methodology →</a>
       </div>
 
     </article>

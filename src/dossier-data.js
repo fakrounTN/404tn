@@ -3,6 +3,7 @@
 // Shared across build-time SSG prerender (scripts/prerender.mjs) and runtime client view (src/main.js)
 
 import { escapeHtml, stripHtml } from './utils.js';
+import { classificationBadge } from './editorial-components.js';
 
 export * from './editorial-components.js';
 export * from './editorial-architecture.js';
@@ -871,7 +872,7 @@ export const GABES_SPECIAL_REPORT = {
       outcome: "The 2017 government relocation pledge remains an unexecuted official statement."
     },
     dataGaps: {
-      title: "OFFICIAL DATA DEFICIT & SENSOR OPACITY",
+      title: "OFFICIAL DATA DEFICIT & UNPUBLISHED SENSOR FEEDS",
       description: "Neither the Ministry of Environment (ANPE) nor the Groupe Chimique Tunisien publishes an open, real-time public telemetry feed for atmospheric emissions (SO2, NOx, particulate matter) or marine discharge toxicity in Gabès. Independent verification relies on historical audit baselines, academic field samples, and civil society incident tracking."
     },
     healthContext: {
@@ -943,23 +944,23 @@ export function renderDossierViewHtml(key, liveData = null) {
   `;
 
   const inScopeHtml = meta.editorialScope.inScope.map(item => `
-    <li class="flex items-start gap-2.5 text-xs text-surface-300">
-      <span class="text-crimson font-mono select-none font-bold">✓</span>
+    <li class="flex items-start gap-2.5 text-xs text-paper-muted">
+      <span class="text-paper-crimson font-mono select-none font-bold">✓</span>
       <span>${escapeHtml(item)}</span>
     </li>
   `).join("");
 
   const outScopeHtml = meta.editorialScope.outsideScope.map(item => `
-    <li class="flex items-start gap-2.5 text-xs text-surface-400">
-      <span class="text-surface-500 font-mono select-none">✕</span>
+    <li class="flex items-start gap-2.5 text-xs text-paper-dim">
+      <span class="text-paper-dim font-mono select-none">✕</span>
       <span>${escapeHtml(item)}</span>
     </li>
   `).join("");
 
   const institutionsHtml = meta.accountableInstitutions.map(inst => `
-    <li class="flex items-start gap-2.5 text-xs text-surface-300">
-      <span class="text-sand font-mono select-none">■</span>
-      <span>${escapeHtml(inst)}</span>
+    <li class="flex items-start gap-2.5 text-xs text-paper-muted font-mono">
+      <span class="text-paper-crimson font-mono select-none">■</span>
+      <span class="text-paper-primary font-medium">${escapeHtml(inst)}</span>
     </li>
   `).join("");
 
@@ -969,38 +970,35 @@ export function renderDossierViewHtml(key, liveData = null) {
     const date = escapeHtml(item.event_date || item.published_at || '2026');
     const sourceName = escapeHtml(stripHtml(item.source_name || 'VERIFIED SOURCE'));
     const classification = escapeHtml(item.classification || 'FACT');
-    const classBadgeStyle = classification === 'FACT' 
-      ? 'bg-bone-100 text-background font-bold' 
-      : (classification === 'CLAIM' ? 'bg-sand text-background font-bold' : 'bg-crimson text-white font-bold');
     const headline = escapeHtml(stripHtml(item.headline || item.title || 'Evidence Record'));
     const summary = escapeHtml(stripHtml(item.summary || item.desc || ''));
     const status = escapeHtml(item.status || 'VERIFIED');
-    const metricStr = item.metric_value ? `<span class="text-crimson font-mono font-bold">${escapeHtml(item.metric_value)} ${escapeHtml(item.metric_unit || '')}</span>` : '';
+    const metricStr = item.metric_value ? `<span class="text-paper-crimson font-mono font-bold">${escapeHtml(item.metric_value)} ${escapeHtml(item.metric_unit || '')}</span>` : '';
 
     return `
-      <article class="p-5 sm:p-6 hover:bg-surface-900/40 transition-colors group cursor-pointer border-b border-surface-800 last:border-b-0" data-evidence-id="${evId}">
+      <article class="p-5 sm:p-6 hover:bg-paper-subtle/50 transition-colors group cursor-pointer border-b border-paper last:border-b-0" data-evidence-id="${evId}">
         <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-2">
           <div class="flex items-center gap-2.5 flex-wrap">
-            <span class="text-[10px] font-mono uppercase px-2 py-0.5 ${classBadgeStyle}">${classification}</span>
-            <span class="text-[10px] font-mono text-surface-400 uppercase tracking-wider">${status}</span>
-            <span class="text-xs font-mono text-crimson font-medium">${date}</span>
+            ${classificationBadge(classification, true)}
+            <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider">${status}</span>
+            <span class="text-xs font-mono text-paper-crimson font-medium">${date}</span>
           </div>
-          <div class="text-[10px] font-mono text-surface-500">
-            SRC: <span class="text-surface-300">${sourceName}</span>
+          <div class="text-[10px] font-mono text-paper-dim">
+            SRC: <span class="text-paper-muted">${sourceName}</span>
           </div>
         </div>
 
-        <h3 class="font-sans font-semibold text-bone-100 text-base sm:text-lg leading-snug group-hover:text-crimson transition-colors mt-1">
+        <h3 class="font-sans font-semibold text-paper-primary text-base sm:text-lg leading-snug group-hover:text-paper-crimson transition-colors mt-1">
           ${headline}
         </h3>
 
-        <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed mt-2 max-w-prose">
+        <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed mt-2 max-w-prose">
           ${summary}
         </p>
 
-        <div class="mt-4 pt-3 border-t border-surface-800/60 flex items-center justify-between text-[11px] font-mono text-surface-400">
+        <div class="mt-4 pt-3 border-t border-paper/60 flex items-center justify-between text-[11px] font-mono text-paper-dim">
           <div>${metricStr}</div>
-          <div class="text-crimson group-hover:underline flex items-center gap-1">
+          <div class="text-paper-crimson group-hover:underline flex items-center gap-1 font-bold">
             <span>Inspect Provenance Slip</span>
             <span>↗</span>
           </div>
@@ -1010,206 +1008,229 @@ export function renderDossierViewHtml(key, liveData = null) {
   }).join("");
 
   const timelineHtml = meta.timeline.map(event => `
-    <div class="relative pl-6 pb-6 border-l border-surface-800 last:border-l-0 last:pb-0">
-      <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-crimson"></span>
+    <div class="relative pl-6 pb-6 border-l border-paper last:border-l-0 last:pb-0">
+      <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-paper-red"></span>
       <div class="flex items-center gap-2">
-        <span class="text-xs font-mono text-crimson font-bold">${escapeHtml(event.date || event.year || '')}</span>
-        <span class="text-[9px] font-mono px-1.5 py-0.2 bg-surface-900 border border-surface-800 text-surface-400">${escapeHtml(event.classification || 'FACT')}</span>
+        <span class="text-xs font-mono text-paper-crimson font-bold">${escapeHtml(event.date || event.year || '')}</span>
+        ${classificationBadge(event.classification || 'FACT', true)}
       </div>
-      <h4 class="font-sans font-semibold text-bone-100 text-sm mt-1">${escapeHtml(stripHtml(event.title))}</h4>
-      <p class="text-xs text-surface-300 font-light mt-1 leading-relaxed">${escapeHtml(stripHtml(event.desc))}</p>
-      <div class="text-[10px] font-mono text-surface-500 mt-1.5">SRC: ${escapeHtml(stripHtml(event.source || 'OFFICIAL REPORT'))}</div>
+      <h4 class="font-sans font-semibold text-paper-primary text-sm mt-1">${escapeHtml(stripHtml(event.title))}</h4>
+      <p class="text-xs text-paper-muted font-light mt-1 leading-relaxed">${escapeHtml(stripHtml(event.desc))}</p>
+      <div class="text-[10px] font-mono text-paper-dim mt-1.5">SRC: ${escapeHtml(stripHtml(event.source || 'OFFICIAL REPORT'))}</div>
     </div>
   `).join("");
 
   const stateResponseHtml = meta.stateResponse.map(resp => `
-    <div class="p-5 sm:p-6 bg-background-elevated border border-surface-800 space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-surface-800">
+    <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-paper">
         <div>
-          <span class="text-[10px] font-mono uppercase tracking-meta text-surface-400">ACCOUNTABLE ENTITY</span>
-          <div class="font-sans font-bold text-bone-100 text-base">${escapeHtml(resp.authority)}</div>
+          <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim">ACCOUNTABLE ENTITY</span>
+          <div class="font-sans font-bold text-paper-primary text-base">${escapeHtml(resp.authority)}</div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-xs font-mono text-surface-400">${escapeHtml(resp.date)}</span>
-          <span class="text-[10px] font-mono uppercase px-2 py-0.5 bg-emerald-950/40 text-emerald-300 border border-emerald-800/40">${escapeHtml(resp.status || 'VERIFIED')}</span>
+          <span class="text-xs font-mono text-paper-dim">${escapeHtml(resp.date)}</span>
+          <span class="text-[10px] font-mono uppercase px-2 py-0.5 bg-paper-subtle text-paper-muted border border-paper font-bold">${escapeHtml(resp.status || 'VERIFIED')}</span>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
-        <div class="p-3 bg-surface-900/60 border border-surface-800 space-y-1">
-          <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-semibold">WHAT WAS SAID / PROMISED</span>
-          <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(resp.whatSaid)}</p>
+        <div class="p-3 bg-paper-subtle/50 border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-muted uppercase tracking-wider block font-bold">WHAT WAS SAID / PROMISED</span>
+          <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(resp.whatSaid)}</p>
         </div>
-        <div class="p-3 bg-surface-900/60 border border-surface-800 space-y-1">
-          <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-semibold">WHAT WAS DONE</span>
-          <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(resp.whatDone)}</p>
+        <div class="p-3 bg-paper-subtle/50 border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-muted uppercase tracking-wider block font-bold">WHAT WAS DONE</span>
+          <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(resp.whatDone)}</p>
         </div>
-        <div class="p-3 bg-surface-900/60 border border-surface-800 space-y-1">
-          <span class="text-[10px] font-mono text-crimson uppercase tracking-wider block font-semibold">WHAT IS KNOWN NOW</span>
-          <p class="text-surface-200 font-medium leading-relaxed">${escapeHtml(resp.outcome)}</p>
+        <div class="p-3 bg-paper-subtle/50 border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-crimson uppercase tracking-wider block font-bold">WHAT IS KNOWN NOW</span>
+          <p class="text-paper-primary font-medium leading-relaxed">${escapeHtml(resp.outcome)}</p>
         </div>
       </div>
     </div>
   `).join("");
 
   const relatedFilesHtml = meta.relatedFiles.map(link => `
-    <a href="${escapeHtml(link.href)}" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
-      <span class="text-bone-100 group-hover:text-crimson font-medium">${escapeHtml(link.label)}</span>
-      <span class="text-surface-400 group-hover:text-bone-100 transition-transform group-hover:translate-x-1">→</span>
+    <a href="${escapeHtml(link.href)}" class="p-4 bg-white hover:bg-paper-subtle/60 border border-paper hover:border-paper-crimson shadow-sm transition-colors group flex items-center justify-between text-xs font-mono">
+      <span class="text-paper-primary group-hover:text-paper-crimson font-medium">${escapeHtml(link.label)}</span>
+      <span class="text-paper-dim group-hover:text-paper-primary transition-transform group-hover:translate-x-1">→</span>
     </a>
   `).join("");
 
   const flagshipBannerHtml = meta.flagshipInvestigation ? `
-    <div class="p-6 bg-background-elevated border border-crimson/50 relative group">
-      <div class="flex items-center justify-between text-[10px] font-mono text-crimson font-bold mb-2">
+    <div class="p-6 sm:p-8 bg-white border-2 border-paper-crimson shadow-sm relative group space-y-3">
+      <div class="flex items-center justify-between text-[10px] font-mono text-paper-crimson font-bold">
         <span>${escapeHtml(meta.flagshipInvestigation.label)}</span>
-        <span class="px-2 py-0.5 bg-crimson/10 border border-crimson/30">FLAGSHIP FILE</span>
+        <span class="px-2 py-0.5 bg-red-50 border border-paper-crimson">FLAGSHIP FILE</span>
       </div>
-      <h3 class="font-editorial text-2xl text-bone-100 group-hover:text-crimson transition-colors">
+      <h3 class="font-editorial text-2xl sm:text-3xl text-paper-primary group-hover:text-paper-crimson transition-colors">
         <a href="${escapeHtml(meta.flagshipInvestigation.href)}">${escapeHtml(meta.flagshipInvestigation.title)}</a>
       </h3>
-      <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed mt-2 max-w-prose">
+      <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-prose">
         ${escapeHtml(meta.flagshipInvestigation.description)}
       </p>
-      <div class="mt-4 pt-3 border-t border-surface-800 flex items-center justify-between text-xs font-mono text-sand">
+      <div class="pt-3 border-t border-paper flex items-center justify-between text-xs font-mono text-paper-crimson font-bold">
         <span>Open Dedicated Special Report</span>
-        <span class="text-crimson font-bold">↗</span>
+        <span>↗</span>
       </div>
     </div>
   ` : '';
 
   return `
-    <article class="issue-dossier-page py-12 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="issue-dossier-page">
       
-      <!-- A. DOSSIER HEADER -->
-      <header id="prerendered-route-header" class="space-y-6 pb-10 border-b border-surface-800">
-        ${breadcrumbHtml}
+      <!-- A. DOSSIER OPENER (DARK INVESTIGATIVE CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <header id="prerendered-route-header" class="space-y-6">
+            ${breadcrumbHtml}
 
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(meta.eyebrow)}</span>
-            <span class="text-[10px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-800 text-surface-400 uppercase">${escapeHtml(meta.scopeContext)}</span>
-          </div>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(meta.eyebrow)}</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 bg-surface-900 border border-surface-800 text-surface-400 uppercase">${escapeHtml(meta.scopeContext)}</span>
+              </div>
 
-          <h1 class="font-editorial text-3xl sm:text-4xl lg:text-5xl text-bone-100 font-normal leading-tight tracking-tight">
-            ${escapeHtml(meta.h1)}
-          </h1>
+              <h1 class="font-editorial text-3xl sm:text-4xl lg:text-5xl text-bone-100 font-normal leading-tight tracking-tight">
+                ${escapeHtml(meta.h1)}
+              </h1>
 
-          <p class="text-base sm:text-lg text-surface-300 font-light leading-relaxed max-w-4xl">
-            ${escapeHtml(meta.deck)}
-          </p>
+              <p class="text-base sm:text-lg text-surface-300 font-light leading-relaxed max-w-4xl">
+                ${escapeHtml(meta.deck)}
+              </p>
+            </div>
+
+            <!-- Metadata Bar -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-surface-800/80 text-xs font-mono">
+              <div class="p-3 bg-surface-900/60 border border-surface-800">
+                <span class="text-[10px] text-surface-400 uppercase tracking-meta block">STATUS</span>
+                <span class="text-crimson font-bold uppercase mt-0.5 block">${escapeHtml(statusDisplay)}</span>
+              </div>
+              <div class="p-3 bg-surface-900/60 border border-surface-800">
+                <span class="text-[10px] text-surface-400 uppercase tracking-meta block">EVIDENCE INVENTORY</span>
+                <span class="text-bone-100 font-bold uppercase mt-0.5 block">${escapeHtml(evCount)}</span>
+              </div>
+              <div class="p-3 bg-surface-900/60 border border-surface-800">
+                <span class="text-[10px] text-surface-400 uppercase tracking-meta block">MONITORING WINDOW</span>
+                <span class="text-sand font-bold uppercase mt-0.5 block">SUMMER 2026</span>
+              </div>
+              <div class="p-3 bg-surface-900/60 border border-surface-800">
+                <span class="text-[10px] text-surface-400 uppercase tracking-meta block">PROVENANCE</span>
+                <span class="text-surface-300 font-bold uppercase mt-0.5 block">CRYPTOGRAPHIC AUDIT</span>
+              </div>
+            </div>
+          </header>
         </div>
+      </div>
 
-        <!-- Metadata Bar -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-surface-800/80 text-xs font-mono">
-          <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-[10px] text-surface-400 uppercase tracking-meta block">STATUS</span>
-            <span class="text-crimson font-bold uppercase mt-0.5 block">${escapeHtml(statusDisplay)}</span>
-          </div>
-          <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-[10px] text-surface-400 uppercase tracking-meta block">EVIDENCE INVENTORY</span>
-            <span class="text-bone-100 font-bold uppercase mt-0.5 block">${escapeHtml(evCount)}</span>
-          </div>
-          <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-[10px] text-surface-400 uppercase tracking-meta block">MONITORING WINDOW</span>
-            <span class="text-sand font-bold uppercase mt-0.5 block">SUMMER 2026</span>
-          </div>
-          <div class="p-3 bg-surface-900/60 border border-surface-800">
-            <span class="text-[10px] text-surface-400 uppercase tracking-meta block">PROVENANCE</span>
-            <span class="text-surface-300 font-bold uppercase mt-0.5 block">CRYPTOGRAPHIC AUDIT</span>
-          </div>
+      <!-- B. DOSSIER REPORT VIEW (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+          ${flagshipBannerHtml}
+
+          <!-- B. WHAT THIS FILE DOCUMENTS (STRICT SCOPE) -->
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-5 space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">TAXONOMY &amp; BOUNDARIES</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">What This File Documents</h2>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                ${escapeHtml(meta.editorialScope.scopeIntro)}
+              </p>
+              <div class="pt-4 border-t border-paper space-y-2">
+                <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim block font-bold">ACCOUNTABLE INSTITUTIONS</span>
+                <ul class="space-y-1.5">${institutionsHtml}</ul>
+              </div>
+            </div>
+
+            <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-white border border-paper shadow-sm">
+              <div class="space-y-3">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-paper-primary block font-bold border-b border-paper pb-2">EXPLICITLY IN SCOPE</span>
+                <ul class="space-y-2.5">${inScopeHtml}</ul>
+              </div>
+              <div class="space-y-3">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-paper-dim block font-bold border-b border-paper pb-2">DELIBERATELY OUTSIDE SCOPE</span>
+                <ul class="space-y-2.5">${outScopeHtml}</ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- C. KEY EVIDENCE ROWS -->
+          <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 pb-4 border-b border-paper">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                  <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">PRIMARY SOURCED RECORDS</span>
+                </div>
+                <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Key Documented Evidence</h2>
+              </div>
+              <div class="text-xs font-mono text-paper-dim">
+                Click any row to inspect complete verification source audit slip.
+              </div>
+            </div>
+
+            <div class="bg-white border border-paper shadow-sm divide-y divide-paper">
+              ${evidenceRowsHtml}
+            </div>
+          </section>
+
+          <!-- D. TIMELINE & CHRONOLOGY -->
+          <section class="space-y-6">
+            <div class="pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">INCIDENT STREAM</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Chronology of Documented Events</h2>
+            </div>
+
+            <div class="p-6 sm:p-8 bg-white border border-paper shadow-sm">
+              <div class="space-y-6">
+                ${timelineHtml}
+              </div>
+            </div>
+          </section>
+
+          <!-- E. STATE RESPONSE -->
+          <section class="space-y-6">
+            <div class="pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">INSTITUTIONAL ACCOUNTABILITY</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">State Response &amp; Known Outcomes</h2>
+            </div>
+
+            <div class="space-y-4">
+              ${stateResponseHtml}
+            </div>
+          </section>
+
+          <!-- F. METHODOLOGY & EPISTEMIC STANDARDS -->
+          <section class="p-6 sm:p-8 bg-paper-subtle border border-paper space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono uppercase tracking-widest text-paper-primary font-bold">404TN VERIFICATION PROTOCOL</span>
+              <a href="/methodology" class="text-xs font-mono text-paper-crimson font-bold hover:underline">Full Methodology →</a>
+            </div>
+            <p class="text-xs text-paper-muted font-light leading-relaxed max-w-prose">
+              Every evidence item in this dossier is tagged with its strict epistemic level (<strong class="text-paper-primary">FACT</strong>: empirically established by records; <strong class="text-paper-muted">CLAIM</strong>: official attribution awaiting independent confirmation; <strong class="text-paper-crimson">ANALYSIS</strong>: structured editorial synthesis).
+            </p>
+          </section>
+
+          <!-- G. RELATED FILES -->
+          <section class="space-y-4 pt-6 border-t border-paper">
+            <span class="text-xs font-mono uppercase tracking-widest text-paper-dim block font-semibold">RELATED INVESTIGATIVE FILES</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              ${relatedFilesHtml}
+            </div>
+          </section>
+
         </div>
-      </header>
-
-      ${flagshipBannerHtml}
-
-      <!-- B. WHAT THIS FILE DOCUMENTS (STRICT SCOPE) -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div class="lg:col-span-5 space-y-4">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">TAXONOMY & BOUNDARIES</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">What This File Documents</h2>
-          <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed">
-            ${escapeHtml(meta.editorialScope.scopeIntro)}
-          </p>
-          <div class="pt-4 border-t border-surface-800 space-y-2">
-            <span class="text-[10px] font-mono uppercase tracking-meta text-surface-400 block">ACCOUNTABLE INSTITUTIONS</span>
-            <ul class="space-y-1.5">${institutionsHtml}</ul>
-          </div>
-        </div>
-
-        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-background-elevated border border-surface-800">
-          <div class="space-y-3">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-bone-100 block font-bold border-b border-surface-800 pb-2">EXPLICITLY IN SCOPE</span>
-            <ul class="space-y-2.5">${inScopeHtml}</ul>
-          </div>
-          <div class="space-y-3">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-surface-400 block font-bold border-b border-surface-800 pb-2">DELIBERATELY OUTSIDE SCOPE</span>
-            <ul class="space-y-2.5">${outScopeHtml}</ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- C. KEY EVIDENCE ROWS -->
-      <section class="space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 pb-4 border-b border-surface-800">
-          <div>
-            <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">PRIMARY SOURCED RECORDS</span>
-            <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">Key Documented Evidence</h2>
-          </div>
-          <div class="text-xs font-mono text-surface-400">
-            Click any row to inspect complete verification source audit slip.
-          </div>
-        </div>
-
-        <div class="bg-background-elevated border border-surface-800 divide-y divide-surface-800">
-          ${evidenceRowsHtml}
-        </div>
-      </section>
-
-      <!-- D. TIMELINE & CHRONOLOGY -->
-      <section class="space-y-6">
-        <div class="pb-4 border-b border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">INCIDENT STREAM</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">Chronology of Documented Events</h2>
-        </div>
-
-        <div class="p-6 sm:p-8 bg-background-elevated border border-surface-800">
-          <div class="space-y-6">
-            ${timelineHtml}
-          </div>
-        </div>
-      </section>
-
-      <!-- E. STATE RESPONSE -->
-      <section class="space-y-6">
-        <div class="pb-4 border-b border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">INSTITUTIONAL ACCOUNTABILITY</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">State Response & Known Outcomes</h2>
-        </div>
-
-        <div class="space-y-4">
-          ${stateResponseHtml}
-        </div>
-      </section>
-
-      <!-- F. METHODOLOGY & EPISTEMIC STANDARDS -->
-      <section class="p-6 sm:p-8 bg-surface-900/60 border border-surface-800 space-y-4">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-mono uppercase tracking-widest text-sand font-bold">404TN VERIFICATION PROTOCOL</span>
-          <a href="/methodology" class="text-xs font-mono text-crimson hover:underline">Full Methodology →</a>
-        </div>
-        <p class="text-xs text-surface-300 font-light leading-relaxed max-w-prose">
-          Every evidence item in this dossier is tagged with its strict epistemic level (<strong class="text-bone-100">FACT</strong>: empirically established by records; <strong class="text-sand">CLAIM</strong>: official attribution awaiting independent confirmation; <strong class="text-crimson">ANALYSIS</strong>: structured editorial synthesis).
-        </p>
-      </section>
-
-      <!-- G. RELATED FILES -->
-      <section class="space-y-4 pt-6 border-t border-surface-800">
-        <span class="text-xs font-mono uppercase tracking-widest text-surface-400 block font-semibold">RELATED INVESTIGATIVE FILES</span>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          ${relatedFilesHtml}
-        </div>
-      </section>
+      </div>
 
     </article>
   `;
@@ -1230,7 +1251,7 @@ export function renderGabesReportViewHtml(liveData = null) {
   `;
 
   const metricsHtml = g.metrics.map(m => `
-    <div class="p-5 bg-background-elevated border border-surface-800 group hover:border-surface-600 transition-colors">
+    <div class="p-5 bg-surface-900/60 border border-surface-800 group hover:border-surface-600 transition-colors">
       <div class="flex items-center justify-between text-[10px] font-mono">
         <span class="text-surface-400 uppercase tracking-meta">${escapeHtml(m.label)}</span>
         <span class="px-1.5 py-0.5 bg-surface-900 border border-surface-800 ${m.status === 'HISTORICAL BASELINE' ? 'text-amber-400' : (m.status === 'NO CURRENT DATA' ? 'text-surface-400' : 'text-crimson')} font-bold">${escapeHtml(m.status)}</span>
@@ -1246,150 +1267,173 @@ export function renderGabesReportViewHtml(liveData = null) {
   `).join("");
 
   const timelineHtml = g.timeline.map(item => `
-    <div class="relative pl-6 pb-6 border-l border-surface-800 last:border-l-0 last:pb-0">
-      <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-crimson"></span>
+    <div class="relative pl-6 pb-6 border-l border-paper last:border-l-0 last:pb-0">
+      <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-paper-red"></span>
       <div class="flex items-center gap-2">
-        <span class="text-xs font-mono text-crimson font-bold">${escapeHtml(item.year)}</span>
-        <span class="text-[9px] font-mono px-1.5 py-0.2 bg-surface-900 border border-surface-800 text-surface-400">${escapeHtml(item.classification)}</span>
+        <span class="text-xs font-mono text-paper-crimson font-bold">${escapeHtml(item.year)}</span>
+        ${classificationBadge(item.classification || 'FACT', true)}
       </div>
-      <h4 class="font-sans font-semibold text-bone-100 text-sm mt-1">${escapeHtml(item.title)}</h4>
-      <p class="text-xs text-surface-300 font-light mt-1 leading-relaxed">${escapeHtml(item.desc)}</p>
-      <div class="text-[10px] font-mono text-surface-500 mt-1.5">SRC: ${escapeHtml(item.source)}</div>
+      <h4 class="font-sans font-semibold text-paper-primary text-sm mt-1">${escapeHtml(item.title)}</h4>
+      <p class="text-xs text-paper-muted font-light mt-1 leading-relaxed">${escapeHtml(item.desc)}</p>
+      <div class="text-[10px] font-mono text-paper-dim mt-1.5">SRC: ${escapeHtml(item.source)}</div>
     </div>
   `).join("");
 
   return `
-    <article class="gabes-special-report py-12 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="gabes-special-report">
       
-      <!-- A. SPECIAL REPORT OPENING -->
-      <header id="prerendered-route-header" class="space-y-6 pb-10 border-b border-surface-800">
-        ${breadcrumbHtml}
+      <!-- A. SPECIAL REPORT OPENING (DARK CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <header id="prerendered-route-header" class="space-y-6 pb-6 border-b border-surface-800">
+            ${breadcrumbHtml}
 
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(g.eyebrow)}</span>
-            <span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson uppercase font-semibold">ACTIVE FILE</span>
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(g.eyebrow)}</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 bg-crimson/10 border border-crimson/30 text-crimson uppercase font-semibold">ACTIVE FILE</span>
+              </div>
+
+              <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl text-bone-100 font-normal leading-[1.12] tracking-tight">
+                ${escapeHtml(g.h1)}
+              </h1>
+
+              <p class="text-base sm:text-xl text-surface-300 font-light leading-relaxed max-w-4xl">
+                ${escapeHtml(g.deck)}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-surface-800/80">
+              ${metricsHtml}
+            </div>
+          </header>
+
+          <!-- RECIPROCAL NATIONAL CONTEXT CALLOUT -->
+          <div class="p-4 sm:p-5 bg-surface-900/60 border border-surface-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold block">${escapeHtml(g.reciprocalLink.label)}</span>
+              <span class="text-sm font-sans text-bone-100 font-medium">This report is part of 404TN's broader national environmental documentation.</span>
+            </div>
+            <a href="${escapeHtml(g.reciprocalLink.href)}" class="px-5 py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 hover:text-white text-xs font-mono uppercase tracking-meta transition-colors shrink-0">
+              ${escapeHtml(g.reciprocalLink.text)}
+            </a>
           </div>
-
-          <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl text-bone-100 font-normal leading-[1.12] tracking-tight">
-            ${escapeHtml(g.h1)}
-          </h1>
-
-          <p class="text-base sm:text-xl text-surface-300 font-light leading-relaxed max-w-4xl">
-            ${escapeHtml(g.deck)}
-          </p>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-surface-800/80">
-          ${metricsHtml}
-        </div>
-      </header>
-
-      <!-- RECIPROCAL NATIONAL CONTEXT CALLOUT -->
-      <div class="p-4 sm:p-5 bg-background-elevated border border-surface-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold block">${escapeHtml(g.reciprocalLink.label)}</span>
-          <span class="text-sm font-sans text-bone-100 font-medium">This report is part of 404TN's broader national environmental documentation.</span>
-        </div>
-        <a href="${escapeHtml(g.reciprocalLink.href)}" class="px-5 py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 text-bone-100 hover:text-white text-xs font-mono uppercase tracking-meta transition-colors shrink-0">
-          ${escapeHtml(g.reciprocalLink.text)}
-        </a>
       </div>
 
-      <!-- B. WHY GABÈS MATTERS & C. INDUSTRIAL CONTEXT -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-6 space-y-4 p-6 sm:p-8 bg-background-elevated border border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">ECOLOGICAL CONTEXT</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">Why Gabès Matters</h2>
-          <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed">
-            ${escapeHtml(g.contextSections.whyItMatters)}
-          </p>
-        </div>
+      <!-- B. SPECIAL REPORT BODY (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
-        <div class="lg:col-span-6 space-y-4 p-6 sm:p-8 bg-background-elevated border border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">INDUSTRIAL PLATFORM</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">The Industrial Complex</h2>
-          <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed">
-            ${escapeHtml(g.contextSections.industrialContext)}
-          </p>
-        </div>
-      </section>
-
-      <!-- D. TIMELINE OF STATE COMMITMENTS VS REALITY -->
-      <section class="space-y-6">
-        <div class="pb-4 border-b border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">DECISION & EXECUTION REGISTER</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">Timeline of Decisions & Current Status (2017–2026)</h2>
-        </div>
-
-        <div class="p-6 sm:p-8 bg-background-elevated border border-surface-800">
-          <div class="space-y-6">
-            ${timelineHtml}
-          </div>
-        </div>
-      </section>
-
-      <!-- E. STATE COMMITMENTS VS DOCUMENTED OUTCOMES -->
-      <section class="space-y-6">
-        <div class="pb-4 border-b border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-semibold block">EPISTEMIC SEPARATION</span>
-          <h2 class="font-editorial text-2xl sm:text-3xl text-bone-100">State Commitment vs Documented Reality</h2>
-        </div>
-
-        <div class="p-6 sm:p-8 bg-background-elevated border border-surface-800 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
-            <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-              <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-bold">WHAT WAS PLEDGED (2017)</span>
-              <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.statement)}</p>
+          <!-- B. WHY GABÈS MATTERS & C. INDUSTRIAL CONTEXT -->
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-6 space-y-4 p-6 sm:p-8 bg-white border border-paper shadow-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">ECOLOGICAL CONTEXT</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Why Gabès Matters</h2>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                ${escapeHtml(g.contextSections.whyItMatters)}
+              </p>
             </div>
-            <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-              <span class="text-[10px] font-mono text-sand uppercase tracking-wider block font-bold">DOCUMENTED STATUS (2026)</span>
-              <p class="text-surface-300 font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.reality)}</p>
+
+            <div class="lg:col-span-6 space-y-4 p-6 sm:p-8 bg-white border border-paper shadow-sm">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">INDUSTRIAL PLATFORM</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">The Industrial Complex</h2>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                ${escapeHtml(g.contextSections.industrialContext)}
+              </p>
             </div>
-            <div class="p-4 bg-surface-900/60 border border-surface-800 space-y-2">
-              <span class="text-[10px] font-mono text-crimson uppercase tracking-wider block font-bold">VERIFIED CONCLUSION</span>
-              <p class="text-surface-200 font-medium leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.outcome)}</p>
+          </section>
+
+          <!-- D. TIMELINE OF STATE COMMITMENTS VS REALITY -->
+          <section class="space-y-6">
+            <div class="pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">DECISION &amp; EXECUTION REGISTER</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Timeline of Decisions &amp; Current Status (2017–2026)</h2>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- G. DATA GAPS & H. HEALTH CONTEXT -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-6 p-6 sm:p-8 bg-surface-900/40 border border-surface-800 space-y-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-sand"></span>
-            <span class="text-[10px] font-mono uppercase tracking-widest text-sand font-bold">${escapeHtml(g.contextSections.dataGaps.title)}</span>
-          </div>
-          <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed">
-            ${escapeHtml(g.contextSections.dataGaps.description)}
-          </p>
-        </div>
+            <div class="p-6 sm:p-8 bg-white border border-paper shadow-sm">
+              <div class="space-y-6">
+                ${timelineHtml}
+              </div>
+            </div>
+          </section>
 
-        <div class="lg:col-span-6 p-6 sm:p-8 bg-surface-900/40 border border-surface-800 space-y-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-crimson"></span>
-            <span class="text-[10px] font-mono uppercase tracking-widest text-crimson font-bold">${escapeHtml(g.contextSections.healthContext.title)}</span>
-          </div>
-          <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed">
-            ${escapeHtml(g.contextSections.healthContext.description)}
-          </p>
-        </div>
-      </section>
+          <!-- E. STATE COMMITMENTS VS DOCUMENTED OUTCOMES -->
+          <section class="space-y-6">
+            <div class="pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-semibold block">EPISTEMIC SEPARATION</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">State Commitment vs Documented Reality</h2>
+            </div>
 
-      <!-- I. EVIDENCE REGISTER & METHODOLOGY -->
-      <section class="p-6 sm:p-8 bg-background-elevated border border-surface-800 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
-          <span class="text-xs font-mono uppercase tracking-widest text-sand font-bold">SOURCE TRAIL & AUDIT PROVENANCE</span>
-          <div class="flex items-center gap-4 text-xs font-mono">
-            <a href="/evidence" class="text-surface-300 hover:text-crimson transition-colors">Primary Evidence Archive →</a>
-            <a href="/methodology" class="text-surface-300 hover:text-crimson transition-colors">Verification Methodology →</a>
-          </div>
+            <div class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs font-sans">
+                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                  <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">WHAT WAS PLEDGED (2017)</span>
+                  <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.statement)}</p>
+                </div>
+                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                  <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">DOCUMENTED STATUS (2026)</span>
+                  <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.reality)}</p>
+                </div>
+                <div class="p-4 bg-paper-subtle border border-paper space-y-2">
+                  <span class="text-[10px] font-mono text-paper-crimson uppercase tracking-wider block font-bold">VERIFIED CONCLUSION</span>
+                  <p class="text-paper-primary font-medium leading-relaxed">${escapeHtml(g.contextSections.stateCommitmentsVsOutcome.outcome)}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- G. DATA GAPS & H. HEALTH CONTEXT -->
+          <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-6 p-6 sm:p-8 bg-paper-subtle border border-paper space-y-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-paper-dim font-bold">${escapeHtml(g.contextSections.dataGaps.title)}</span>
+              </div>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                ${escapeHtml(g.contextSections.dataGaps.description)}
+              </p>
+            </div>
+
+            <div class="lg:col-span-6 p-6 sm:p-8 bg-paper-subtle border border-paper space-y-3">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-paper-red"></span>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-paper-crimson font-bold">${escapeHtml(g.contextSections.healthContext.title)}</span>
+              </div>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+                ${escapeHtml(g.contextSections.healthContext.description)}
+              </p>
+            </div>
+          </section>
+
+          <!-- I. EVIDENCE REGISTER & METHODOLOGY -->
+          <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-paper pb-3">
+              <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold">SOURCE TRAIL &amp; AUDIT PROVENANCE</span>
+              <div class="flex items-center gap-4 text-xs font-mono">
+                <a href="/evidence" class="text-paper-muted hover:text-paper-crimson font-semibold transition-colors">Primary Evidence Archive →</a>
+                <a href="/methodology" class="text-paper-muted hover:text-paper-crimson font-semibold transition-colors">Verification Methodology →</a>
+              </div>
+            </div>
+            <p class="text-xs text-paper-muted font-light leading-relaxed">
+              Sources utilized for this investigation include official JORT government gazette records, ANPE technical audits, World Bank industrial assessments, and corroborated local reporting. Every factual claim is bound to primary documentation.
+            </p>
+          </section>
+
         </div>
-        <p class="text-xs text-surface-400 font-light leading-relaxed">
-          Sources utilized for this investigation include official JORT government gazette records, ANPE technical audits, World Bank industrial assessments, and corroborated local reporting. Every factual claim is bound to primary documentation.
-        </p>
-      </section>
+      </div>
 
     </article>
   `;

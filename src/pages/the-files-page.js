@@ -107,81 +107,99 @@ export function renderTheFilesHtml() {
   ];
 
   return `
-    <article class="the-files-archive-page py-10 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="the-files-archive-page">
       
-      <!-- HERO -->
-      ${heroHtml}
-
-      <!-- ARCHIVE LISTING -->
-      <section class="space-y-6" aria-label="Archive Directory">
-        <div class="space-y-1 pb-4 border-b border-surface-800">
-          ${sectionKicker('SYSTEMIC DOSSIERS')}
-          ${sectionHeading('The 7 Core Investigative Dossiers', 'Every dossier contains verified baseline indicators, institutional responsibility mappings, state responses, primary gazette documents, and documented data gaps.')}
+      <!-- A. INVESTIGATIVE ARCHIVE OPENER (DARK CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${heroHtml}
         </div>
+      </div>
 
-        <div class="divide-y divide-surface-800 border-y border-surface-800 font-sans">
-          ${files.map(f => `
-            <div class="py-8 group hover:bg-surface-900/30 transition-colors px-4 space-y-4">
-              <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
-                <div class="flex items-baseline gap-4">
-                  <span class="num-archival text-3xl font-light text-surface-500 group-hover:text-crimson transition-colors font-mono">${f.num}</span>
-                  <div>
-                    <span class="text-[10px] font-mono uppercase tracking-widest text-crimson font-bold block">DOSSIER ${f.num}</span>
-                    <a href="/issues/${f.slug}" class="text-xl sm:text-2xl font-bold text-bone-100 group-hover:text-crimson transition-colors no-underline">
-                      ${escapeHtml(f.name)}
+      <!-- B. MASTER DOSSIER REGISTER (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+          <!-- ARCHIVE DIRECTORY -->
+          <section class="space-y-6" aria-label="Archive Directory">
+            <div class="space-y-1 pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold">SYSTEMIC DOSSIERS</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">The 7 Core Investigative Dossiers</h2>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-2xl">
+                Every dossier contains verified baseline indicators, institutional responsibility mappings, state responses, primary gazette documents, and documented data gaps.
+              </p>
+            </div>
+
+            <!-- OPEN BROADSHEET REGISTER (ZERO CARD WALLS) -->
+            <div class="divide-y divide-paper border-y border-paper font-sans">
+              ${files.map(f => `
+                <div class="py-8 group hover:bg-paper-subtle/50 transition-colors px-2 sm:px-4 space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                    <div class="flex items-baseline gap-4">
+                      <span class="text-2xl sm:text-3xl font-light text-paper-dim group-hover:text-paper-crimson transition-colors font-mono">${f.num}</span>
+                      <div>
+                        <span class="text-[10px] font-mono uppercase tracking-widest text-paper-crimson font-bold block">DOSSIER ${f.num}</span>
+                        <a href="/issues/${f.slug}" class="text-xl sm:text-2xl font-editorial font-bold text-paper-primary group-hover:text-paper-crimson transition-colors no-underline">
+                          ${escapeHtml(f.name)}
+                        </a>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3 font-mono text-xs">
+                      <span class="px-2 py-0.5 bg-white border border-paper text-paper-muted font-mono text-[11px]">${escapeHtml(f.metric)}</span>
+                      <span class="stamp-badge stamp-paper-crimson">${escapeHtml(f.status)}</span>
+                    </div>
+                  </div>
+
+                  <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-4xl pl-0 sm:pl-10">
+                    ${escapeHtml(f.deck)}
+                  </p>
+
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-paper/60 pl-0 sm:pl-10 text-xs font-mono">
+                    <div class="text-paper-muted text-[11px]">
+                      HOLDING ENTITIES: <span class="text-paper-primary font-semibold">${escapeHtml(f.institutions.join(' · '))}</span>
+                    </div>
+                    <a href="/issues/${f.slug}" class="text-paper-crimson font-bold hover:underline inline-flex items-center gap-1">
+                      <span>Inspect Complete Dossier</span>
+                      <span>→</span>
                     </a>
                   </div>
                 </div>
-                <div class="flex items-center gap-3 font-mono text-xs">
-                  <span class="px-2 py-0.5 bg-surface-900 border border-surface-800 text-sand">${escapeHtml(f.metric)}</span>
-                  <span class="px-2 py-0.5 bg-crimson/15 text-crimson border border-crimson/30 uppercase font-semibold text-[10px]">${escapeHtml(f.status)}</span>
-                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- SPECIAL FLAGSHIP REPORT CALLOUT (DOCUMENTARY FACSIMILE) -->
+          <section class="p-6 sm:p-8 bg-white border border-paper-strong shadow-sm space-y-6">
+            <div class="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-paper">
+              <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold">FLAGSHIP SPECIAL INVESTIGATION</span>
+              <span class="text-xs font-mono text-paper-muted">33°53'N 10°05'E</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div class="lg:col-span-8 space-y-3">
+                <h3 class="font-editorial text-2xl sm:text-3xl text-paper-primary">Gabès: Industrial Pollution &amp; State Inaction</h3>
+                <p class="text-xs sm:text-sm text-paper-muted font-sans font-light leading-relaxed">
+                  404TN’s deep-dive flagship investigation into the Groupe Chimique Tunisien (GCT) industrial complex at Chatt Essalam. Featuring satellite verification, environmental baseline comparisons, timeline of unfulfilled government relocation decrees, and documented atmospheric data deficits.
+                </p>
               </div>
-
-              <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed max-w-4xl pl-0 sm:pl-12">
-                ${escapeHtml(f.deck)}
-              </p>
-
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-surface-800/60 pl-0 sm:pl-12 text-xs font-mono">
-                <div class="text-surface-400 text-[11px]">
-                  HOLDING ENTITIES: <span class="text-bone-100">${escapeHtml(f.institutions.join(' · '))}</span>
-                </div>
-                <a href="/issues/${f.slug}" class="text-crimson font-bold hover:underline inline-flex items-center gap-1">
-                  <span>Inspect Complete Dossier</span>
-                  <span>→</span>
+              <div class="lg:col-span-4 flex justify-start lg:justify-end">
+                <a href="/gabes" class="px-6 sm:px-8 py-3.5 bg-paper-red hover:bg-red-800 text-white text-xs font-mono uppercase tracking-meta font-bold transition-colors inline-flex items-center gap-2 shadow-sm">
+                  <span>Read Gabès Flagship Report</span>
+                  <span>↗</span>
                 </a>
               </div>
             </div>
-          `).join('')}
-        </div>
-      </section>
+          </section>
 
-      <!-- SPECIAL FLAGSHIP REPORT CALLOUT -->
-      <section class="p-8 bg-background-elevated border border-crimson/40 space-y-6">
-        <div class="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-surface-800">
-          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">FLAGSHIP SPECIAL INVESTIGATION</span>
-          <span class="text-xs font-mono text-sand">33°53'N 10°05'E</span>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div class="lg:col-span-8 space-y-3">
-            <h3 class="font-editorial text-3xl text-bone-100">Gabès: Industrial Pollution &amp; State Inaction</h3>
-            <p class="text-xs sm:text-sm text-surface-300 font-sans font-light leading-relaxed">
-              404TN’s deep-dive flagship investigation into the Groupe Chimique Tunisien (GCT) industrial complex at Chatt Essalam. Featuring satellite verification, environmental baseline comparisons, timeline of unfulfilled government relocation decrees, and documented atmospheric data deficits.
-            </p>
+          <!-- CROSS-LINK FOOTER -->
+          <div class="pt-8 border-t border-paper flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+            <a href="/summer-2026" class="text-paper-muted hover:text-paper-primary hover:underline">← Summer 2026 Overview Dossier</a>
+            <a href="/presidency" class="text-paper-crimson hover:underline font-bold">Inspect The Record of Power (2019–2026) →</a>
           </div>
-          <div class="lg:col-span-4 flex justify-start lg:justify-end">
-            <a href="/gabes" class="px-8 py-4 bg-crimson hover:bg-crimson-muted text-white text-xs font-mono uppercase tracking-meta font-bold transition-colors inline-flex items-center gap-2">
-              <span>Read Gabès Flagship Report</span>
-              <span>↗</span>
-            </a>
-          </div>
-        </div>
-      </section>
 
-      <!-- CROSS-LINK FOOTER -->
-      <div class="pt-8 border-t border-surface-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <a href="/summer-2026" class="text-sand hover:underline">← Summer 2026 Overview Dossier</a>
-        <a href="/presidency" class="text-crimson hover:underline font-bold">Inspect The Record of Power (2019–2026) →</a>
+        </div>
       </div>
 
     </article>

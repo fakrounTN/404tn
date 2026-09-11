@@ -1,6 +1,7 @@
 // 404TN Summer 2026 Timeline Controller (src/timeline.js)
 import { getTimeline } from './api.js';
 import { escapeHtml, stripHtml } from './utils.js';
+import { classificationBadge } from './editorial-components.js';
 
 export async function initTimelineController() {
   const container = document.getElementById("timeline-events-container");
@@ -13,12 +14,12 @@ export async function initTimelineController() {
   let activeTopic = "ALL";
 
   const render = async () => {
-    container.innerHTML = `<div class="col-span-full py-8 text-center text-xs font-mono text-surface-500">Querying verified timeline events...</div>`;
+    container.innerHTML = `<div class="py-8 text-center text-xs font-mono text-paper-dim">Querying verified timeline events...</div>`;
     const events = await getTimeline(activeMonth, activeTopic);
 
     if (!events || events.length === 0) {
       container.innerHTML = `
-        <div class="col-span-full py-12 text-center text-surface-400 font-mono text-xs border border-dashed border-surface-800">
+        <div class="py-12 text-center text-paper-muted font-mono text-xs border border-dashed border-paper bg-white p-6">
           No documented events recorded for the selected filter combination.
         </div>
       `;
@@ -31,43 +32,43 @@ export async function initTimelineController() {
       const date = escapeHtml(item.date || '2026');
       const topic = escapeHtml(item.topic || 'GOVERNANCE');
       
-      // Sanitized plain text for headline and description
       const cleanTitle = escapeHtml(stripHtml(item.title || item.headline || 'Timeline Event'));
       const rawDesc = item.desc || item.summary || item.title || '';
       const cleanDesc = escapeHtml(stripHtml(rawDesc));
       const source = escapeHtml(stripHtml(item.source || item.source_name || 'VERIFIED SOURCE'));
+      const institution = escapeHtml(stripHtml(item.institution || item.accountable_entity || 'State Utility / Ministry'));
       const classification = escapeHtml(item.classification || 'FACT');
-      const status = escapeHtml(item.status || 'VERIFIED');
 
       return `
-        <article class="timeline-card group relative p-5 sm:p-6 bg-background-subtle border border-surface-800 hover:border-surface-600 transition-all flex flex-col justify-between cursor-pointer w-full min-w-0 box-border hover:shadow-lg hover:shadow-black/40" data-evidence-id="${evidenceId}">
-          <div class="min-w-0 w-full space-y-2.5">
-            <!-- Header: Date & Topic Badge -->
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-mono text-crimson font-medium tracking-meta">${date}</span>
-              <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 bg-surface-900 border border-surface-800 text-surface-400 group-hover:border-surface-700 transition-colors">${topic}</span>
+        <div class="relative group space-y-3" id="${evidenceId}" data-evidence-id="${evidenceId}">
+          <!-- Continuous Spine Node Dot -->
+          <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-white border-2 border-paper-crimson"></span>
+
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+            <div class="flex items-center gap-3 flex-wrap">
+              <time class="text-xs sm:text-sm font-mono font-bold text-paper-crimson">${date}</time>
+              <span class="text-[9px] font-mono uppercase px-2 py-0.5 bg-paper-subtle border border-paper text-paper-muted font-bold">${topic}</span>
+              ${classificationBadge(classification, true)}
             </div>
-
-            <!-- Headline: Clamped 2-3 lines max -->
-            <h4 class="font-sans font-semibold text-bone-100 text-sm sm:text-base leading-snug group-hover:text-crimson transition-colors line-clamp-3 break-words">
-              ${cleanTitle}
-            </h4>
-
-            <!-- Concise Summary: Clamped ~3 lines max -->
-            <p class="text-xs text-surface-300 leading-relaxed font-light line-clamp-3 break-words">
-              ${cleanDesc}
-            </p>
+            <div class="text-[10px] font-mono text-paper-dim">
+              ID: <span class="text-paper-muted">${evidenceId}</span>
+            </div>
           </div>
 
-          <!-- Pinned Footer: Epistemic Status & Provenance -->
-          <div class="mt-4 pt-3 border-t border-surface-800/80 flex items-center justify-between text-[10px] font-mono text-surface-400 min-w-0 gap-2">
-            <div class="flex items-center gap-2 min-w-0 truncate">
-              <span class="px-1.5 py-0.2 bg-surface-900 border border-surface-800 text-[9px] uppercase tracking-wider text-sand shrink-0">${classification}</span>
-              <span class="truncate">SRC: ${source}</span>
-            </div>
-            <span class="text-crimson select-none shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform font-bold">↗</span>
+          <div class="space-y-1.5">
+            <h3 class="font-editorial font-bold text-paper-primary text-lg sm:text-xl">${cleanTitle}</h3>
+            <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-4xl">${cleanDesc}</p>
           </div>
-        </article>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-paper/60 text-xs font-mono text-paper-dim">
+            <div>
+              INSTITUTION: <span class="text-paper-primary font-semibold">${institution}</span>
+            </div>
+            <div class="sm:text-right">
+              SOURCE: <span class="text-paper-muted italic">${source}</span>
+            </div>
+          </div>
+        </div>
       `;
     }).join("");
   };
@@ -75,11 +76,11 @@ export async function initTimelineController() {
   monthFilters.forEach(btn => {
     btn.addEventListener("click", () => {
       monthFilters.forEach(b => {
-        b.classList.remove("bg-surface-800", "text-bone-100", "border-crimson");
-        b.classList.add("text-surface-400", "border-surface-800");
+        b.classList.remove("bg-paper-primary", "text-paper-bg-base", "border-paper-primary", "font-bold");
+        b.classList.add("bg-white", "text-paper-muted", "border-paper");
       });
-      btn.classList.add("bg-surface-800", "text-bone-100", "border-crimson");
-      btn.classList.remove("text-surface-400", "border-surface-800");
+      btn.classList.add("bg-paper-primary", "text-paper-bg-base", "border-paper-primary", "font-bold");
+      btn.classList.remove("bg-white", "text-paper-muted", "border-paper");
       activeMonth = btn.getAttribute("data-timeline-month");
       render();
     });

@@ -121,81 +121,95 @@ export function renderTimelineHtml() {
   ];
 
   return `
-    <article class="timeline-chronology-page py-10 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="timeline-chronology-page">
       
-      <!-- HERO -->
-      ${heroHtml}
-
-      <!-- TIMELINE CONTROLS & FILTER BAR -->
-      <section class="space-y-6" aria-label="Incident Chronology">
-        
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-surface-800">
-          <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
-            <button class="px-4 py-2 bg-surface-800 text-bone-100 border border-crimson font-bold uppercase tracking-meta" data-timeline-month="ALL">All Months</button>
-            <button class="px-4 py-2 bg-surface-900 border border-surface-800 text-surface-400 hover:text-bone-100 uppercase tracking-meta" data-timeline-month="JUNE">June</button>
-            <button class="px-4 py-2 bg-surface-900 border border-surface-800 text-surface-400 hover:text-bone-100 uppercase tracking-meta" data-timeline-month="JULY">July</button>
-            <button class="px-4 py-2 bg-surface-900 border border-surface-800 text-surface-400 hover:text-bone-100 uppercase tracking-meta" data-timeline-month="AUGUST">August</button>
-            <button class="px-4 py-2 bg-surface-900 border border-surface-800 text-surface-400 hover:text-bone-100 uppercase tracking-meta" data-timeline-month="SEPTEMBER">September</button>
-          </div>
-          <div class="w-full sm:w-64">
-            <select id="timeline-topic-select" class="w-full px-3 py-2 bg-background border border-surface-800 text-xs font-mono text-bone-100 focus:outline-none focus:border-crimson" aria-label="Filter by Topic">
-              <option value="ALL">All Sectors (07 Files)</option>
-              <option value="WATER">Water &amp; Dams</option>
-              <option value="ENERGY">Electricity &amp; Grid</option>
-              <option value="ENVIRONMENT">Environment &amp; Pollution</option>
-              <option value="ECONOMY">Labor &amp; Employment</option>
-              <option value="MIGRATION">Migration &amp; Borders</option>
-              <option value="PUBLIC SERVICES">Public Services</option>
-              <option value="GOVERNANCE">Governance &amp; Rights</option>
-            </select>
-          </div>
+      <!-- A. CHRONOLOGY OPENER (DARK INVESTIGATIVE CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${heroHtml}
         </div>
+      </div>
 
-        <!-- TIMELINE EVENT CARDS -->
-        <div id="timeline-events-container" class="space-y-6">
-          ${timelineEvents.map(ev => `
-            <div class="p-6 bg-background-elevated border border-surface-800 hover:border-surface-700 transition-colors space-y-4 font-sans" id="${escapeHtml(ev.id)}">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-surface-800">
-                <div class="flex items-center gap-3 flex-wrap">
-                  <time class="text-xs font-mono font-bold text-crimson">${escapeHtml(ev.date)}</time>
-                  <span class="text-[9px] font-mono uppercase px-2 py-0.5 bg-surface-900 border border-surface-800 text-sand font-bold">${escapeHtml(ev.topic)}</span>
-                  ${classificationBadge(ev.classification)}
-                </div>
-                <div class="text-[10px] font-mono text-surface-500">
-                  ID: <span class="text-surface-400">${escapeHtml(ev.id)}</span>
-                </div>
+      <!-- B. DOCUMENTARY TIMELINE STREAM (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+
+          <!-- TIMELINE CONTROLS & FILTER BAR -->
+          <section class="space-y-6" aria-label="Incident Chronology">
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-paper">
+              <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
+                <button class="px-4 py-2 bg-paper-primary text-paper-bg-base border border-paper-primary font-bold uppercase tracking-meta" data-timeline-month="ALL">All Months</button>
+                <button class="px-4 py-2 bg-white border border-paper text-paper-muted hover:text-paper-primary uppercase tracking-meta" data-timeline-month="JUNE">June</button>
+                <button class="px-4 py-2 bg-white border border-paper text-paper-muted hover:text-paper-primary uppercase tracking-meta" data-timeline-month="JULY">July</button>
+                <button class="px-4 py-2 bg-white border border-paper text-paper-muted hover:text-paper-primary uppercase tracking-meta" data-timeline-month="AUGUST">August</button>
+                <button class="px-4 py-2 bg-white border border-paper text-paper-muted hover:text-paper-primary uppercase tracking-meta" data-timeline-month="SEPTEMBER">September</button>
               </div>
-
-              <div class="space-y-2">
-                <h3 class="font-sans font-bold text-bone-100 text-base sm:text-lg">${escapeHtml(ev.title)}</h3>
-                <p class="text-xs sm:text-sm text-surface-300 font-light leading-relaxed max-w-4xl">${escapeHtml(ev.summary)}</p>
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-surface-800/80 text-xs font-mono">
-                <div class="text-surface-400 text-[11px]">
-                  INSTITUTION: <span class="text-bone-100">${escapeHtml(ev.institution)}</span>
-                </div>
-                <div class="text-surface-400 text-[11px] sm:text-right">
-                  SOURCE: <span class="text-surface-300 italic">${escapeHtml(ev.source)}</span>
-                </div>
-              </div>
-
-              <div class="pt-2 flex items-center justify-between text-xs font-mono text-sand">
-                <a href="${escapeHtml(ev.relatedDossier)}" class="hover:underline flex items-center gap-1 font-bold">
-                  <span>Inspect Associated Dossier</span>
-                  <span>↗</span>
-                </a>
+              <div class="w-full sm:w-64">
+                <select id="timeline-topic-select" class="w-full px-3 py-2 bg-white border border-paper text-xs font-mono text-paper-primary focus:outline-none focus:border-paper-crimson" aria-label="Filter by Topic">
+                  <option value="ALL">All Sectors (07 Files)</option>
+                  <option value="WATER">Water &amp; Dams</option>
+                  <option value="ENERGY">Electricity &amp; Grid</option>
+                  <option value="ENVIRONMENT">Environment &amp; Pollution</option>
+                  <option value="ECONOMY">Labor &amp; Employment</option>
+                  <option value="MIGRATION">Migration &amp; Borders</option>
+                  <option value="PUBLIC SERVICES">Public Services</option>
+                  <option value="GOVERNANCE">Governance &amp; Rights</option>
+                </select>
               </div>
             </div>
-          `).join('')}
+
+            <!-- OPEN BROADSHEET TIMELINE (ZERO CARD WALLS) -->
+            <div id="timeline-events-container" class="relative pl-6 sm:pl-8 border-l-2 border-paper space-y-10 font-sans">
+              ${timelineEvents.map(ev => `
+                <div class="relative group space-y-3" id="${escapeHtml(ev.id)}">
+                  <!-- Continuous Spine Node Dot -->
+                  <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-white border-2 border-paper-crimson"></span>
+
+                  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+                    <div class="flex items-center gap-3 flex-wrap">
+                      <time class="text-xs sm:text-sm font-mono font-bold text-paper-crimson">${escapeHtml(ev.date)}</time>
+                      <span class="text-[9px] font-mono uppercase px-2 py-0.5 bg-paper-subtle border border-paper text-paper-muted font-bold">${escapeHtml(ev.topic)}</span>
+                      ${classificationBadge(ev.classification, true)}
+                    </div>
+                    <div class="text-[10px] font-mono text-paper-dim">
+                      ID: <span class="text-paper-muted">${escapeHtml(ev.id)}</span>
+                    </div>
+                  </div>
+
+                  <div class="space-y-1.5">
+                    <h3 class="font-editorial font-bold text-paper-primary text-lg sm:text-xl">${escapeHtml(ev.title)}</h3>
+                    <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-4xl">${escapeHtml(ev.summary)}</p>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-paper/60 text-xs font-mono text-paper-dim">
+                    <div>
+                      INSTITUTION: <span class="text-paper-primary font-semibold">${escapeHtml(ev.institution)}</span>
+                    </div>
+                    <div class="sm:text-right">
+                      SOURCE: <span class="text-paper-muted italic">${escapeHtml(ev.source)}</span>
+                    </div>
+                  </div>
+
+                  <div class="pt-1">
+                    <a href="${escapeHtml(ev.relatedDossier)}" class="text-paper-crimson font-bold hover:underline inline-flex items-center gap-1 text-xs font-mono">
+                      <span>Inspect Associated Dossier</span>
+                      <span>↗</span>
+                    </a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+          </section>
+
+          <!-- NAVIGATION FOOTER -->
+          <div class="pt-8 border-t border-paper flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+            <a href="/summer-2026" class="text-paper-muted hover:text-paper-primary hover:underline">← Summer 2026 Dossier</a>
+            <a href="/state-response" class="text-paper-crimson hover:underline font-bold">Inspect State Response Matrix →</a>
+          </div>
+
         </div>
-
-      </section>
-
-      <!-- NAVIGATION FOOTER -->
-      <div class="pt-8 border-t border-surface-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <a href="/summer-2026" class="text-sand hover:underline">← Summer 2026 Dossier</a>
-        <a href="/state-response" class="text-crimson hover:underline font-bold">Inspect State Response Matrix →</a>
       </div>
 
     </article>

@@ -70,38 +70,121 @@ export function renderStateResponseHtml() {
   ];
 
   return `
-    <article class="state-response-page py-10 sm:py-16 space-y-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <article class="state-response-page">
       
-      <!-- HERO -->
-      ${heroHtml}
-
-      <!-- 6-QUESTION ACCOUNTABILITY GRAMMAR -->
-      ${renderAccountabilityQuestionBlock({
-        topic: "State Response Audit: The Concentration of Executive Authority",
-        authority: "Presidency of the Republic & Cabinet Ministries",
-        promised: "Elimination of speculative hoarding, efficient direct management of public utilities, and rapid economic sovereignty.",
-        announcedAction: "Emergency decrees, direct presidential visits to utility headquarters (SONEDE/STEG), and restructuring of state commissions.",
-        whatHappened: "Utility infrastructure remained structurally aged and under-financed; operational rationing expanded during peak summer heat.",
-        verifiedFact: "Under the 2022 Constitution, all executive directives and administrative appointments are formally concentrated in the presidency.",
-        unresolved: "Internal ministerial logs explaining delays in executing the 2017 Gabès relocation decision and itemized treasury ledgers for penal settlements."
-      })}
-
-      <!-- COMMITMENTS AUDIT LIST -->
-      <section class="space-y-6" aria-label="Commitments Register">
-        <div class="space-y-1 pb-4 border-b border-surface-800">
-          ${sectionKicker('SYSTEMIC COMMITMENT AUDIT')}
-          ${sectionHeading('Documented Commitments vs Verified Implementations', 'Evaluating announced government solutions against independently verifiable on-the-ground outcomes.')}
+      <!-- A. STATE RESPONSE OPENER (DARK INVESTIGATIVE CHASSIS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${heroHtml}
         </div>
+      </div>
 
-        <div class="space-y-6">
-          ${commitments.map(c => stateResponseBlock(c)).join('')}
+      <!-- B. ACCOUNTABILITY LEDGER (WARM ARCHIVAL PAPER SURFACE) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+          <!-- 6-QUESTION ACCOUNTABILITY GRAMMAR (DOCUMENTARY DOSSIER) -->
+          <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6" aria-label="Accountability Grammar">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                  <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold block">404TN ACCOUNTABILITY GRAMMAR</span>
+                </div>
+                <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary mt-1 font-normal">State Response Audit: The Concentration of Executive Authority</h2>
+              </div>
+              <div class="text-xs font-mono text-paper-dim">
+                RESPONSIBLE: <span class="text-paper-primary font-bold">Presidency of the Republic &amp; Cabinet Ministries</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-sans">
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">1. WHAT WAS PROMISED?</span>
+                <p class="text-paper-muted font-light leading-relaxed">Elimination of speculative hoarding, efficient direct management of public utilities, and rapid economic sovereignty.</p>
+              </div>
+
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">2. WHAT ACTION WAS ANNOUNCED?</span>
+                <p class="text-paper-muted font-light leading-relaxed">Emergency decrees, direct presidential visits to utility headquarters (SONEDE/STEG), and restructuring of state commissions.</p>
+              </div>
+
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">3. WHAT HAPPENED?</span>
+                <p class="text-paper-muted font-light leading-relaxed">Utility infrastructure remained structurally aged and under-financed; operational rationing expanded during peak summer heat.</p>
+              </div>
+
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-paper-primary uppercase tracking-wider block font-bold">4. WHO WAS RESPONSIBLE?</span>
+                <p class="text-paper-muted font-light leading-relaxed">Presidency of the Republic &amp; Cabinet Ministries</p>
+              </div>
+
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-paper-crimson uppercase tracking-wider block font-bold">5. WHAT IS VERIFIED?</span>
+                <p class="text-paper-primary font-medium leading-relaxed">Under the 2022 Constitution, all executive directives and administrative appointments are formally concentrated in the presidency.</p>
+              </div>
+
+              <div class="p-4 bg-paper-subtle/60 border border-paper space-y-1.5">
+                <span class="text-[10px] font-mono text-amber-700 uppercase tracking-wider block font-bold">6. WHAT REMAINS UNKNOWN?</span>
+                <p class="text-paper-muted font-light leading-relaxed">Internal ministerial logs explaining delays in executing the 2017 Gabès relocation decision and itemized treasury ledgers for penal settlements.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- COMMITMENTS AUDIT LEDGER -->
+          <section class="space-y-6" aria-label="Commitments Register">
+            <div class="space-y-1 pb-4 border-b border-paper">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-0.5 bg-paper-red inline-block"></span>
+                <span class="text-xs font-mono uppercase tracking-widest text-paper-crimson font-bold">SYSTEMIC COMMITMENT AUDIT</span>
+              </div>
+              <h2 class="font-editorial text-2xl sm:text-3xl text-paper-primary font-normal">Documented Commitments vs Verified Implementations</h2>
+              <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-2xl">
+                Evaluating announced government solutions against independently verifiable on-the-ground outcomes.
+              </p>
+            </div>
+
+            <!-- STRUCTURED DOCUMENTARY LEDGER ROWS -->
+            <div class="space-y-6">
+              ${commitments.map(c => `
+                <div class="p-6 bg-white border border-paper shadow-sm space-y-4">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-paper">
+                    <div>
+                      <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim font-bold">ACCOUNTABLE ENTITY</span>
+                      <div class="font-editorial font-bold text-paper-primary text-lg sm:text-xl">${escapeHtml(c.authority)}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-mono text-paper-dim">${escapeHtml(c.date)}</span>
+                      <span class="stamp-badge stamp-paper-crimson font-bold">${escapeHtml(c.status)}</span>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-sans">
+                    <div class="p-3.5 bg-paper-subtle/50 border border-paper space-y-1">
+                      <span class="text-[10px] font-mono text-paper-muted uppercase tracking-wider block font-bold">1. WHAT WAS SAID / PROMISED</span>
+                      <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(c.whatSaid)}</p>
+                    </div>
+                    <div class="p-3.5 bg-paper-subtle/50 border border-paper space-y-1">
+                      <span class="text-[10px] font-mono text-paper-muted uppercase tracking-wider block font-bold">2. WHAT WAS DONE</span>
+                      <p class="text-paper-muted font-light leading-relaxed">${escapeHtml(c.whatDone)}</p>
+                    </div>
+                    <div class="p-3.5 bg-paper-subtle/50 border border-paper space-y-1">
+                      <span class="text-[10px] font-mono text-paper-crimson uppercase tracking-wider block font-bold">3. WHAT IS KNOWN NOW</span>
+                      <p class="text-paper-primary font-medium leading-relaxed">${escapeHtml(c.outcome)}</p>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- NAVIGATION FOOTER -->
+          <div class="pt-8 border-t border-paper flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+            <a href="/timeline" class="text-paper-muted hover:text-paper-primary hover:underline">← Summer 2026 Chronology</a>
+            <a href="/evidence" class="text-paper-crimson hover:underline font-bold">Inspect Evidence Register →</a>
+          </div>
+
         </div>
-      </section>
-
-      <!-- NAVIGATION FOOTER -->
-      <div class="pt-8 border-t border-surface-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <a href="/timeline" class="text-sand hover:underline">← Summer 2026 Chronology</a>
-        <a href="/evidence" class="text-crimson hover:underline font-bold">Inspect Evidence Register →</a>
       </div>
 
     </article>
