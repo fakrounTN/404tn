@@ -29,7 +29,7 @@ export function renderGeospatialHtml(options = {}) {
     eyebrow: "404TN CARTOGRAPHIC MONITOR · SUMMER 2026",
     badge: "TERRITORIAL TELEMETRY",
     badgeClass: "bg-crimson/15 border-crimson/40 text-crimson font-bold",
-    h1: "Territorial Pressure & Infrastructure Stress",
+    h1: "Tunisia: Territorial Evidence Monitor",
     deck: "Real-coordinate mapping of water dry-outs, grid failures, industrial emissions, and civil liberties actions across all 24 Tunisian governorates.",
     metadataItems: [
       { label: "TERRITORIAL SCOPE", value: "24 GOVERNORATES", highlight: false, subtext: "EPSG:4326 COORDINATES" },
