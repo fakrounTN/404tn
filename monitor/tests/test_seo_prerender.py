@@ -58,6 +58,7 @@ class TestSeoPrerender(unittest.TestCase):
             "/methodology",
             "/geospatial-monitor",
             "/presidency",
+            "/presidency/archive",
             "/statement",
             "/issues/water",
             "/issues/electricity",
@@ -79,7 +80,7 @@ class TestSeoPrerender(unittest.TestCase):
 
         # Ensure no other routes are defined
         defined_routes = re.findall(r"'(/[^']*)':\s*\{", self.registry_content)
-        self.assertEqual(len(defined_routes), 20, f"Expected exactly 20 routes, found {len(defined_routes)}: {defined_routes}")
+        self.assertEqual(len(defined_routes), 21, f"Expected exactly 21 routes, found {len(defined_routes)}: {defined_routes}")
 
     def test_issues_pollution_is_canonical(self):
         """Confirm /issues/pollution is canonical, indexable, and links to /gabes."""
@@ -143,6 +144,7 @@ class TestSeoPrerender(unittest.TestCase):
             "/methodology",
             "/geospatial-monitor",
             "/presidency",
+            "/presidency/archive",
             "/statement",
             "/issues/water",
             "/issues/electricity",
@@ -182,7 +184,7 @@ class TestSeoPrerender(unittest.TestCase):
                 self.assertNotIn(deferred_type, graph_types, f"Deferred type {deferred_type} should not appear in Phase 1 JSON-LD")
 
     def test_sitemap_xml_canonical_alignment(self):
-        """Gate 5: Confirm public/sitemap.xml contains exactly the 18 canonical URLs and no aliases/obsolete prefixes."""
+        """Gate 5: Confirm public/sitemap.xml contains exactly the 19 canonical URLs and no aliases/obsolete prefixes."""
         sitemap_path = os.path.join(self.repo_root, "public", "sitemap.xml")
         self.assertTrue(os.path.exists(sitemap_path), "public/sitemap.xml must exist")
 
@@ -190,8 +192,8 @@ class TestSeoPrerender(unittest.TestCase):
             content = f.read()
 
         locs = re.findall(r"<loc>(.*?)</loc>", content)
-        self.assertEqual(len(locs), 18, f"Expected exactly 18 <loc> entries in sitemap, found {len(locs)}")
-        self.assertEqual(len(set(locs)), 18, "Sitemap must not contain duplicate URLs")
+        self.assertEqual(len(locs), 19, f"Expected exactly 19 <loc> entries in sitemap, found {len(locs)}")
+        self.assertEqual(len(set(locs)), 19, "Sitemap must not contain duplicate URLs")
 
         expected_canonical_urls = [
             "https://404tn.com/",
@@ -204,6 +206,7 @@ class TestSeoPrerender(unittest.TestCase):
             "https://404tn.com/methodology",
             "https://404tn.com/geospatial-monitor",
             "https://404tn.com/presidency",
+            "https://404tn.com/presidency/archive",
             "https://404tn.com/statement",
             "https://404tn.com/issues/water",
             "https://404tn.com/issues/electricity",
@@ -214,7 +217,7 @@ class TestSeoPrerender(unittest.TestCase):
             "https://404tn.com/issues/rights"
         ]
 
-        self.assertEqual(set(locs), set(expected_canonical_urls), "Sitemap URLs must exactly match 18 canonical registry entries")
+        self.assertEqual(set(locs), set(expected_canonical_urls), "Sitemap URLs must exactly match 19 canonical registry entries")
 
         # Prohibited items check
         self.assertNotIn("https://404tn.com/geospatial", locs, "Alias /geospatial must not be in sitemap")

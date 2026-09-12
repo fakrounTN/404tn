@@ -11,6 +11,8 @@ import {
   renderDossierViewHtml,
   renderGabesReportViewHtml,
   renderPresidencyReportViewHtml,
+  renderPresidencyArchiveViewHtml,
+  initPresidencyArchiveController,
   renderHomepageHtml,
   renderSummer2026Html,
   renderTheFilesHtml,
@@ -147,6 +149,11 @@ export function renderRouteView(cleanPath, routeConfig) {
 
     case 'presidency':
       container.innerHTML = renderPresidencyReportViewHtml();
+      break;
+
+    case 'presidency-archive':
+      container.innerHTML = renderPresidencyArchiveViewHtml();
+      initPresidencyArchiveController();
       break;
 
     case 'timeline':

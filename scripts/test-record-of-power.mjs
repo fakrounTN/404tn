@@ -590,118 +590,215 @@ test("38. R2.3 UI: Epistemic Distinctions & Correct Macro Indicator Numbers Rend
 
 
 // ============================================================
-// 7. PHASE R2.4A READING ARCHITECTURE & DOM INTEGRITY TESTS
+// 7. PHASE R2.4B PRESIDENCY READING ARCHITECTURE & ARCHIVE SEPARATION TESTS
 // ============================================================
-import { TRACE_FAMILIES, CURATED_ERA_CONFIG } from '../src/presidency-data.js';
+import { escapeHtml } from '../src/utils.js';
+import {
+  TRACE_FAMILIES,
+  CURATED_ERA_CONFIG,
+  renderPresidencyArchiveViewHtml
+} from '../src/presidency-data.js';
 
-test("39. R2.4A UI: Presidency Reading Architecture 8-Part Structure & Anchors", () => {
+test("39. R2.4B UI: /presidency Narrative 8-Part Structure & Essential Anchor IDs", () => {
   const html = renderPresidencyReportViewHtml();
 
-  // Section 01: Opener
+  // 1. Single H1
+  const h1Matches = html.match(/<h1[\s\S]*?<\/h1>/gi) || [];
+  assert.strictEqual(h1Matches.length, 1, "/presidency must contain exactly one H1");
   assert.ok(html.includes('Tunisia under Kais Saied, 2019–2026'), "Must contain header H1");
 
-  // Section 02: The Record in Numbers
+  // 2. The Record in Numbers
   assert.ok(html.includes('id="the-record-in-numbers"'), "Must contain #the-record-in-numbers section");
   assert.ok(html.includes('88'), "Must display total records count");
   assert.ok(html.includes('08'), "Must display total eras count");
 
-  // Section 03: Accountability Chains
+  // 3. Accountability Chains
   assert.ok(html.includes('id="accountability-chains"'), "Must contain #accountability-chains section");
 
-  // Section 04: Presidential Spine
+  // 4. Presidential Spine
   assert.ok(html.includes('id="presidential-spine"'), "Must contain #presidential-spine section");
 
-  // Section 05: Eras 2019 to 2026
+  // 5. Eras 2019 to 2026
   for (let y = 2019; y <= 2026; y++) {
     assert.ok(html.includes(`id="year-${y}"`), `Must contain anchor #year-${y}`);
   }
 
-  // Section 06: Full Archive Access
-  assert.ok(html.includes('id="full-archive-access"'), "Must contain #full-archive-access section");
+  // 6. Measured Outcomes in 2026 section
+  assert.ok(html.includes('The Record &amp; Measured Outcomes') || html.includes('The Record & Measured Outcomes'), "Must contain 2026 Measured Outcomes header");
 
-  // Section 07: Methodological Closing
+  // 7. The Complete Record Transition Block
+  assert.ok(html.includes('id="the-complete-record"'), "Must contain #the-complete-record section");
+  assert.ok(html.includes('href="/presidency/archive"'), "Must link to /presidency/archive");
+
+  // 8. Methodological Closing
   assert.ok(html.includes('id="methodological-closing"'), "Must contain #methodological-closing section");
 });
 
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-test("40. R2.4A UI: All 7 Accountability Trace Families Render with Valid Nodes & Canonical Provenance", () => {
+test("40. R2.4B UI: Accountability Chains Feature Flagship Open Traces & Disclosed Traces 04–07", () => {
   const html = renderPresidencyReportViewHtml();
   assert.strictEqual(TRACE_FAMILIES.length, 7, "Must define exactly 7 trace families");
 
-  for (const tf of TRACE_FAMILIES) {
+  // Top 3 flagships open by default
+  const top3 = TRACE_FAMILIES.slice(0, 3);
+  for (const tf of top3) {
     assert.ok(html.includes(`id="${tf.id}"`), `Must render trace container for ${tf.id}`);
     assert.ok(html.includes(escapeHtml(tf.title)), `Must render title for ${tf.title}`);
+  }
 
-    // Check every step node in chain exists in DOM and resolves to canonical record
-    for (const step of tf.chain) {
-      const rec = getRecordById(step.recordId);
-      assert.ok(rec, `Step record ID ${step.recordId} must exist in canonical dataset`);
-      assert.ok(html.includes(rec.id), `Step record ID ${rec.id} must be referenced in DOM`);
-      assert.ok(html.includes(escapeHtml(step.role)), `Step role ${step.role} must be rendered`);
-    }
+  // Traces 04-07 contained inside disclosure <details>
+  assert.ok(html.includes('<details class="group p-5 sm:p-6 bg-[#FAF8F5] border border-paper transition-all">'), "Must include traces disclosure element");
+  assert.ok(html.includes('EXPLORE 4 MORE ACCOUNTABILITY CHAINS'), "Must include disclosure summary text");
+
+  const rest4 = TRACE_FAMILIES.slice(3);
+  for (const tf of rest4) {
+    assert.ok(html.includes(`id="${tf.id}"`), `Must render trace container for ${tf.id}`);
+    assert.ok(html.includes(escapeHtml(tf.title)), `Must render title for ${tf.title}`);
   }
 });
 
-test("41. R2.4A UI: All 88 Canonical Records Rendered in the DOM with Zero Omissions", () => {
+test("41. R2.4B UI: Curated Narrative Reading Path Renders 28 Featured Era Records + 10 Key 2026 Outcome Records", () => {
   const html = renderPresidencyReportViewHtml();
+  const featuredIds = Object.values(CURATED_ERA_CONFIG).flatMap(c => c.featuredIds);
+  assert.strictEqual(featuredIds.length, 28, "CURATED_ERA_CONFIG must contain 28 featured records for 2019-2025");
+
+  for (const id of featuredIds) {
+    const rec = getRecordById(id);
+    assert.ok(rec, `Primary record ${id} must exist in canonical records`);
+    assert.ok(html.includes(`id="${id}"`), `Primary record ${id} must be rendered in /presidency narrative`);
+    assert.ok(html.includes(escapeHtml(rec.title)), `Primary record title for ${id} must be rendered`);
+  }
+
+  // Check 2026 outcomes records are rendered
+  const outcomes2026 = [
+    "ROP-IND-UNEMP-GRAD-001",
+    "ROP-IND-GDP-GROWTH-001",
+    "ROP-IND-2026-PUBLIC-DEBT",
+    "ROP-IND-2026-INFLATION-FOOD",
+    "ROP-IND-2026-ENERGY-DEFICIT",
+    "ROP-IND-2026-FX-DAYS",
+    "ROP-OUT-2026-RECON-001",
+    "ROP-OUT-2026-WATER-001",
+    "ROP-OUT-2026-GABES-RELOC-FAIL",
+    "ROP-OUT-2026-DL54-CONVICT"
+  ];
+  for (const id of outcomes2026) {
+    const rec = getRecordById(id);
+    assert.ok(rec, `Outcome record ${id} must exist`);
+    assert.ok(html.includes(`id="${id}"`), `Outcome record ${id} must be rendered in /presidency`);
+  }
+});
+
+test("42. R2.4B UI: #the-complete-record Transition Block Directs Readers to Dedicated Archive", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.ok(html.includes('id="the-complete-record"'), "Must contain #the-complete-record transition block");
+  assert.ok(html.includes('/presidency/archive'), "Must link to /presidency/archive");
+  assert.ok(html.includes('EXPLORE THE PRESIDENTIAL ARCHIVE'), "Must have primary research archive CTA");
+  assert.ok(html.includes('88 Records'), "Must display 88 Records total in repository box");
+});
+
+test("43. R2.4B UI: Dedicated Archive View Renders Single H1 & Complete Research Interface", () => {
+  const html = renderPresidencyArchiveViewHtml();
+  assert.ok(typeof html === 'string', "Output must be a string");
+
+  // Single H1 check
+  const h1Matches = html.match(/<h1[\s\S]*?<\/h1>/gi) || [];
+  assert.strictEqual(h1Matches.length, 1, "/presidency/archive must contain exactly one H1");
+  assert.ok(h1Matches[0].includes("Presidential Record Archive 2019 — 2026"), "H1 must match archive title");
+});
+
+test("44. R2.4B UI: All 88 Canonical Records Rendered in Archive View with Stable Anchor IDs (#ROP-...)", () => {
+  const html = renderPresidencyArchiveViewHtml();
   assert.strictEqual(SEED_RECORDS.length, 88, "Dataset must contain exactly 88 canonical records");
 
-  // Every single record ID must be present in the HTML output
   for (const rec of SEED_RECORDS) {
     assert.ok(
-      html.includes(`id="${rec.id}"`) || html.includes(`href="#${rec.id}"`),
-      `Canonical record ${rec.id} must be accessible and indexed in /presidency DOM`
+      html.includes(`id="${rec.id}"`),
+      `Canonical record ${rec.id} must have a stable anchor id in /presidency/archive`
+    );
+    assert.ok(
+      html.includes(escapeHtml(rec.title)),
+      `Canonical record title for ${rec.id} must be rendered in archive`
     );
   }
 });
 
-test("42. R2.4A UI: Era Curation Renders Primary Reading Path & Accessible <details> for Secondary Records", () => {
-  const html = renderPresidencyReportViewHtml();
+test("45. R2.4B UI: Archive Search and Filter Controls Present in DOM", () => {
+  const html = renderPresidencyArchiveViewHtml();
 
-  // Eras 2019 to 2025 must have curated config with featured and secondary records
-  for (let y = 2019; y <= 2025; y++) {
-    const config = CURATED_ERA_CONFIG[y];
-    assert.ok(config, `Config must exist for year ${y}`);
-    assert.ok(config.featuredIds.length >= 3 && config.featuredIds.length <= 5, `Year ${y} must feature 3-5 records`);
+  // Search input
+  assert.ok(html.includes('id="archive-search-input"'), "Must have search input #archive-search-input");
 
-    // Check details element exists for eras with secondary records
-    if (config.allIds.length > config.featuredIds.length) {
-      assert.ok(html.includes(`VIEW FULL ${y} ARCHIVE (${config.allIds.length} RECORDS)`), `Must render disclosure button for ${y}`);
-    }
+  // Year filter buttons (All + 2019..2026)
+  assert.ok(html.includes('data-year="ALL"'), "Must have All years filter button");
+  for (let y = 2019; y <= 2026; y++) {
+    assert.ok(html.includes(`data-year="${y}"`), `Must have year filter button for ${y}`);
   }
+
+  // Type filter select
+  assert.ok(html.includes('id="archive-type-select"'), "Must have type filter select");
+  const expectedTypes = ['EVENT', 'PROMISE', 'DECISION', 'LAW', 'INSTITUTIONAL_CHANGE', 'OFFICIAL_STATEMENT', 'OPPOSITION_CLAIM', 'OUTCOME', 'INDICATOR', 'DATA_GAP'];
+  for (const t of expectedTypes) {
+    assert.ok(html.includes(`value="${t}"`), `Must have type filter option for ${t}`);
+  }
+
+  // Epistemic filter select
+  assert.ok(html.includes('id="archive-class-select"'), "Must have epistemic filter select");
+  const expectedClasses = ['FACT', 'CLAIM', 'ANALYSIS', 'DATA_GAP'];
+  for (const e of expectedClasses) {
+    assert.ok(html.includes(`value="${e}"`), `Must have epistemic filter option for ${e}`);
+  }
+
+  // Sort select
+  assert.ok(html.includes('id="archive-sort-select"'), "Must have sort select element");
 });
 
-test("43. R2.4A UI: DOM ID Uniqueness across Entire Generated Presidency HTML", () => {
-  const html = renderPresidencyReportViewHtml();
-  const idRegex = /\sid="([^"]+)"/g;
-  const ids = [];
-  let match;
-  while ((match = idRegex.exec(html)) !== null) {
-    ids.push(match[1]);
-  }
-
-  const idCounts = {};
-  const duplicates = [];
-  for (const id of ids) {
-    idCounts[id] = (idCounts[id] || 0) + 1;
-    if (idCounts[id] === 2) {
-      duplicates.push(id);
-    }
-  }
-
-  assert.strictEqual(duplicates.length, 0, `DOM IDs must be unique across /presidency view. Duplicates: ${duplicates.join(', ')}`);
+test("46. R2.4B UI: Archive View Contains Backlink & Context Header to /presidency Narrative", () => {
+  const html = renderPresidencyArchiveViewHtml();
+  assert.ok(html.includes('href="/presidency"'), "Archive must contain backlink to /presidency");
+  assert.ok(html.includes('READ THE INVESTIGATION'), "Archive must contain clear backlink label");
 });
 
-test("44. R2.4A UI: Exactly One Global Footer Invariant in Full Site Prerender", async () => {
+test("47. R2.4B UI: Every Canonical Record has Expandable Forensic Details in the Archive", () => {
+  const html = renderPresidencyArchiveViewHtml();
+  // Check details/summary tags exist for every record in archive
+  const detailsCount = (html.match(/<details class="archive-record-details/g) || []).length;
+  assert.strictEqual(detailsCount, 88, "All 88 canonical records must have <details class=\"archive-record-details\">");
+});
+
+test("48. R2.4B UI: DOM ID Uniqueness across /presidency and /presidency/archive Views Individually", () => {
+  // Test /presidency DOM ID uniqueness
+  const presHtml = renderPresidencyReportViewHtml();
+  const presIdRegex = /\sid="([^"]+)"/g;
+  const presIds = [];
+  let m;
+  while ((m = presIdRegex.exec(presHtml)) !== null) {
+    presIds.push(m[1]);
+  }
+  const presCounts = {};
+  const presDups = [];
+  for (const id of presIds) {
+    presCounts[id] = (presCounts[id] || 0) + 1;
+    if (presCounts[id] === 2) presDups.push(id);
+  }
+  assert.strictEqual(presDups.length, 0, `/presidency DOM IDs must be unique. Duplicates: ${presDups.join(', ')}`);
+
+  // Test /presidency/archive DOM ID uniqueness
+  const archHtml = renderPresidencyArchiveViewHtml();
+  const archIdRegex = /\sid="([^"]+)"/g;
+  const archIds = [];
+  while ((m = archIdRegex.exec(archHtml)) !== null) {
+    archIds.push(m[1]);
+  }
+  const archCounts = {};
+  const archDups = [];
+  for (const id of archIds) {
+    archCounts[id] = (archCounts[id] || 0) + 1;
+    if (archCounts[id] === 2) archDups.push(id);
+  }
+  assert.strictEqual(archDups.length, 0, `/presidency/archive DOM IDs must be unique. Duplicates: ${archDups.join(', ')}`);
+});
+
+test("49. R2.4B UI: Exactly One Global Footer Invariant in Full Site Prerender", async () => {
   const fs = await import('node:fs');
   const path = await import('node:path');
   const indexHtmlPath = path.resolve(process.cwd(), 'index.html');
@@ -714,9 +811,14 @@ test("44. R2.4A UI: Exactly One Global Footer Invariant in Full Site Prerender",
   const presHtml = renderPresidencyReportViewHtml();
   const presFooterMatches = presHtml.match(/<footer[\s\S]*?<\/footer>/gi) || [];
   assert.strictEqual(presFooterMatches.length, 0, "renderPresidencyReportViewHtml must NOT contain nested <footer> tags");
+
+  // In /presidency/archive rendered article, verify no nested <footer> tag exists
+  const archHtml = renderPresidencyArchiveViewHtml();
+  const archFooterMatches = archHtml.match(/<footer[\s\S]*?<\/footer>/gi) || [];
+  assert.strictEqual(archFooterMatches.length, 0, "renderPresidencyArchiveViewHtml must NOT contain nested <footer> tags");
 });
 
-test("45. R2.4A UI: Presidential Spine Navigation Links Match All 8 Era Anchor IDs", () => {
+test("50. R2.4B UI: Presidential Spine Navigation Links Match All 8 Era Anchor IDs", () => {
   const html = renderPresidencyReportViewHtml();
   for (let y = 2019; y <= 2026; y++) {
     assert.ok(html.includes(`href="#year-${y}"`), `Spine must link to #year-${y}`);

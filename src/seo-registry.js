@@ -264,6 +264,33 @@ export const SEO_REGISTRY = {
     isAlias: false
   },
 
+  '/presidency/archive': {
+    path: '/presidency/archive',
+    title: 'Presidential Record Archive (2019–2026): The Complete Record of Power | 404TN',
+    description: 'Searchable forensic archive of all 88 canonical records during the presidency of Kais Saied (2019–2026). Events, decisions, laws, indicators, and data gaps.',
+    canonical: 'https://404tn.com/presidency/archive',
+    robots: 'index, follow',
+    lang: 'en',
+    pageType: 'collection',
+    h1: 'Presidential Record Archive 2019 — 2026',
+    breadcrumb: [
+      { name: 'Home', path: '/' },
+      { name: 'The Record of Power', path: '/presidency' },
+      { name: 'Presidential Archive', path: '/presidency/archive' }
+    ],
+    editorialIntro: 'A structured forensic record of 88 documented events, promises, decisions, laws, institutional transformations, official statements, opposition claims, measurable outcomes, economic indicators, and information gaps during the presidency of Kais Saied.',
+    internalLinks: [
+      { href: '/presidency', label: 'Read The Investigation' },
+      { href: '/evidence', label: 'Primary Evidence Registry' },
+      { href: '/methodology', label: 'Documentary Methodology' },
+      { href: '/the-files', label: 'The Seven Files' }
+    ],
+    schemaTypes: ['CollectionPage', 'Dataset'],
+    sitemap: { inSitemap: true, priority: 0.85, changefreq: 'weekly' },
+    prerender: true,
+    isAlias: false
+  },
+
   '/statement': {
     path: '/statement',
     title: 'Mission Statement: Independent Documentation Standards | 404TN',

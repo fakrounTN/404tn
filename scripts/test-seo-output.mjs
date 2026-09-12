@@ -50,8 +50,8 @@ function runTests() {
   const aliasRoutes = routes.filter(r => SEO_REGISTRY[r].isAlias);
 
   // C. Route inventory checks
-  assert(routes.length === 20, `Total registry entries = 20 (found ${routes.length})`);
-  assert(canonicalRoutes.length === 18, `Exactly 18 canonical routes (found ${canonicalRoutes.length})`);
+  assert(routes.length === 21, `Total registry entries = 21 (found ${routes.length})`);
+  assert(canonicalRoutes.length === 19, `Exactly 19 canonical routes (found ${canonicalRoutes.length})`);
   assert(aliasRoutes.length === 2, `Exactly 2 alias routes (found ${aliasRoutes.length})`);
 
   // E. No third pollution alias check
@@ -228,7 +228,21 @@ function runTests() {
   assert(presidencyHtml.includes('Arab Barometer'), `/presidency contains Arab Barometer survey evidence`);
   assert(presidencyHtml.includes('Moody') && presidencyHtml.includes('Fitch'), `/presidency contains sovereign ratings trajectory`);
   assert(presidencyHtml.includes('ACCOUNTABILITY GRAMMAR'), `/presidency contains 6-question accountability grammar block`);
+  assert(presidencyHtml.includes('href="/presidency/archive"'), `/presidency links to /presidency/archive`);
   assert(!presidencyHtml.includes('href="/issues/rights-institutions"'), `/presidency has NO links to alias /issues/rights-institutions`);
+
+  // Phase R2.4B: Presidential Record Archive (/presidency/archive) Assertions
+  console.log(`\nPhase R2.4B Presidential Record Archive (/presidency/archive) Assertions:`);
+  const archiveHtml = fs.readFileSync(path.join(DIST_DIR, 'presidency', 'archive', 'index.html'), 'utf-8');
+  assert(archiveHtml.includes('THE RECORD OF POWER'), `/presidency/archive contains THE RECORD OF POWER tag`);
+  assert(archiveHtml.includes('Presidential Record Archive 2019 — 2026') || archiveHtml.includes('Presidential Record Archive'), `/presidency/archive contains H1 title`);
+  assert(archiveHtml.includes('id="archive-search-input"'), `/presidency/archive contains search input`);
+  assert(archiveHtml.includes('id="archive-year-filters"'), `/presidency/archive contains year filters`);
+  assert(archiveHtml.includes('id="archive-type-select"'), `/presidency/archive contains type selector`);
+  assert(archiveHtml.includes('id="archive-class-select"'), `/presidency/archive contains classification selector`);
+  assert(archiveHtml.includes('id="archive-records-list"'), `/presidency/archive contains records list`);
+  assert(archiveHtml.includes('href="/presidency"'), `/presidency/archive links back to /presidency`);
+  assert(!archiveHtml.includes('href="/issues/rights-institutions"'), `/presidency/archive has NO links to alias /issues/rights-institutions`);
 
   // Subpage Modular Content Assertions
   console.log(`\nModular Subpage Content Assertions:`);
@@ -269,8 +283,8 @@ function runTests() {
     const sitemapContent = fs.readFileSync(sitemapLocation, 'utf-8');
     const locMatches = [...sitemapContent.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim());
 
-    assert(locMatches.length === 18, `${sitemapRel} contains exactly 18 URLs (found ${locMatches.length})`);
-    assert(new Set(locMatches).size === 18, `${sitemapRel} contains zero duplicate URLs`);
+    assert(locMatches.length === canonicalRoutes.length, `${sitemapRel} contains exactly ${canonicalRoutes.length} URLs (found ${locMatches.length})`);
+    assert(new Set(locMatches).size === canonicalRoutes.length, `${sitemapRel} contains zero duplicate URLs`);
 
     // Check set equality with canonical registry
     const matchesCanonicalSet = expectedCanonicalUrls.every(u => locMatches.includes(u)) && locMatches.every(u => expectedCanonicalUrls.includes(u));

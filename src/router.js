@@ -11,6 +11,7 @@ export const ROUTE_MAP = {
   '/gabes': { type: 'gabes', navRoute: '/the-files' },
   '/state-response': { type: 'state-response', navRoute: '/state-response' },
   '/presidency': { type: 'presidency', navRoute: '/presidency' },
+  '/presidency/archive': { type: 'presidency-archive', navRoute: '/presidency' },
   '/timeline': { type: 'timeline', navRoute: '/timeline' },
   '/evidence': { type: 'evidence', navRoute: '/methodology' },
   '/methodology': { type: 'methodology', navRoute: '/methodology' },

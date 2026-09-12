@@ -1,6 +1,8 @@
 // src/presidency-data.js
-// 404TN — The Record of Power: Documentary Chronology UI (Tunisia 2019–2026)
-// Authoritative evidence-backed interface for /presidency route directly consuming R2.3 data architecture.
+// 404TN — The Record of Power: Editorial Narrative & Research Archive (Tunisia 2019–2026)
+// Provides two distinct interfaces:
+// 1. /presidency = Premium investigative reading narrative (~38 primary records + 7 traces + 2026 outcomes)
+// 2. /presidency/archive = Complete canonical research archive (all 88 records, search, filters, deep anchors)
 
 import { escapeHtml, stripHtml } from './utils.js';
 import {
@@ -118,7 +120,7 @@ export const TRACE_FAMILIES = [
 ];
 
 /**
- * Curated Era Configuration: Featured primary reading path vs secondary disclosure.
+ * Curated Era Configuration for /presidency: Featured primary reading path vs secondary disclosure in archive.
  */
 export const CURATED_ERA_CONFIG = {
   2019: {
@@ -127,8 +129,7 @@ export const CURATED_ERA_CONFIG = {
     featuredIds: [
       "ROP-EVT-2019-ELEC-001",
       "ROP-PRM-2019-RECON-001",
-      "ROP-PRM-2019-SOV-001",
-      "ROP-IND-2019-UNEMP-BASE"
+      "ROP-PRM-2019-SOV-001"
     ],
     allIds: [
       "ROP-EVT-2019-ELEC-001",
@@ -149,8 +150,7 @@ export const CURATED_ERA_CONFIG = {
     featuredIds: [
       "ROP-EVT-2020-GOV-FRIB-001",
       "ROP-EVT-2020-FAKH-RESIGN",
-      "ROP-DEC-2020-MECH-APPOINT",
-      "ROP-OUT-2020-COVID-001"
+      "ROP-DEC-2020-MECH-APPOINT"
     ],
     allIds: [
       "ROP-EVT-2020-GOV-FRIB-001",
@@ -217,8 +217,7 @@ export const CURATED_ERA_CONFIG = {
       "ROP-INS-2023-ARP-INAUG",
       "ROP-EVT-2023-ARRESTS-CONSP",
       "ROP-EVT-2023-EU-MOU",
-      "ROP-STM-2023-IMF-REFUSAL",
-      "ROP-IND-2023-INFLATION-PEAK"
+      "ROP-STM-2023-IMF-REFUSAL"
     ],
     allIds: [
       "ROP-EVT-2023-PARL-ELEC-R2",
@@ -293,177 +292,155 @@ function resolveSource(sourceId) {
 }
 
 /**
- * Resolves human-readable institution descriptor from registry.
+ * Resolves full institution metadata.
  */
-function resolveInstitutionName(institutionId) {
-  if (!institutionId) return '';
-  const inst = INSTITUTIONS_REGISTRY[institutionId];
-  if (!inst) return institutionId;
-  return inst.short_name ? `${inst.name} (${inst.short_name})` : inst.name;
+function resolveInstitutionName(instId) {
+  if (!instId) return null;
+  const inst = INSTITUTIONS_REGISTRY[instId];
+  return inst ? inst.name_en : instId;
 }
 
 /**
- * Renders classification badge with restrained paper editorial styling.
+ * Renders an epistemic classification badge on paper surface.
  */
 function renderClassificationBadge(classification) {
-  if (classification === EPISTEMIC_CLASSIFICATION.FACT) {
-    return `<span class="stamp-badge stamp-paper-fact">FACT</span>`;
+  switch (classification) {
+    case EPISTEMIC_CLASSIFICATION.FACT:
+      return `<span class="stamp-badge stamp-paper-fact">FACT</span>`;
+    case EPISTEMIC_CLASSIFICATION.CLAIM:
+      return `<span class="stamp-badge stamp-paper-claim">CLAIM · ATTRIBUTED</span>`;
+    case EPISTEMIC_CLASSIFICATION.ANALYSIS:
+      return `<span class="stamp-badge stamp-paper-analysis">ANALYSIS</span>`;
+    case EPISTEMIC_CLASSIFICATION.DATA_GAP:
+      return `<span class="stamp-badge stamp-paper-gap">DATA GAP</span>`;
+    default:
+      return `<span class="stamp-badge stamp-paper-fact">${escapeHtml(classification || 'FACT')}</span>`;
   }
-  if (classification === EPISTEMIC_CLASSIFICATION.CLAIM) {
-    return `<span class="stamp-badge stamp-paper-claim" title="Attributed statement or allegation not independently established as fact">CLAIM · ATTRIBUTED</span>`;
-  }
-  if (classification === EPISTEMIC_CLASSIFICATION.ANALYSIS) {
-    return `<span class="stamp-badge stamp-paper-analysis" title="404TN investigative interpretation">ANALYSIS</span>`;
-  }
-  if (classification === 'DATA_GAP' || classification === 'DATA GAP') {
-    return `<span class="stamp-badge stamp-paper-datagap">DATA GAP</span>`;
-  }
-  return `<span class="stamp-badge bg-surface-200 text-paper-main border-paper">${escapeHtml(classification)}</span>`;
 }
 
 /**
- * Renders a canonical status badge on paper.
+ * Renders record type badge with restrained editorial style.
  */
-function renderStatusBadge(status, highlight = false) {
-  if (!status) return '';
-  const s = String(status).replace(/_/g, ' ');
-  let colorClass = 'bg-[#F2EFE9] text-paper-muted border-paper';
-  if (status === 'UNEXECUTED' || status === 'UNRESOLVED' || status === 'NOT_PUBLISHED' || status === 'INACCESSIBLE' || status === 'BROKEN' || status === 'SUBVERTED') {
-    colorClass = 'bg-red-50 text-red-700 border-red-200 font-semibold';
-  } else if (status === 'ENACTED' || status === 'CONFIRMED' || status === 'VERIFIED' || status === 'FULFILLED') {
-    colorClass = 'bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold';
-  } else if (status === 'DISPUTED' || status === 'CONTESTED' || status === 'PARTIAL' || status === 'PRELIMINARY') {
-    colorClass = 'bg-amber-50 text-amber-800 border-amber-200 font-semibold';
-  }
-  return `<span class="text-[9px] font-mono uppercase px-2 py-0.5 border ${colorClass}">${escapeHtml(s)}</span>`;
-}
-
-/**
- * Renders responsible institutions for a record on paper.
- */
-function renderResponsibilityList(recordId) {
-  const rsps = getResponsibilityForRecord(recordId, RESPONSIBILITY_RECORDS, INSTITUTIONS_REGISTRY);
-  if (!rsps || rsps.length === 0) return '';
-
-  const entries = rsps.map(r => {
-    const instName = r.institution ? `${r.institution.name} (${r.institution.short_name})` : r.institution_id;
-    const typeLabel = (r.responsibility_type || '').replace(/_/g, ' ');
-    const basis = r.legal_or_administrative_basis ? ` · <span class="text-paper-muted font-light">${escapeHtml(r.legal_or_administrative_basis)}</span>` : '';
-    return `
-      <div class="text-xs font-mono">
-        <span class="text-paper-sand font-bold">${escapeHtml(instName)}</span>
-        <span class="text-paper-dim"> — </span>
-        <span class="text-paper-main font-semibold uppercase text-[10px]">${escapeHtml(typeLabel)}</span>
-        ${basis}
-      </div>
-    `;
-  }).join('');
-
+function renderRecordTypeBadge(type) {
+  const label = (type || 'EVENT').replace(/_/g, ' ');
   return `
-    <div class="pt-2 mt-2 border-t border-paper text-xs font-mono space-y-1">
-      <span class="text-[9px] font-mono uppercase tracking-meta text-paper-dim block font-bold">INSTITUTIONAL RESPONSIBILITY</span>
-      <div class="space-y-0.5">
-        ${entries}
-      </div>
-    </div>
+    <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 bg-[#F2EFE9] border border-paper text-paper-main font-semibold">
+      ${escapeHtml(label)}
+    </span>
   `;
 }
 
 /**
- * Renders primary source provenance footnote for a record on paper.
+ * Renders promise or legal status badge.
+ */
+function renderStatusBadge(status) {
+  if (!status) return '';
+  const label = status.replace(/_/g, ' ');
+  let colorClasses = "bg-[#F2EFE9] text-paper-muted border-paper";
+
+  if (status === "BROKEN" || status === "UNEXECUTED" || status === "CONVICTED" || status === "NOT_PUBLISHED") {
+    colorClasses = "bg-red-50 text-paper-red border-red-200 font-bold";
+  } else if (status === "FULFILLED" || status === "ENACTED" || status === "OPERATIONAL") {
+    colorClasses = "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold";
+  } else if (status === "PARTIALLY_FULFILLED" || status === "IN_PROGRESS" || status === "CONTESTED" || status === "PARTIAL") {
+    colorClasses = "bg-amber-50 text-amber-900 border-amber-200 font-semibold";
+  }
+
+  return `
+    <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 border ${colorClasses}">
+      ${escapeHtml(label)}
+    </span>
+  `;
+}
+
+/**
+ * Renders source citations slip on paper.
  */
 function renderSourceSlip(sourceIds) {
   if (!Array.isArray(sourceIds) || sourceIds.length === 0) return '';
-  const slips = sourceIds.map(sid => {
-    const s = resolveSource(sid);
-    if (!s) return `<span class="text-paper-dim font-mono text-[10px]">[SRC: ${escapeHtml(sid)}]</span>`;
-    const urlHtml = s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="text-paper-red hover:underline ml-1.5 font-bold">Document Link ↗</a>` : '';
-    return `
-      <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] font-mono text-paper-muted">
-        <div>
-          <span class="text-paper-dim uppercase font-bold">[SRC]</span>
-          <span class="text-paper-main font-bold ml-1">${escapeHtml(s.organization)}</span>
-          <span class="text-paper-dim"> — </span>
-          <span class="text-paper-main italic">"${escapeHtml(s.title)}"</span>
-          <span class="text-paper-dim">(${escapeHtml(s.publication_date || s.reference_period || '')})</span>
-        </div>
-        <div>
-          <span class="px-1.5 py-0.5 bg-[#F2EFE9] border border-paper text-paper-muted uppercase text-[9px]">${escapeHtml(s.source_type)}</span>
-          ${urlHtml}
-        </div>
-      </div>
-    `;
-  }).join('');
+
+  const sources = sourceIds.map(id => resolveSource(id)).filter(Boolean);
+  if (sources.length === 0) return '';
 
   return `
-    <div class="pt-2 mt-2 border-t border-paper space-y-1">
-      ${slips}
+    <div class="mt-3 pt-2.5 border-t border-paper/70 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-mono text-paper-dim">
+      <span class="text-[9px] font-mono uppercase text-paper-sand font-bold">PRIMARY SOURCES:</span>
+      ${sources.map(s => `
+        <span class="inline-flex items-center gap-1">
+          <strong class="text-paper-main font-medium">${escapeHtml(s.name)}</strong>
+          ${s.jort_number ? `<span class="text-paper-muted">(${escapeHtml(s.jort_number)})</span>` : ''}
+          ${s.publication_date ? `<span class="text-paper-dim text-[10px]">· ${escapeHtml(s.publication_date)}</span>` : ''}
+          ${s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener noreferrer" class="text-paper-red hover:underline text-[10px]">↗</a>` : ''}
+        </span>
+      `).join('<span class="text-paper/40">|</span>')}
     </div>
   `;
 }
 
 /**
- * Renders a primary chronology record row/entry on paper (open broadsheet item, NO enclosing card rectangle).
+ * Renders institutional responsibility attribution list.
+ */
+function renderResponsibilityList(recordId) {
+  const respList = getResponsibilityForRecord(recordId);
+  if (!respList || respList.length === 0) return '';
+
+  return `
+    <div class="mt-2 text-xs font-mono text-paper-muted flex flex-wrap items-center gap-2">
+      <span class="text-[9px] uppercase font-bold text-paper-sand">RESPONSIBILITY:</span>
+      ${respList.map(r => {
+        const instName = resolveInstitutionName(r.institution_id);
+        const roleLabel = r.role ? `(${escapeHtml(r.role.replace(/_/g, ' '))})` : '';
+        return `
+          <span class="px-2 py-0.5 bg-[#F2EFE9] border border-paper text-paper-main text-[10px] font-medium">
+            ${escapeHtml(instName || r.institution_id)} ${roleLabel}
+          </span>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/**
+ * Renders an editorial Chronology Item card for /presidency narrative.
  */
 function renderChronologyItem(rec) {
   if (!rec) return '';
-  const typeBadge = `<span class="stamp-badge bg-[#F2EFE9] border-paper text-paper-muted font-semibold uppercase">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
+
+  const dateStr = rec.date_start ? rec.date_start : (rec.date || '2019–2026');
+  const typeBadge = renderRecordTypeBadge(rec.record_type);
   const classBadge = renderClassificationBadge(rec.classification);
-  const statusBadge = rec.status ? renderStatusBadge(rec.status) : '';
-  const dateStr = rec.date_start ? (rec.date_start.length === 10 ? rec.date_start : rec.date_start) : '2019–2026';
+  const statusBadge = renderStatusBadge(rec.status);
 
   let specificDetailsHtml = '';
 
-  // LAW Metadata
-  if (rec.record_type === RECORD_TYPES.LAW) {
+  // PROMISE Metadata
+  if (rec.record_type === RECORD_TYPES.PROMISE) {
     specificDetailsHtml = `
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2 pt-2 border-t border-paper text-xs font-sans">
-        ${rec.stated_purpose ? `
-          <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
-            <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">STATED LEGISLATIVE PURPOSE</span>
-            <p class="text-paper-main font-light leading-relaxed">${escapeHtml(rec.stated_purpose)}</p>
-          </div>
-        ` : ''}
-        ${rec.documented_effect ? `
-          <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
-            <span class="text-[9px] font-mono text-paper-red uppercase font-bold block">DOCUMENTED INSTITUTIONAL EFFECT</span>
-            <p class="text-paper-main font-light leading-relaxed">${escapeHtml(rec.documented_effect)}</p>
-          </div>
-        ` : ''}
+      <div class="mt-3 p-3.5 bg-[#FAF8F5] border border-paper space-y-1.5 text-xs font-sans">
+        <div class="flex items-center justify-between text-[10px] font-mono text-paper-dim">
+          <span>STATED COMMITMENT</span>
+          <span>STATUS: <strong class="text-paper-red">${escapeHtml(rec.status || 'UNFULFILLED')}</strong></span>
+        </div>
+        <p class="text-paper-main font-serif italic text-sm">"${escapeHtml(rec.summary)}"</p>
+        ${rec.stated_outcome_target ? `<div class="text-[11px] text-paper-muted pt-1">Target: <strong class="text-paper-main">${escapeHtml(rec.stated_outcome_target)}</strong></div>` : ''}
+        ${rec.evaluation_notes ? `<div class="text-[11px] text-paper-muted pt-1 border-t border-paper/60">Evaluation: ${escapeHtml(rec.evaluation_notes)}</div>` : ''}
       </div>
-      ${rec.legal_challenges ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
-          <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">LEGAL CHALLENGES &amp; OBJECTIONS</span>
-          <p class="text-paper-muted font-light mt-0.5">${escapeHtml(rec.legal_challenges)}</p>
-        </div>
-      ` : ''}
-      ${rec.jort_reference ? `
-        <div class="text-[10px] font-mono text-paper-muted mt-2">
-          GAZETTE: <span class="text-paper-main font-bold">${escapeHtml(rec.jort_reference)}</span>
-          ${rec.relevant_articles ? ` · Articles: <span class="text-paper-main font-medium">${escapeHtml(rec.relevant_articles.join(', '))}</span>` : ''}
-        </div>
-      ` : ''}
     `;
   }
 
-  // DECISION Metadata
-  else if (rec.record_type === RECORD_TYPES.DECISION) {
+  // LAW / DECISION Metadata
+  else if (rec.record_type === RECORD_TYPES.LAW || rec.record_type === RECORD_TYPES.DECISION) {
     specificDetailsHtml = `
-      ${rec.stated_reason ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
-          <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">STATED ADMINISTRATIVE REASON</span>
-          <p class="text-paper-main font-light mt-0.5">${escapeHtml(rec.stated_reason)}</p>
+      ${rec.jort_reference || rec.relevant_articles ? `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-paper text-xs font-mono text-paper-muted">
+          ${rec.jort_reference ? `<div><strong class="text-paper-main">GAZETTE REF:</strong> ${escapeHtml(rec.jort_reference)}</div>` : ''}
+          ${rec.relevant_articles && rec.relevant_articles.length > 0 ? `<div><strong class="text-paper-main">ARTICLES:</strong> ${escapeHtml(rec.relevant_articles.join(', '))}</div>` : ''}
         </div>
       ` : ''}
-      ${rec.contested_interpretations ? `
-        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper">
-          <span class="text-[9px] font-mono text-paper-red uppercase font-bold block">CONTESTED INTERPRETATION &amp; COURT INJUNCTIONS</span>
-          <p class="text-paper-main font-light mt-0.5">${escapeHtml(rec.contested_interpretations)}</p>
-        </div>
-      ` : ''}
-      ${rec.legal_basis ? `
-        <div class="text-[10px] font-mono text-paper-muted mt-2">
-          LEGAL BASIS: <span class="text-paper-main font-bold">${escapeHtml(rec.legal_basis)}</span>
+      ${rec.documented_effect ? `
+        <div class="mt-2 text-xs font-sans text-paper-main p-2.5 bg-[#FAF8F5] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-sand block font-bold">DOCUMENTED LEGAL EFFECT</span>
+          ${escapeHtml(rec.documented_effect)}
         </div>
       ` : ''}
     `;
@@ -473,23 +450,24 @@ function renderChronologyItem(rec) {
   else if (rec.record_type === RECORD_TYPES.INDICATOR) {
     specificDetailsHtml = `
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 pt-2 border-t border-paper text-xs font-sans">
-        <div class="p-3 bg-[#F2EFE9] border border-paper text-center">
-          <span class="text-[9px] font-mono uppercase text-paper-dim block">RECORDED VALUE</span>
-          <span class="text-2xl font-editorial font-bold text-paper-red block my-1">${escapeHtml(rec.value)}</span>
-          <span class="text-[9px] font-mono text-paper-muted">${escapeHtml(rec.unit || '')}</span>
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block font-bold">MEASURED VALUE</span>
+          <span class="text-xl font-mono font-bold text-paper-red block mt-1">${escapeHtml(rec.value || '')}</span>
+          <span class="text-[10px] font-mono text-paper-muted block mt-0.5">${escapeHtml(rec.unit || '')}</span>
         </div>
-        <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
-          <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">OBSERVATION TYPE</span>
-          <div class="font-mono text-xs font-bold text-paper-main">${escapeHtml(rec.observation_type || '')}</div>
-          <div class="text-[10px] text-paper-dim">Ref: ${escapeHtml(rec.reference_period || '')}</div>
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block font-bold">REFERENCE PERIOD</span>
+          <span class="text-xs font-mono font-semibold text-paper-main block mt-1">${escapeHtml(rec.reference_period || 'Summer 2026')}</span>
+          <span class="text-[10px] font-mono text-paper-muted block mt-0.5">INS Official Bulletin</span>
         </div>
-        <div class="p-3 bg-[#F2EFE9] border border-paper space-y-1">
-          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">METHODOLOGY &amp; BASE</span>
-          <p class="text-[10px] text-paper-muted leading-tight">${escapeHtml(rec.methodology || '')}</p>
+        <div class="p-3 bg-[#F2EFE9] border border-paper">
+          <span class="text-[9px] font-mono uppercase text-paper-dim block font-bold">HISTORICAL BASELINE</span>
+          <span class="text-xs font-mono text-paper-main block mt-1 font-semibold">${escapeHtml(rec.baseline || 'Pre-2019 Baseline')}</span>
+          <span class="text-[10px] font-mono text-paper-muted block mt-0.5">${escapeHtml(rec.comparison || 'Comparative trajectory')}</span>
         </div>
       </div>
       ${rec.comparability_notes ? `
-        <div class="text-[10px] font-mono text-paper-muted p-2 bg-[#F2EFE9] border border-paper mt-2">
+        <div class="mt-2 text-[11px] font-mono text-paper-dim p-2 bg-[#FAF8F5] border border-paper">
           <strong class="text-paper-sand">COMPARABILITY NOTE:</strong> ${escapeHtml(rec.comparability_notes)}
         </div>
       ` : ''}
@@ -613,90 +591,99 @@ function renderDataGapCard(gapRecord) {
 }
 
 /**
- * Renders the 7 Signature Accountability Chains.
+ * Renders a single accountability chain card.
  */
-function renderAccountabilityChainsSection() {
-  const tracesHtml = TRACE_FAMILIES.map(tf => {
-    const nodesHtml = tf.chain.map((stepItem, idx) => {
-      const rec = getRecordById(stepItem.recordId);
-      if (!rec) return '';
-      const isLast = idx === tf.chain.length - 1;
-      const stepBadge = `
-        <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 ${
-          stepItem.step === 'PROMISE' ? 'bg-[#141517] text-white' :
-          stepItem.step === 'LAW' ? 'bg-[#B91C1C] text-white' :
-          stepItem.step === 'OUTCOME' ? 'bg-emerald-800 text-white' :
-          stepItem.step === 'DATA GAP' ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold' :
-          'bg-[#F2EFE9] text-paper-main border border-paper'
-        }">
-          ${escapeHtml(stepItem.step)}
-        </span>
-      `;
-      const dateStr = rec.date_start ? rec.date_start.substring(0, 4) : '';
-      const sourcesCount = rec.source_ids ? rec.source_ids.length : 0;
-
-      return `
-        <div class="relative pl-6 pb-6 last:pb-0 group">
-          <!-- Connective Timeline Rail -->
-          ${!isLast ? `<div class="absolute left-[11px] top-6 bottom-0 w-px bg-paper-red/30"></div>` : ''}
-          <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#FAF8F5] border-2 border-paper-red flex items-center justify-center text-[10px] font-mono font-bold text-paper-red">
-            ${idx + 1}
-          </div>
-
-          <div class="p-4 bg-[#FAF8F5] border border-paper hover:border-paper-red/60 transition-colors space-y-2">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                ${stepBadge}
-                <span class="text-[10px] font-mono font-bold text-paper-red">${escapeHtml(dateStr)}</span>
-                <span class="text-[10px] font-mono text-paper-dim uppercase font-semibold">· ${escapeHtml(stepItem.role)}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                ${renderClassificationBadge(rec.classification)}
-                <span class="text-[9px] font-mono text-paper-dim">${sourcesCount} ${sourcesCount === 1 ? 'src' : 'srcs'}</span>
-              </div>
-            </div>
-
-            <div class="font-sans font-bold text-paper-main text-sm">
-              <a href="#${escapeHtml(rec.id)}" class="hover:text-paper-red hover:underline">
-                ${escapeHtml(rec.title)}
-              </a>
-            </div>
-
-            <p class="text-xs text-paper-muted font-light leading-relaxed">
-              ${escapeHtml(rec.summary)}
-            </p>
-
-            ${rec.value || rec.measurement ? `
-              <div class="text-xs font-mono font-bold text-paper-red pt-1">
-                MEASURED: ${escapeHtml(rec.value || rec.measurement)}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
+function renderTraceFamilyCard(tf) {
+  const nodesHtml = tf.chain.map((stepItem, idx) => {
+    const rec = getRecordById(stepItem.recordId);
+    if (!rec) return '';
+    const isLast = idx === tf.chain.length - 1;
+    const stepBadge = `
+      <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 ${
+        stepItem.step === 'PROMISE' ? 'bg-[#141517] text-white' :
+        stepItem.step === 'LAW' ? 'bg-[#B91C1C] text-white' :
+        stepItem.step === 'OUTCOME' ? 'bg-emerald-800 text-white' :
+        stepItem.step === 'DATA GAP' ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold' :
+        'bg-[#F2EFE9] text-paper-main border border-paper'
+      }">
+        ${escapeHtml(stepItem.step)}
+      </span>
+    `;
+    const dateStr = rec.date_start ? rec.date_start.substring(0, 4) : '';
+    const sourcesCount = rec.source_ids ? rec.source_ids.length : 0;
 
     return `
-      <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4" id="${escapeHtml(tf.id)}">
-        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-3 border-b border-paper">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 bg-[#FAF8F5] border border-paper text-paper-red">TRACE ${escapeHtml(tf.number)}</span>
-              <h3 class="font-editorial text-xl sm:text-2xl text-paper-main font-normal">${escapeHtml(tf.title)}</h3>
-            </div>
-            <p class="text-xs font-sans text-paper-muted font-light mt-1">${escapeHtml(tf.subtitle)}</p>
-          </div>
-          <div class="text-[10px] font-mono text-paper-dim shrink-0">
-            ${tf.chain.length} SEQUENTIAL NODES
-          </div>
+      <div class="relative pl-6 pb-6 last:pb-0 group">
+        <!-- Connective Timeline Rail -->
+        ${!isLast ? `<div class="absolute left-[11px] top-6 bottom-0 w-px bg-paper-red/30"></div>` : ''}
+        <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#FAF8F5] border-2 border-paper-red flex items-center justify-center text-[10px] font-mono font-bold text-paper-red">
+          ${idx + 1}
         </div>
 
-        <div class="pt-2">
-          ${nodesHtml}
+        <div class="p-4 bg-[#FAF8F5] border border-paper hover:border-paper-red/60 transition-colors space-y-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              ${stepBadge}
+              <span class="text-[10px] font-mono font-bold text-paper-red">${escapeHtml(dateStr)}</span>
+              <span class="text-[10px] font-mono text-paper-dim uppercase font-semibold">· ${escapeHtml(stepItem.role)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              ${renderClassificationBadge(rec.classification)}
+              <span class="text-[9px] font-mono text-paper-dim">${sourcesCount} ${sourcesCount === 1 ? 'src' : 'srcs'}</span>
+            </div>
+          </div>
+
+          <div class="font-sans font-bold text-paper-main text-sm">
+            <a href="/presidency/archive#${escapeHtml(rec.id)}" class="hover:text-paper-red hover:underline">
+              ${escapeHtml(rec.title)}
+            </a>
+          </div>
+
+          <p class="text-xs text-paper-muted font-light leading-relaxed">
+            ${escapeHtml(rec.summary)}
+          </p>
+
+          ${rec.value || rec.measurement ? `
+            <div class="text-xs font-mono font-bold text-paper-red pt-1">
+              MEASURED: ${escapeHtml(rec.value || rec.measurement)}
+            </div>
+          ` : ''}
         </div>
       </div>
     `;
   }).join('');
+
+  return `
+    <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4" id="${escapeHtml(tf.id)}">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-3 border-b border-paper">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 bg-[#FAF8F5] border border-paper text-paper-red">TRACE ${escapeHtml(tf.number)}</span>
+            <h3 class="font-editorial text-xl sm:text-2xl text-paper-main font-normal">${escapeHtml(tf.title)}</h3>
+          </div>
+          <p class="text-xs font-sans text-paper-muted font-light mt-1">${escapeHtml(tf.subtitle)}</p>
+        </div>
+        <div class="text-[10px] font-mono text-paper-dim shrink-0">
+          ${tf.chain.length} SEQUENTIAL NODES
+        </div>
+      </div>
+
+      <div class="pt-2">
+        ${nodesHtml}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Renders the 7 Signature Accountability Chains (3 flagship visible + disclosure for remaining 4).
+ */
+function renderAccountabilityChainsSection() {
+  const primaryTraces = TRACE_FAMILIES.slice(0, 3);
+  const remainingTraces = TRACE_FAMILIES.slice(3);
+
+  const primaryCardsHtml = primaryTraces.map(tf => renderTraceFamilyCard(tf)).join('');
+  const remainingCardsHtml = remainingTraces.map(tf => renderTraceFamilyCard(tf)).join('');
 
   return `
     <section id="accountability-chains" class="space-y-6 pt-8 border-t border-paper" aria-label="Signature Accountability Chains">
@@ -712,14 +699,30 @@ function renderAccountabilityChainsSection() {
       </div>
 
       <div class="grid grid-cols-1 gap-6">
-        ${tracesHtml}
+        ${primaryCardsHtml}
       </div>
+
+      <!-- Secondary Accountability Chains Disclosure -->
+      <details class="group p-5 sm:p-6 bg-[#FAF8F5] border border-paper transition-all">
+        <summary class="cursor-pointer flex items-center justify-between text-xs font-mono select-none list-none">
+          <div class="flex items-center gap-2">
+            <span class="text-paper-red font-bold uppercase tracking-wider group-open:hidden">▶ EXPLORE 4 MORE ACCOUNTABILITY CHAINS (TRACES 04–07)</span>
+            <span class="text-paper-red font-bold uppercase tracking-wider hidden group-open:inline">▼ COLLAPSE SECONDARY ACCOUNTABILITY CHAINS</span>
+          </div>
+          <span class="text-[10px] font-mono text-paper-dim uppercase">DECREE 54 · SOVEREIGNTY · GABÈS · 2024 ELECTION</span>
+        </summary>
+        <div class="space-y-6 pt-6 mt-4 border-t border-paper/80">
+          <div class="grid grid-cols-1 gap-6">
+            ${remainingCardsHtml}
+          </div>
+        </div>
+      </details>
     </section>
   `;
 }
 
 /**
- * Renders the Presidential Spine Navigation Bar.
+ * Renders the Presidential Spine Navigation Bar for /presidency.
  */
 function renderPresidentialSpine() {
   const eras = [
@@ -749,7 +752,7 @@ function renderPresidentialSpine() {
           <div class="text-xs font-sans text-paper-muted mt-0.5">8 Chronological Eras · 88 Canonical Records · Deterministic Reading Hierarchy</div>
         </div>
         <div class="text-[10px] font-mono text-paper-dim">
-          SELECT ERA TO INSPECT
+          <a href="/presidency/archive" class="text-paper-red hover:underline font-bold">Open Full Archive Registry ↗</a>
         </div>
       </div>
 
@@ -761,12 +764,10 @@ function renderPresidentialSpine() {
 }
 
 /**
- * Renders an entire year section with 3–5 featured records and disclosure for secondary records.
+ * Renders an entire year section with 3–5 featured primary records and contextual link to archive.
  */
 function renderYearChronologySection(year, config, customModules = '') {
   const featuredRecords = config.featuredIds.map(id => getRecordById(id)).filter(Boolean);
-  const secondaryIds = config.allIds.filter(id => !config.featuredIds.includes(id));
-  const secondaryRecords = secondaryIds.map(id => getRecordById(id)).filter(Boolean);
 
   const featuredItemsHtml = featuredRecords.map(r => `
     <div class="chronology-node">
@@ -774,33 +775,6 @@ function renderYearChronologySection(year, config, customModules = '') {
       ${renderChronologyItem(r)}
     </div>
   `).join('');
-
-  const secondaryItemsHtml = secondaryRecords.map(r => `
-    <div class="chronology-node">
-      <span class="chronology-node-dot-paper opacity-60"></span>
-      ${renderChronologyItem(r)}
-    </div>
-  `).join('');
-
-  const disclosureHtml = secondaryRecords.length > 0 ? `
-    <details class="group mt-6 p-4 sm:p-5 bg-[#FAF8F5] border border-paper transition-all">
-      <summary class="cursor-pointer flex items-center justify-between text-xs font-mono select-none list-none">
-        <div class="flex items-center gap-2">
-          <span class="text-paper-red font-bold uppercase tracking-wider group-open:hidden">▶ VIEW FULL ${year} ARCHIVE (${config.allIds.length} RECORDS)</span>
-          <span class="text-paper-red font-bold uppercase tracking-wider hidden group-open:inline">▼ COLLAPSE ${year} SECONDARY RECORDS</span>
-        </div>
-        <span class="text-[10px] font-mono text-paper-dim uppercase">${secondaryRecords.length} ADDITIONAL VERIFIED ENTRIES</span>
-      </summary>
-      <div class="space-y-4 pt-4 mt-3 border-t border-paper/80">
-        <div class="text-[11px] font-sans text-paper-muted italic pb-1">
-          The following secondary entries complete the full canonical archive for ${year}:
-        </div>
-        <div class="chronology-spine-paper space-y-4">
-          ${secondaryItemsHtml}
-        </div>
-      </div>
-    </details>
-  ` : '';
 
   return `
     <section id="year-${year}" class="space-y-6 pt-8 border-t border-paper">
@@ -813,7 +787,7 @@ function renderYearChronologySection(year, config, customModules = '') {
           <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">${escapeHtml(config.subtitle)}</p>
         </div>
         <div class="text-[10px] font-mono text-paper-dim shrink-0">
-          ${config.featuredIds.length} FEATURED · ${config.allIds.length} TOTAL RECORDS
+          ${config.featuredIds.length} FEATURED · ${config.allIds.length} TOTAL IN ARCHIVE
         </div>
       </div>
 
@@ -823,7 +797,13 @@ function renderYearChronologySection(year, config, customModules = '') {
         ${featuredItemsHtml}
       </div>
 
-      ${disclosureHtml}
+      <div class="mt-4 pt-3 border-t border-paper/60 flex items-center justify-between flex-wrap gap-2 text-xs font-mono">
+        <span class="text-paper-dim uppercase text-[10px]">${config.allIds.length} DOCUMENTED RECORDS IN ${year} ERA</span>
+        <a href="/presidency/archive?year=${year}" class="text-paper-red hover:underline font-bold flex items-center gap-1 group">
+          <span>VIEW FULL ${year} ARCHIVE (${config.allIds.length} RECORDS)</span>
+          <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+        </a>
+      </div>
     </section>
   `;
 }
@@ -948,70 +928,58 @@ function renderCertifiedVsContestedModule() {
 }
 
 /**
- * Renders the Full Record of Power (88 Canonical Records Registry).
+ * Renders the Editorial Archive Transition Block (Replaces giant 88-row directory on /presidency).
  */
-function renderFullArchiveAccessSection() {
-  const rowsHtml = SEED_RECORDS.map((r, idx) => {
-    const yearStr = r.date_start ? r.date_start.substring(0, 4) : '2019–2026';
-    const classBadge = renderClassificationBadge(r.classification);
-    const sourceCount = r.source_ids ? r.source_ids.length : 0;
-    return `
-      <tr class="border-b border-paper hover:bg-[#FAF8F5] transition-colors text-xs font-mono">
-        <td class="py-2.5 px-3 text-paper-dim">${idx + 1}</td>
-        <td class="py-2.5 px-3 font-bold text-paper-red">${escapeHtml(yearStr)}</td>
-        <td class="py-2.5 px-3 font-mono text-[11px] text-paper-muted">
-          <a href="#${escapeHtml(r.id)}" class="hover:underline hover:text-paper-red font-bold">${escapeHtml(r.id)}</a>
-        </td>
-        <td class="py-2.5 px-3 uppercase text-[10px] text-paper-sand font-semibold">${escapeHtml(r.record_type.replace(/_/g, ' '))}</td>
-        <td class="py-2.5 px-3 font-sans text-paper-main font-medium max-w-md truncate" title="${escapeHtml(r.title)}">
-          <a href="#${escapeHtml(r.id)}" class="hover:text-paper-red hover:underline">${escapeHtml(r.title)}</a>
-        </td>
-        <td class="py-2.5 px-3">${classBadge}</td>
-        <td class="py-2.5 px-3 text-paper-dim text-[10px]">${sourceCount} src</td>
-      </tr>
-    `;
-  }).join('');
-
+function renderExploreCompleteRecordSection() {
   return `
-    <section id="full-archive-access" class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6 my-8" aria-label="Full Canonical Archive">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
-        <div>
-          <span class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold block">CANONICAL ARCHIVE DIRECTORY · 88 RECORDS</span>
-          <h3 class="font-editorial text-2xl text-paper-main mt-1">The Full Record of Power (2019–2026)</h3>
+    <section id="the-complete-record" class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6 my-8" aria-label="The Complete Record Transition">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+        <div class="space-y-1">
+          <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">RESEARCH REPOSITORY · 88 CANONICAL RECORDS</span>
+          <h3 class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">The Complete Record of Power (2019–2026)</h3>
         </div>
         <div class="text-xs font-mono text-paper-muted">
-          ALL 88 RECORDS INDEXED · JUMP TO EVIDENCE
+          FULL SEARCH &amp; FILTER REGISTER
         </div>
       </div>
 
-      <p class="text-xs font-sans text-paper-muted font-light leading-relaxed">
-        Every act of power, legislative decree, economic indicator, and transparency data gap tracked in the 404TN baseline is indexed below with its canonical identifier, epistemic status, and primary source references.
+      <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-4xl">
+        The primary investigation above traces 38 consequential structural shifts. The full Record of Power archive preserves every single documented event, legislative decree, ministerial appointment, economic indicator, and transparency data gap across all eight chronological eras.
       </p>
 
-      <div class="overflow-x-auto border border-paper">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-[#FAF8F5] border-b border-paper text-[10px] font-mono text-paper-dim uppercase tracking-wider">
-              <th class="py-2 px-3">#</th>
-              <th class="py-2 px-3">ERA</th>
-              <th class="py-2 px-3">RECORD ID</th>
-              <th class="py-2 px-3">TYPE</th>
-              <th class="py-2 px-3">HEADLINE TITLE</th>
-              <th class="py-2 px-3">STATUS</th>
-              <th class="py-2 px-3">PROVENANCE</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">FULL REPOSITORY</span>
+          <span class="font-editorial text-2xl text-paper-red font-normal mt-1 block">88 Records</span>
+          <p class="text-[11px] text-paper-muted font-light">Every decree, decision, outcome, and indicator indexed with primary source citations.</p>
+        </div>
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">RESEARCH FILTERS</span>
+          <span class="font-editorial text-2xl text-paper-main font-normal mt-1 block">10 Record Types</span>
+          <p class="text-[11px] text-paper-muted font-light">Filter by Year, Legal Type, Epistemic Status (FACT/CLAIM), or Policy Domain.</p>
+        </div>
+        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
+          <span class="text-[10px] font-mono text-paper-dim uppercase tracking-wider block font-bold">FORENSIC PROVENANCE</span>
+          <span class="font-editorial text-2xl text-paper-sand font-normal mt-1 block">44 Sources</span>
+          <p class="text-[11px] text-paper-muted font-light">Direct links to JORT, INS, Central Bank bulletins, and Administrative Court rulings.</p>
+        </div>
+      </div>
+
+      <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-paper/60">
+        <a href="/presidency/archive" class="w-full sm:w-auto px-6 py-3.5 bg-[#B91C1C] hover:bg-[#991b1b] text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors text-center shadow-sm flex items-center justify-center gap-2 group">
+          <span>EXPLORE THE PRESIDENTIAL ARCHIVE</span>
+          <span class="group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+        <div class="text-xs font-mono text-paper-dim">
+          Shareable query filters · Instant client-side search · Stable record anchors
+        </div>
       </div>
     </section>
   `;
 }
 
 /**
- * Renders the complete, rich, single-H1 documentary chronology for /presidency.
+ * Renders the complete, rich, single-H1 documentary narrative for /presidency.
  */
 export function renderPresidencyReportViewHtml() {
   const eco = ECONOMY_ARCHITECTURE_DATA;
@@ -1057,7 +1025,7 @@ export function renderPresidencyReportViewHtml() {
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-left font-mono">
         <div class="p-3 bg-[#FAF8F5] border border-paper">
           <span class="text-[9px] text-paper-dim uppercase tracking-wider block">CANONICAL RECORDS</span>
-          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-red mt-1 block">88</span>
+          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-red mt-1 block">${SEED_RECORDS.length}</span>
           <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">10 Distinct Types</span>
         </div>
         <div class="p-3 bg-[#FAF8F5] border border-paper">
@@ -1147,7 +1115,7 @@ export function renderPresidencyReportViewHtml() {
         </div>
       </div>
 
-      <!-- 02–07. DOCUMENTARY REPORT VIEW (REAL WARM PAPER SURFACE) -->
+      <!-- 02–08. DOCUMENTARY REPORT VIEW (REAL WARM PAPER SURFACE) -->
       <div class="surface-paper py-10 sm:py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
 
@@ -1160,7 +1128,7 @@ export function renderPresidencyReportViewHtml() {
           <!-- 04. 2019→2026 PRESIDENTIAL SPINE -->
           ${renderPresidentialSpine()}
 
-          <!-- 05. ERA-BY-ERA CURATED DOCUMENTARY RECORD -->
+          <!-- 05. CURATED ERA-BY-ERA DOCUMENTARY RECORD -->
 
           <!-- ERA 1: 2019 — MANDATE & PROMISES -->
           ${renderYearChronologySection(2019, CURATED_ERA_CONFIG[2019])}
@@ -1202,7 +1170,7 @@ export function renderPresidencyReportViewHtml() {
                 <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Seven years following the 2019 mandate and five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps.</p>
               </div>
               <div class="text-[10px] font-mono text-paper-dim shrink-0">
-                14 CANONICAL RECORDS · 4 TRANSPARENCY DATA GAPS
+                14 TOTAL RECORDS · 4 TRANSPARENCY DATA GAPS
               </div>
             </div>
 
@@ -1316,12 +1284,21 @@ export function renderPresidencyReportViewHtml() {
                 `).join("")}
               </div>
             </div>
+
+            <!-- 2026 Archive Link -->
+            <div class="mt-6 pt-4 border-t border-paper flex items-center justify-between flex-wrap gap-2 text-xs font-mono">
+              <span class="text-paper-dim uppercase text-[10px]">14 TOTAL 2026 RECORDS &amp; DATA GAPS</span>
+              <a href="/presidency/archive?year=2026" class="text-paper-red hover:underline font-bold flex items-center gap-1 group">
+                <span>EXPLORE ALL 2026 RECORDS IN ARCHIVE</span>
+                <span class="group-hover:translate-x-0.5 transition-transform">→</span>
+              </a>
+            </div>
           </section>
 
-          <!-- 06. FULL RECORD OF POWER (88 CANONICAL RECORDS REGISTER) -->
-          ${renderFullArchiveAccessSection()}
+          <!-- 07. EXPLORE THE COMPLETE RECORD (TRANSITION TO /presidency/archive) -->
+          ${renderExploreCompleteRecordSection()}
 
-          <!-- 07. METHODOLOGICAL / SOURCE CLOSING & EPISTEMIC STANDARDS -->
+          <!-- 08. METHODOLOGICAL / SOURCE CLOSING & EPISTEMIC STANDARDS -->
           <section id="methodological-closing" class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6" aria-label="Methodology and Epistemic Standards">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
               <div>
@@ -1390,4 +1367,597 @@ export function renderPresidencyReportViewHtml() {
 
     </article>
   `;
+}
+
+/**
+ * Renders an expandable documentary record card for /presidency/archive.
+ */
+function renderArchiveRecordCard(rec) {
+  if (!rec) return '';
+
+  const year = rec.date_start ? rec.date_start.substring(0, 4) : '2019';
+  const typeBadge = renderRecordTypeBadge(rec.record_type);
+  const classBadge = renderClassificationBadge(rec.classification);
+  const statusBadge = renderStatusBadge(rec.status || rec.data_gap_status);
+  const sourceCount = rec.source_ids ? rec.source_ids.length : 0;
+  const instNames = (rec.institution_ids || []).map(id => resolveInstitutionName(id)).filter(Boolean).join(', ');
+
+  // Search indexing string
+  const searchCorpus = [
+    rec.id,
+    rec.title,
+    rec.short_title,
+    rec.summary,
+    rec.record_type,
+    rec.classification,
+    year,
+    instNames,
+    ...(rec.issue_tags || []),
+    rec.official_title || '',
+    rec.jort_reference || '',
+    rec.value || rec.measurement || rec.result || ''
+  ].join(' ').toLowerCase();
+
+  const respHtml = renderResponsibilityList(rec.id);
+  const sourceHtml = renderSourceSlip(rec.source_ids);
+
+  return `
+    <article class="archive-record-card p-5 bg-white border border-paper hover:border-paper-red/50 transition-colors space-y-3 relative group" id="${escapeHtml(rec.id)}" data-record-id="${escapeHtml(rec.id)}" data-year="${escapeHtml(year)}" data-type="${escapeHtml(rec.record_type)}" data-classification="${escapeHtml(rec.classification)}" data-search="${escapeHtml(searchCorpus)}">
+      <!-- Card Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-paper/60">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-mono font-bold text-paper-red">${escapeHtml(year)}</span>
+          ${typeBadge}
+          ${classBadge}
+          ${statusBadge}
+        </div>
+        <div class="flex items-center gap-2 text-[10px] font-mono text-paper-dim">
+          <span>ID: <a href="#${escapeHtml(rec.id)}" class="text-paper-muted hover:text-paper-red font-mono">${escapeHtml(rec.id)}</a></span>
+          <span>·</span>
+          <span>${sourceCount} ${sourceCount === 1 ? 'src' : 'srcs'}</span>
+        </div>
+      </div>
+
+      <!-- Title & Headline -->
+      <h3 class="font-editorial font-bold text-paper-main text-lg sm:text-xl leading-snug">
+        <a href="#${escapeHtml(rec.id)}" class="hover:text-paper-red transition-colors">
+          ${escapeHtml(rec.title)}
+        </a>
+      </h3>
+
+      <!-- Narrative Summary -->
+      <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
+        ${escapeHtml(rec.summary)}
+      </p>
+
+      <!-- Key Metadata Tags -->
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-paper-dim pt-1">
+        ${instNames ? `<div><span class="text-[9px] uppercase font-bold text-paper-sand">INSTITUTION:</span> <span class="text-paper-main">${escapeHtml(instNames)}</span></div>` : ''}
+        ${rec.issue_tags && rec.issue_tags.length > 0 ? `<div><span class="text-[9px] uppercase font-bold text-paper-sand">TAGS:</span> <span class="text-paper-muted">${escapeHtml(rec.issue_tags.slice(0, 3).join(', '))}</span></div>` : ''}
+      </div>
+
+      <!-- Measured Metric Highlight if present -->
+      ${rec.value || rec.measurement || rec.result ? `
+        <div class="p-2.5 bg-[#FAF8F5] border border-paper flex items-center justify-between text-xs font-mono">
+          <span class="text-[9px] uppercase tracking-wider text-paper-sand font-bold">MEASURED RECORD:</span>
+          <span class="font-bold text-paper-red">${escapeHtml(rec.value || rec.measurement || rec.result)} ${rec.unit ? `<span class="text-paper-muted font-normal">(${escapeHtml(rec.unit)})</span>` : ''}</span>
+        </div>
+      ` : ''}
+
+      <!-- Expandable Forensic Evidence Slip -->
+      <details class="archive-record-details pt-2 border-t border-paper/60 text-xs font-sans group/details">
+        <summary class="cursor-pointer select-none text-[11px] font-mono font-semibold text-paper-red hover:underline flex items-center gap-1 list-none">
+          <span class="group-open/details:hidden">▶ VIEW FULL EVIDENCE &amp; PROVENANCE</span>
+          <span class="hidden group-open/details:inline">▼ COLLAPSE EVIDENCE SLIP</span>
+        </summary>
+
+        <div class="mt-3 p-4 bg-[#FAF8F5] border border-paper space-y-3">
+          ${rec.official_title ? `
+            <div>
+              <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">OFFICIAL STATUTORY TITLE</span>
+              <p class="text-xs font-mono text-paper-main mt-0.5">${escapeHtml(rec.official_title)}</p>
+            </div>
+          ` : ''}
+
+          ${rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target ? `
+            <div>
+              <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">STATED PURPOSE / PLEDGE</span>
+              <p class="text-xs text-paper-muted italic mt-0.5">${escapeHtml(rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target)}</p>
+            </div>
+          ` : ''}
+
+          ${rec.documented_effect ? `
+            <div>
+              <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">DOCUMENTED EFFECT</span>
+              <p class="text-xs text-paper-main mt-0.5">${escapeHtml(rec.documented_effect)}</p>
+            </div>
+          ` : ''}
+
+          ${rec.jort_reference || rec.relevant_articles ? `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-paper-muted pt-1 border-t border-paper/60">
+              ${rec.jort_reference ? `<div>GAZETTE: <strong class="text-paper-main">${escapeHtml(rec.jort_reference)}</strong></div>` : ''}
+              ${rec.relevant_articles ? `<div>ARTICLES: <span class="text-paper-main">${escapeHtml(rec.relevant_articles.join(', '))}</span></div>` : ''}
+            </div>
+          ` : ''}
+
+          ${rec.editorial_notes ? `
+            <div class="text-[11px] font-sans text-paper-muted pt-1 border-t border-paper/60">
+              <strong class="text-paper-dim font-mono text-[9px] uppercase">EDITORIAL NOTE:</strong> ${escapeHtml(rec.editorial_notes)}
+            </div>
+          ` : ''}
+
+          ${rec.related_record_ids && rec.related_record_ids.length > 0 ? `
+            <div class="pt-1 border-t border-paper/60 text-[10px] font-mono">
+              <span class="text-paper-dim uppercase font-bold">CONNECTED RECORDS:</span>
+              ${rec.related_record_ids.map(rid => `<a href="#${escapeHtml(rid)}" class="ml-1 text-paper-red hover:underline font-bold">${escapeHtml(rid)}</a>`).join(', ')}
+            </div>
+          ` : ''}
+
+          ${respHtml}
+          ${sourceHtml}
+        </div>
+      </details>
+    </article>
+  `;
+}
+
+/**
+ * Renders the complete, searchable, filterable research archive view for /presidency/archive.
+ */
+export function renderPresidencyArchiveViewHtml() {
+  const allCardsHtml = SEED_RECORDS.map(rec => renderArchiveRecordCard(rec)).join('');
+
+  const breadcrumbHtml = `
+    <nav aria-label="Breadcrumb" class="text-xs font-mono text-surface-400">
+      <a href="/" class="hover:text-bone-100 transition-colors">Home</a> &gt;
+      <a href="/presidency" class="hover:text-bone-100 transition-colors">The Record of Power</a> &gt;
+      <span class="text-bone-100 font-medium">Presidential Archive (2019–2026)</span>
+    </nav>
+  `;
+
+  // 01. Archive Opener Header (Dark Investigative Canvas)
+  const headerHtml = `
+    <header id="prerendered-route-header" class="space-y-6 pb-10 border-b border-surface-800">
+      ${breadcrumbHtml}
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="text-xs font-mono uppercase tracking-widest text-crimson font-bold">THE RECORD OF POWER</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 border uppercase font-semibold bg-crimson/15 border-crimson/40 text-crimson font-bold">PRESIDENTIAL RECORD ARCHIVE · 2019—2026</span>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl text-bone-100 font-normal leading-[1.12] tracking-tight">
+              Presidential Record Archive 2019 — 2026
+            </h1>
+            <p class="text-base sm:text-lg text-surface-300 font-light leading-relaxed max-w-3xl mt-2">
+              A structured forensic record of 88 documented events, promises, decisions, laws, institutional transformations, official statements, opposition claims, measurable outcomes, economic indicators, and information gaps during the presidency of Kais Saied.
+            </p>
+          </div>
+          <div class="shrink-0">
+            <a href="/presidency" class="inline-flex items-center gap-2 px-4 py-2.5 bg-surface-900 hover:bg-surface-800 border border-surface-700 hover:border-surface-500 text-bone-100 text-xs font-mono uppercase tracking-wider transition-colors">
+              <span>← READ THE INVESTIGATION</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-6 border-t border-surface-800/80">
+        <div class="p-3 sm:p-4 bg-surface-900/60 border border-surface-800">
+          <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">CANONICAL ARCHIVE</span>
+          <span class="text-xs sm:text-sm font-mono text-crimson font-bold uppercase mt-0.5 block">${SEED_RECORDS.length} TOTAL RECORDS</span>
+          <span class="text-[10px] font-mono text-surface-500 block mt-0.5">COMPLETE 2019–2026 DATASET</span>
+        </div>
+        <div class="p-3 sm:p-4 bg-surface-900/60 border border-surface-800">
+          <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">CHRONOLOGY</span>
+          <span class="text-xs sm:text-sm font-mono text-bone-100 font-bold uppercase mt-0.5 block">8 ERAS INDEXED</span>
+          <span class="text-[10px] font-mono text-surface-500 block mt-0.5">2019 THROUGH 2026</span>
+        </div>
+        <div class="p-3 sm:p-4 bg-surface-900/60 border border-surface-800">
+          <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">TAXONOMY</span>
+          <span class="text-xs sm:text-sm font-mono text-bone-100 font-bold uppercase mt-0.5 block">10 RECORD TYPES</span>
+          <span class="text-[10px] font-mono text-surface-500 block mt-0.5">PROMISE TO DATA GAP</span>
+        </div>
+        <div class="p-3 sm:p-4 bg-surface-900/60 border border-surface-800">
+          <span class="text-[10px] font-mono text-surface-400 uppercase tracking-meta block">PROVENANCE</span>
+          <span class="text-xs sm:text-sm font-mono text-bone-100 font-bold uppercase mt-0.5 block">${SOURCE_MANIFEST.length} PRIMARY SOURCES</span>
+          <span class="text-[10px] font-mono text-surface-500 block mt-0.5">OFFICIAL GAZETTE &amp; BULLETINS</span>
+        </div>
+      </div>
+    </header>
+  `;
+
+  return `
+    <article class="presidency-archive-page">
+
+      <!-- 01. ARCHIVE HERO OPENER (DARK INVESTIGATIVE CANVAS) -->
+      <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          ${headerHtml}
+        </div>
+      </div>
+
+      <!-- 02. SEARCH, FILTER & DOCUMENTARY ARCHIVE (WARM PAPER CANVAS) -->
+      <div class="surface-paper py-10 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+          <!-- Interactive Search and Filter Apparatus -->
+          <section id="archive-controls" class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-5" aria-label="Archive Search and Filter Controls">
+
+            <!-- Search Bar -->
+            <div class="space-y-1.5">
+              <label for="archive-search-input" class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold block">
+                SEARCH ARCHIVE
+              </label>
+              <div class="relative">
+                <input
+                  type="search"
+                  id="archive-search-input"
+                  placeholder="Search by title, ID, institution, issue, legal instrument, or keyword..."
+                  class="w-full px-4 py-3 bg-[#FAF8F5] border border-paper text-paper-main placeholder-paper-dim text-sm font-sans focus:outline-none focus:border-paper-red transition-colors"
+                />
+              </div>
+            </div>
+
+            <!-- Filter Controls Matrix -->
+            <div class="space-y-4 pt-4 border-t border-paper/60 text-xs font-mono">
+
+              <!-- Era / Year Filter Row -->
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] uppercase font-bold text-paper-dim">CHRONOLOGICAL ERA:</span>
+                  <span class="text-[10px] text-paper-dim">2019 → 2026</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5" id="archive-year-filters">
+                  <button type="button" data-year="ALL" class="archive-filter-btn px-2.5 py-1 bg-[#141517] text-white border border-[#141517] font-bold text-[11px] transition-colors">ALL (88)</button>
+                  <button type="button" data-year="2019" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2019 (10)</button>
+                  <button type="button" data-year="2020" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2020 (7)</button>
+                  <button type="button" data-year="2021" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2021 (10)</button>
+                  <button type="button" data-year="2022" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2022 (13)</button>
+                  <button type="button" data-year="2023" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2023 (13)</button>
+                  <button type="button" data-year="2024" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2024 (12)</button>
+                  <button type="button" data-year="2025" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2025 (9)</button>
+                  <button type="button" data-year="2026" class="archive-filter-btn px-2.5 py-1 bg-[#FAF8F5] text-paper-main border border-paper hover:border-paper-red font-medium text-[11px] transition-colors">2026 (14)</button>
+                </div>
+              </div>
+
+              <!-- Type and Epistemic Filter Selectors -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                <!-- Type Filter -->
+                <div class="space-y-1">
+                  <label for="archive-type-select" class="text-[10px] uppercase font-bold text-paper-dim block">RECORD TYPE:</label>
+                  <select id="archive-type-select" class="w-full px-3 py-2 bg-[#FAF8F5] border border-paper text-paper-main text-xs font-mono focus:outline-none focus:border-paper-red">
+                    <option value="ALL">All Types (10 Categories)</option>
+                    <option value="EVENT">Event</option>
+                    <option value="PROMISE">Promise</option>
+                    <option value="DECISION">Decision</option>
+                    <option value="LAW">Law / Decree-Law</option>
+                    <option value="INSTITUTIONAL_CHANGE">Institutional Change</option>
+                    <option value="OFFICIAL_STATEMENT">Official Statement</option>
+                    <option value="OPPOSITION_CLAIM">Opposition Claim</option>
+                    <option value="OUTCOME">Outcome</option>
+                    <option value="INDICATOR">Indicator</option>
+                    <option value="DATA_GAP">Data Gap</option>
+                  </select>
+                </div>
+
+                <!-- Epistemic Classification Filter -->
+                <div class="space-y-1">
+                  <label for="archive-class-select" class="text-[10px] uppercase font-bold text-paper-dim block">EPISTEMIC STANDARD:</label>
+                  <select id="archive-class-select" class="w-full px-3 py-2 bg-[#FAF8F5] border border-paper text-paper-main text-xs font-mono focus:outline-none focus:border-paper-red">
+                    <option value="ALL">All Standards</option>
+                    <option value="FACT">FACT (Official Gazette / INS)</option>
+                    <option value="CLAIM">CLAIM (Speech / Allegation)</option>
+                    <option value="ANALYSIS">ANALYSIS (Investigative Context)</option>
+                    <option value="DATA_GAP">DATA GAP (Unpublished Ledger)</option>
+                  </select>
+                </div>
+
+                <!-- Sort Order -->
+                <div class="space-y-1">
+                  <label for="archive-sort-select" class="text-[10px] uppercase font-bold text-paper-dim block">SORT ORDER:</label>
+                  <select id="archive-sort-select" class="w-full px-3 py-2 bg-[#FAF8F5] border border-paper text-paper-main text-xs font-mono focus:outline-none focus:border-paper-red">
+                    <option value="asc">Chronological (Oldest → Newest)</option>
+                    <option value="desc">Reverse Chronological (Newest → Oldest)</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Active Match Status Bar -->
+            <div class="flex items-center justify-between pt-3 border-t border-paper/60 text-xs font-mono">
+              <div class="text-paper-muted">
+                SHOWING <span id="archive-count" class="font-bold text-paper-red">${SEED_RECORDS.length}</span> OF <span class="font-bold text-paper-main">${SEED_RECORDS.length}</span> CANONICAL RECORDS
+              </div>
+              <button type="button" id="archive-reset-btn" class="hidden text-paper-red hover:underline font-bold text-[11px] uppercase">
+                ✕ Reset All Filters
+              </button>
+            </div>
+
+          </section>
+
+          <!-- Records List Container (Cards Grid) -->
+          <div id="archive-records-list" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            ${allCardsHtml}
+          </div>
+
+          <!-- Empty State (Hidden by default) -->
+          <div id="archive-empty-state" class="hidden py-16 text-center bg-white border border-dashed border-paper p-8 space-y-3">
+            <span class="text-2xl font-editorial text-paper-main block font-normal">No Matching Archive Records</span>
+            <p class="text-xs sm:text-sm text-paper-muted font-light max-w-md mx-auto">
+              No canonical Record of Power entries match your current search and filter combination. Try clearing your query or adjusting the filters.
+            </p>
+            <button type="button" onclick="document.getElementById('archive-reset-btn').click()" class="mt-2 px-4 py-2 bg-[#FAF8F5] border border-paper text-paper-red font-mono text-xs font-bold uppercase hover:bg-white transition-colors">
+              Reset Filters
+            </button>
+          </div>
+
+          <!-- Bottom Return Bridge to /presidency -->
+          <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-4 my-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span class="text-[10px] font-mono uppercase tracking-widest text-paper-red font-bold block">INVESTIGATIVE DOSSIER</span>
+                <h3 class="font-editorial text-2xl text-paper-main mt-0.5">Read The Narrative Investigation</h3>
+                <p class="text-xs text-paper-muted font-light mt-1">Explore the curated editorial investigation with signature 7-trace accountability chains and measured 2026 outcomes.</p>
+              </div>
+              <a href="/presidency" class="shrink-0 px-6 py-3 bg-[#141517] hover:bg-black text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors text-center">
+                <span>READ THE INVESTIGATION →</span>
+              </a>
+            </div>
+          </section>
+
+          <!-- Methodology Closing Block -->
+          <section class="p-6 bg-[#FAF8F5] border border-paper space-y-4 text-xs font-sans">
+            <div class="flex items-center justify-between border-b border-paper pb-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-paper-dim font-bold">RESEARCH METRIC STANDARDS</span>
+              <div class="flex items-center gap-3 font-mono text-[11px]">
+                <a href="/evidence" class="text-paper-red hover:underline font-bold">Sources Registry ↗</a>
+                <span>·</span>
+                <a href="/methodology" class="text-paper-main hover:underline font-bold">Methodology Standard ↗</a>
+              </div>
+            </div>
+            <p class="text-paper-muted font-light leading-relaxed">
+              The 404TN Presidential Archive is a strict forensic dataset. All assertions are anchored to primary public sources (Official Gazette JORT, INS bulletins, Central Bank reports, and Administrative Court rulings). Documented data gaps represent verified absences of legally mandated public data.
+            </p>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- CONNECTED THEMATIC DOSSIERS (EDITORIAL TRANSITION) -->
+      <section class="bg-background text-bone-100 py-12 border-t border-surface-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono uppercase tracking-widest text-surface-400 block font-semibold">CONNECTED THEMATIC DOSSIERS</span>
+            <a href="/the-files" class="text-xs font-mono text-sand hover:underline">View All 07 Files ↗</a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="/issues/water" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 01: Water Deficit (21.4%)</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/issues/electricity" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 02: Electrical Stress (52%)</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/gabes" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">Gabès Flagship Investigation</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+            <a href="/issues/rights" class="p-4 bg-background-elevated hover:bg-surface-900 border border-surface-800 hover:border-surface-600 transition-colors group flex items-center justify-between text-xs font-mono">
+              <span class="text-bone-100 group-hover:text-crimson font-medium">File 07: Rights &amp; Freedoms</span>
+              <span class="text-surface-400 group-hover:text-bone-100">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </article>
+  `;
+}
+
+/**
+ * Client-Side Interactive Controller for /presidency/archive
+ */
+export function initPresidencyArchiveController() {
+  const searchInput = document.getElementById("archive-search-input");
+  const yearButtons = document.querySelectorAll(".archive-filter-btn");
+  const typeSelect = document.getElementById("archive-type-select");
+  const classSelect = document.getElementById("archive-class-select");
+  const sortSelect = document.getElementById("archive-sort-select");
+  const countEl = document.getElementById("archive-count");
+  const resetBtn = document.getElementById("archive-reset-btn");
+  const emptyStateEl = document.getElementById("archive-empty-state");
+  const recordsContainer = document.getElementById("archive-records-list");
+
+  if (!recordsContainer) return;
+
+  const cards = Array.from(recordsContainer.querySelectorAll(".archive-record-card"));
+
+  // State
+  let activeYear = "ALL";
+  let activeType = "ALL";
+  let activeClass = "ALL";
+  let activeQuery = "";
+  let activeSort = "asc";
+
+  // Read URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("year")) activeYear = urlParams.get("year");
+  if (urlParams.has("type")) activeType = urlParams.get("type");
+  if (urlParams.has("classification")) activeClass = urlParams.get("classification");
+  if (urlParams.has("q")) activeQuery = urlParams.get("q");
+  if (urlParams.has("sort")) activeSort = urlParams.get("sort");
+
+  // Sync initial UI elements
+  if (searchInput && activeQuery) searchInput.value = activeQuery;
+  if (typeSelect && activeType !== "ALL") typeSelect.value = activeType;
+  if (classSelect && activeClass !== "ALL") classSelect.value = activeClass;
+  if (sortSelect && activeSort !== "asc") sortSelect.value = activeSort;
+
+  yearButtons.forEach(btn => {
+    const y = btn.getAttribute("data-year");
+    if (y === activeYear) {
+      btn.classList.add("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+      btn.classList.remove("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+    } else {
+      btn.classList.remove("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+      btn.classList.add("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+    }
+  });
+
+  const updateUrlParams = () => {
+    const params = new URLSearchParams();
+    if (activeYear !== "ALL") params.set("year", activeYear);
+    if (activeType !== "ALL") params.set("type", activeType);
+    if (activeClass !== "ALL") params.set("classification", activeClass);
+    if (activeQuery.trim()) params.set("q", activeQuery.trim());
+    if (activeSort !== "asc") params.set("sort", activeSort);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  };
+
+  const applyFilters = () => {
+    const q = activeQuery.toLowerCase().trim();
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const cardYear = card.getAttribute("data-year");
+      const cardType = card.getAttribute("data-type");
+      const cardClass = card.getAttribute("data-classification");
+      const cardSearch = card.getAttribute("data-search") || "";
+
+      let matchesYear = activeYear === "ALL" || cardYear === activeYear;
+      let matchesType = activeType === "ALL" || cardType === activeType;
+      let matchesClass = activeClass === "ALL" || cardClass === activeClass;
+      let matchesQuery = !q || cardSearch.includes(q);
+
+      if (matchesYear && matchesType && matchesClass && matchesQuery) {
+        card.classList.remove("hidden");
+        visibleCount++;
+      } else {
+        card.classList.add("hidden");
+      }
+    });
+
+    if (countEl) countEl.textContent = String(visibleCount);
+
+    if (emptyStateEl) {
+      if (visibleCount === 0) {
+        emptyStateEl.classList.remove("hidden");
+      } else {
+        emptyStateEl.classList.add("hidden");
+      }
+    }
+
+    const isFiltered = activeYear !== "ALL" || activeType !== "ALL" || activeClass !== "ALL" || q.length > 0 || activeSort !== "asc";
+    if (resetBtn) {
+      if (isFiltered) {
+        resetBtn.classList.remove("hidden");
+      } else {
+        resetBtn.classList.add("hidden");
+      }
+    }
+
+    // Sort cards in DOM
+    if (activeSort === "desc") {
+      cards.slice().reverse().forEach(card => recordsContainer.appendChild(card));
+    } else {
+      cards.forEach(card => recordsContainer.appendChild(card));
+    }
+
+    updateUrlParams();
+  };
+
+  // Event Listeners
+  if (searchInput) {
+    let debounceTimer;
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        activeQuery = e.target.value;
+        applyFilters();
+      }, 150);
+    });
+  }
+
+  yearButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      yearButtons.forEach(b => {
+        b.classList.remove("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+        b.classList.add("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+      });
+      btn.classList.add("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+      btn.classList.remove("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+      activeYear = btn.getAttribute("data-year") || "ALL";
+      applyFilters();
+    });
+  });
+
+  if (typeSelect) {
+    typeSelect.addEventListener("change", (e) => {
+      activeType = e.target.value;
+      applyFilters();
+    });
+  }
+
+  if (classSelect) {
+    classSelect.addEventListener("change", (e) => {
+      activeClass = e.target.value;
+      applyFilters();
+    });
+  }
+
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (e) => {
+      activeSort = e.target.value;
+      applyFilters();
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      activeYear = "ALL";
+      activeType = "ALL";
+      activeClass = "ALL";
+      activeQuery = "";
+      activeSort = "asc";
+
+      if (searchInput) searchInput.value = "";
+      if (typeSelect) typeSelect.value = "ALL";
+      if (classSelect) classSelect.value = "ALL";
+      if (sortSelect) sortSelect.value = "asc";
+
+      yearButtons.forEach(b => {
+        const y = b.getAttribute("data-year");
+        if (y === "ALL") {
+          b.classList.add("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+          b.classList.remove("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+        } else {
+          b.classList.remove("bg-[#141517]", "text-white", "border-[#141517]", "font-bold");
+          b.classList.add("bg-[#FAF8F5]", "text-paper-main", "border-paper", "font-medium");
+        }
+      });
+
+      applyFilters();
+    });
+  }
+
+  // Handle deep linking to record anchor
+  if (window.location.hash) {
+    const targetId = window.location.hash.substring(1);
+    const targetCard = document.getElementById(targetId);
+    if (targetCard) {
+      targetCard.classList.remove("hidden");
+      const details = targetCard.querySelector(".archive-record-details");
+      if (details) details.open = true;
+      targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  applyFilters();
 }

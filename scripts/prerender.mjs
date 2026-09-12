@@ -10,6 +10,7 @@ import {
   renderDossierViewHtml,
   renderGabesReportViewHtml,
   renderPresidencyReportViewHtml,
+  renderPresidencyArchiveViewHtml,
   renderSummer2026Html,
   renderTheFilesHtml,
   renderTimelineHtml,
@@ -161,6 +162,8 @@ function prerenderRoute(baseHtml, entry) {
     routeHtml = renderGabesReportViewHtml();
   } else if (entry.path === '/presidency') {
     routeHtml = renderPresidencyReportViewHtml();
+  } else if (entry.path === '/presidency/archive') {
+    routeHtml = renderPresidencyArchiveViewHtml();
   } else if (entry.path === '/summer-2026') {
     routeHtml = renderSummer2026Html({ isPrerender: true });
   } else if (entry.path === '/the-files') {
