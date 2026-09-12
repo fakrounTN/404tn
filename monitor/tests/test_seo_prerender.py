@@ -308,7 +308,7 @@ class TestSeoPrerender(unittest.TestCase):
         self.assertNotIn('href="/issues/rights-institutions"', gabes_html)
 
     def test_phase_c_presidency_and_editorial_design_system(self):
-        """Phase R2.2: Verify /presidency Record of Power structure, Promise/Action/Result blocks, and editorial design components."""
+        """Phase R2.2/R2.4: Verify /presidency Record of Power structure, Promise/Action/Result blocks, and editorial design components."""
         if not os.path.exists(self.dist_dir):
             self.skipTest("dist/ directory not yet generated; skipping dist template assertions.")
 
@@ -325,7 +325,7 @@ class TestSeoPrerender(unittest.TestCase):
         self.assertIn("year-2024", pres_html)
         self.assertIn("year-2026", pres_html)
         self.assertIn("WHAT WAS PROMISED", pres_html)
-        self.assertIn("WHAT EVIDENCE SHOWS", pres_html)
+        self.assertTrue("WHAT THE RECORD SHOWS" in pres_html or "WHAT EVIDENCE SHOWS" in pres_html)
         self.assertIn("Arab Barometer", pres_html)
         self.assertTrue("Moody" in pres_html and "Fitch" in pres_html)
         self.assertIn("ACCOUNTABILITY GRAMMAR", pres_html)

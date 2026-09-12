@@ -1,8 +1,8 @@
 // src/presidency-data.js
 // 404TN — The Record of Power: Editorial Narrative & Research Archive (Tunisia 2019–2026)
-// Provides two distinct interfaces:
-// 1. /presidency = Premium investigative reading narrative (~38 primary records + 7 traces + 2026 outcomes)
-// 2. /presidency/archive = Complete canonical research archive (all 88 records, search, filters, deep anchors)
+// Dual-View Information Architecture (Phase R2.4B.1):
+// 1. /presidency = Premium investigative reading narrative (Three-level hierarchy: 11 Lead + 17 Supporting + 10 Outcomes = 38 Primary Records)
+// 2. /presidency/archive = Complete canonical research archive (88-record year-grouped compact documentary evidence index)
 
 import { escapeHtml, stripHtml } from './utils.js';
 import {
@@ -48,65 +48,62 @@ export const TRACE_FAMILIES = [
   {
     id: "trace-july25-constitution",
     number: "02",
-    title: "July 25 Rupture → Decree 117 → 2022 Constitution",
-    subtitle: "Concentration of Plenary Executive & Decree Authority in the Presidency",
+    title: "The July 25 Rupture, Decree 117 & 2022 Constitution",
+    subtitle: "From Emergency Measures to Executive Power Concentration and Constitutional Overhaul",
     chain: [
-      { step: "EVENT", recordId: "ROP-EVT-2021-0725-001", role: "Article 80 Invocation & Cabinet Freeze" },
-      { step: "DECISION", recordId: "ROP-DEC-2021-0922-001", role: "Presidential Decree 117 Promulgated" },
-      { step: "LAW", recordId: "ROP-LAW-2022-CONST-001", role: "2022 Constitution Enacted" },
-      { step: "INSTITUTION", recordId: "ROP-INS-2024-NRC-INAUG", role: "Bicameral Installation (NRC)" }
+      { step: "EVENT", recordId: "ROP-EVT-2021-0725-001", role: "Article 80 Invocation" },
+      { step: "STATEMENT", recordId: "ROP-STM-2021-0725-001", role: "Emergency Justification Speech" },
+      { step: "DECISION", recordId: "ROP-DEC-2021-0922-001", role: "Decree 117 (Plenary Decree Powers)" },
+      { step: "LAW", recordId: "ROP-LAW-2022-CONST-001", role: "2022 Constitution Promulgated" }
     ]
   },
   {
     id: "trace-judiciary-restructuring",
     number: "03",
-    title: "Judiciary Restructuring & Magistrate Revocations",
-    subtitle: "Dismantling of Independent Judicial Councils and Executive Oversight",
+    title: "Judiciary Restructuring & Revocation of 57 Magistrates",
+    subtitle: "Dissolution of High Judicial Council, Revocations, and Non-Execution of Administrative Court Injunctions",
     chain: [
-      { step: "DECISION", recordId: "ROP-INS-2022-CSM-001", role: "Elected High Judicial Council Dissolved" },
-      { step: "DECISION", recordId: "ROP-DEC-2022-JUDGES-001", role: "57 Magistrates Revoked by Decree" },
-      { step: "OUTCOME", recordId: "ROP-OUT-2022-JUDICIAL-INJ", role: "Administrative Court Injunctions Unexecuted" },
-      { step: "OUTCOME", recordId: "ROP-OUT-2026-DL54-CONVICT", role: "Executive Oversight Maintained" }
+      { step: "INSTITUTION", recordId: "ROP-INS-2022-CSM-001", role: "Dissolution of CSM by Decree 2022-11" },
+      { step: "DECISION", recordId: "ROP-DEC-2022-JUDGES-001", role: "Revocation of 57 Judges (Decree 2022-516)" },
+      { step: "OUTCOME", recordId: "ROP-OUT-2022-JUDICIAL-INJ", role: "Administrative Court Stay of Execution" },
+      { step: "OUTCOME", recordId: "ROP-OUT-2026-DL54-CONVICT", role: "Non-Reinstatement & Continuing Judicial Subordination" }
     ]
   },
   {
-    id: "trace-decree54-speech",
+    id: "trace-decree-54-speech",
     number: "04",
-    title: "Decree-Law 54 / Media & Public Speech",
-    subtitle: "Application of Cybercrime Sanctions to Journalists, Lawyers, and Commentators",
+    title: "Decree-Law 54 & Freedom of Expression Proceedings",
+    subtitle: "Cybercrime Legislation, Press Prosecutions, and Documented Convictions",
     chain: [
-      { step: "LAW", recordId: "ROP-LAW-2022-054-001", role: "Decree-Law 2022-54 Promulgated" },
-      { step: "EVENT", recordId: "ROP-EVT-2023-SNJT-PROSEC", role: "Journalist & Lawyer Inquiries Initiated" },
-      { step: "EVENT", recordId: "ROP-EVT-2024-MAY-CRACKDOWN", role: "Bar Association & Studio Arrests" },
-      { step: "OUTCOME", recordId: "ROP-OUT-2026-DL54-CONVICT", role: ">80 Inquiries & Convictions Documented" }
+      { step: "LAW", recordId: "ROP-LAW-2022-054-001", role: "Decree-Law 2022-54 Enacted (Article 24)" },
+      { step: "EVENT", recordId: "ROP-EVT-2023-SNJT-PROSEC", role: "Prosecution of Journalists & Lawyers" },
+      { step: "OUTCOME", recordId: "ROP-OUT-2026-DL54-CONVICT", role: "Documented Convictions & Detentions (2022–2026)" }
     ]
   },
   {
-    id: "trace-economic-sovereignty",
+    id: "trace-imf-bct-sovereignty",
     number: "05",
-    title: "Macroeconomic Sovereignty / IMF / BCT Lending",
-    subtitle: "From External Diktat Rejections to Direct Central Bank Statutory Advances",
+    title: "Economic Sovereignty, IMF Standoff & Central Bank Direct Lending",
+    subtitle: "From Founding Sovereignty Pledges to Law 2024-10 Direct BCT Treasury Financing",
     chain: [
-      { step: "PROMISE", recordId: "ROP-PRM-2019-SOV-001", role: "Self-Reliance & Sovereignty Pledge" },
-      { step: "STATEMENT", recordId: "ROP-STM-2023-IMF-REFUSAL", role: "Rejection of IMF Reform Conditions" },
-      { step: "LAW", recordId: "ROP-LAW-2024-BCT-LENDING", role: "Law 2024-10 (7B TND BCT Financing)" },
-      { step: "OUTCOME", recordId: "ROP-OUT-2024-SOV-DEBT-REPAY", role: "€850M Eurobond Repaid On Schedule" },
-      { step: "INDICATOR", recordId: "ROP-IND-2026-PUBLIC-DEBT", role: "80.2% Public Debt Burden" }
+      { step: "PROMISE", recordId: "ROP-PRM-2019-SOV-001", role: "National Sovereignty & Self-Reliance Pledge" },
+      { step: "EVENT", recordId: "ROP-EVT-2022-IMF-SLA", role: "IMF Staff-Level Agreement (1.9B USD)" },
+      { step: "STATEMENT", recordId: "ROP-STM-2023-IMF-REFUSAL", role: "Public Refusal of IMF 'Foreign Dictates'" },
+      { step: "LAW", recordId: "ROP-LAW-2024-BCT-LENDING", role: "Law 2024-10 Direct BCT Financing (7B TND)" }
     ]
   },
   {
-    id: "trace-gabes-relocation",
+    id: "trace-gabes-pollution-reloc",
     number: "06",
-    title: "Gabès Relocation / Environmental Transparency",
-    subtitle: "Tracking Nine Years of Unexecuted Dismantling Pledges and Missing Ambient Air Data",
+    title: "Gabès Industrial Relocation & Environmental Transparency Gap",
+    subtitle: "Cabinet Relocation Mandate, Execution Inaction, and Lack of Continuous Ambient Air Data",
     chain: [
-      { step: "DECISION", recordId: "ROP-DEC-2020-KAMOUR-001", role: "2017 Cabinet Commitment Maintained" },
-      { step: "OUTCOME", recordId: "ROP-OUT-2026-GABES-RELOC-FAIL", role: "Zero Chemical Units Relocated" },
-      { step: "DATA GAP", recordId: "ROP-GAP-2026-GABES-AIR-001", role: "No Continuous Public Ambient Air Data" }
+      { step: "OUTCOME", recordId: "ROP-OUT-2026-GABES-RELOC-FAIL", role: "Non-Execution of 2017 Cabinet Decision on GCT Coastal Processing Relocation" },
+      { step: "DATA GAP", recordId: "ROP-GAP-2026-GABES-AIR-001", role: "Continuous Ambient Air Quality Monitoring Data Gap" }
     ]
   },
   {
-    id: "trace-2024-presidential-election",
+    id: "trace-2024-election-isie",
     number: "07",
     title: "2024 Presidential Election & Candidate Disqualifications",
     subtitle: "Disqualification of Candidates, Electoral Code Amendments, and Certified 90.69% Re-election",
@@ -120,12 +117,20 @@ export const TRACE_FAMILIES = [
 ];
 
 /**
- * Curated Era Configuration for /presidency: Featured primary reading path vs secondary disclosure in archive.
+ * Curated Era Configuration for /presidency:
+ * Deterministic Three-Level Information Hierarchy (Lead records vs Supporting records vs Full Archive)
  */
 export const CURATED_ERA_CONFIG = {
   2019: {
     title: "The Mandate & Founding Pledges",
     subtitle: "Electoral victory, inaugural promises on corruption and stolen assets, economic sovereignty framework, and baseline macroeconomic indicators.",
+    leadIds: [
+      "ROP-EVT-2019-ELEC-001"
+    ],
+    supportingIds: [
+      "ROP-PRM-2019-RECON-001",
+      "ROP-PRM-2019-SOV-001"
+    ],
     featuredIds: [
       "ROP-EVT-2019-ELEC-001",
       "ROP-PRM-2019-RECON-001",
@@ -147,6 +152,13 @@ export const CURATED_ERA_CONFIG = {
   2020: {
     title: "Governing Deadlock & The Pandemic Crisis",
     subtitle: "Failed government formation, Fakhfakh cabinet resignation, Mechichi appointment, and initial COVID-19 emergency measures.",
+    leadIds: [
+      "ROP-DEC-2020-MECH-APPOINT"
+    ],
+    supportingIds: [
+      "ROP-EVT-2020-GOV-FRIB-001",
+      "ROP-EVT-2020-FAKH-RESIGN"
+    ],
     featuredIds: [
       "ROP-EVT-2020-GOV-FRIB-001",
       "ROP-EVT-2020-FAKH-RESIGN",
@@ -165,6 +177,14 @@ export const CURATED_ERA_CONFIG = {
   2021: {
     title: "The July 25 Rupture & Decree 117",
     subtitle: "Invocation of Article 80, suspension of parliament, dismissal of Mechichi cabinet, concentration of decree power, and appointment of Najla Bouden.",
+    leadIds: [
+      "ROP-EVT-2021-0725-001",
+      "ROP-DEC-2021-0922-001"
+    ],
+    supportingIds: [
+      "ROP-STM-2021-0725-001",
+      "ROP-DEC-2021-BOUDEN-APPOINT"
+    ],
     featuredIds: [
       "ROP-EVT-2021-0725-001",
       "ROP-STM-2021-0725-001",
@@ -187,6 +207,15 @@ export const CURATED_ERA_CONFIG = {
   2022: {
     title: "Constitutional Reordering & Executive Decrees",
     subtitle: "Dissolution of High Judicial Council, revocation of 57 magistrates, Decree-Law 2022-13 on penal reconciliation, 2022 Constitution referendum, and Decree-Law 54.",
+    leadIds: [
+      "ROP-LAW-2022-CONST-001",
+      "ROP-LAW-2022-054-001"
+    ],
+    supportingIds: [
+      "ROP-INS-2022-CSM-001",
+      "ROP-DEC-2022-JUDGES-001",
+      "ROP-LAW-2022-RECON-001"
+    ],
     featuredIds: [
       "ROP-INS-2022-CSM-001",
       "ROP-DEC-2022-JUDGES-001",
@@ -213,6 +242,14 @@ export const CURATED_ERA_CONFIG = {
   2023: {
     title: "Political Consolidation & Sovereignty Discourse",
     subtitle: "Inauguration of the new ARP, political arrests, migration policy shift and EU MoU, public refusal of IMF program, and peak inflation (10.4%).",
+    leadIds: [
+      "ROP-EVT-2023-ARRESTS-CONSP",
+      "ROP-STM-2023-IMF-REFUSAL"
+    ],
+    supportingIds: [
+      "ROP-INS-2023-ARP-INAUG",
+      "ROP-EVT-2023-EU-MOU"
+    ],
     featuredIds: [
       "ROP-INS-2023-ARP-INAUG",
       "ROP-EVT-2023-ARRESTS-CONSP",
@@ -238,6 +275,15 @@ export const CURATED_ERA_CONFIG = {
   2024: {
     title: "BCT Lending, Second Chamber & Presidential Re-election",
     subtitle: "Law 2024-10 direct central bank lending, installation of National Council of Regions, candidate disqualifications, Law 2024-45 appellate restrictions, and 90.69% election victory.",
+    leadIds: [
+      "ROP-LAW-2024-BCT-LENDING",
+      "ROP-EVT-2024-ELEC-001"
+    ],
+    supportingIds: [
+      "ROP-INS-2024-NRC-INAUG",
+      "ROP-DEC-2024-ISIE-DISQUAL",
+      "ROP-LAW-2024-ELEC-STRIP"
+    ],
     featuredIds: [
       "ROP-LAW-2024-BCT-LENDING",
       "ROP-INS-2024-NRC-INAUG",
@@ -263,6 +309,14 @@ export const CURATED_ERA_CONFIG = {
   2025: {
     title: "Outcomes, Institutional Effects & Public Confidence",
     subtitle: "Debates on draft civil society legislation, administrative rollout of community enterprises (236 created, 60 operational; 95M TND state credit lines), maritime border interceptions, and phosphate extraction performance.",
+    leadIds: [
+      "ROP-OUT-2025-COMMUNITY-YIELD"
+    ],
+    supportingIds: [
+      "ROP-EVT-2025-ASSOCIATIONS-DEB",
+      "ROP-EVT-2025-BORDER-PATROL",
+      "ROP-OUT-2025-PHOSPHATE-TARGET"
+    ],
     featuredIds: [
       "ROP-EVT-2025-ASSOCIATIONS-DEB",
       "ROP-OUT-2025-COMMUNITY-YIELD",
@@ -280,70 +334,139 @@ export const CURATED_ERA_CONFIG = {
       "ROP-STM-2025-WATER-PLOTS",
       "ROP-OPP-2025-CLIMATE-RESP"
     ]
+  },
+  2026: {
+    title: "Measured Results & Audited Transparency Gaps",
+    subtitle: "Seven years following the 2019 mandate and five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps.",
+    leadIds: [
+      "ROP-IND-UNEMP-GRAD-001",
+      "ROP-IND-GDP-GROWTH-001",
+      "ROP-IND-2026-PUBLIC-DEBT",
+      "ROP-IND-2026-INFLATION-FOOD",
+      "ROP-IND-2026-ENERGY-DEFICIT",
+      "ROP-IND-2026-FX-DAYS",
+      "ROP-OUT-2026-RECON-001",
+      "ROP-OUT-2026-WATER-001",
+      "ROP-OUT-2026-GABES-RELOC-FAIL",
+      "ROP-OUT-2026-DL54-CONVICT"
+    ],
+    supportingIds: [],
+    featuredIds: [
+      "ROP-IND-UNEMP-GRAD-001",
+      "ROP-IND-GDP-GROWTH-001",
+      "ROP-IND-2026-PUBLIC-DEBT",
+      "ROP-IND-2026-INFLATION-FOOD",
+      "ROP-IND-2026-ENERGY-DEFICIT",
+      "ROP-IND-2026-FX-DAYS",
+      "ROP-OUT-2026-RECON-001",
+      "ROP-OUT-2026-WATER-001",
+      "ROP-OUT-2026-GABES-RELOC-FAIL",
+      "ROP-OUT-2026-DL54-CONVICT"
+    ],
+    allIds: [
+      "ROP-IND-UNEMP-GRAD-001",
+      "ROP-IND-GDP-GROWTH-001",
+      "ROP-IND-2026-PUBLIC-DEBT",
+      "ROP-IND-2026-INFLATION-FOOD",
+      "ROP-IND-2026-ENERGY-DEFICIT",
+      "ROP-IND-2026-FX-DAYS",
+      "ROP-OUT-2026-RECON-001",
+      "ROP-OUT-2026-WATER-001",
+      "ROP-OUT-2026-GABES-RELOC-FAIL",
+      "ROP-OUT-2026-DL54-CONVICT",
+      "ROP-GAP-2026-GABES-AIR-001",
+      "ROP-GAP-2026-RECON-RECEIPTS-001",
+      "ROP-GAP-2026-ENERGY-SUBSIDY",
+      "ROP-GAP-2026-CIVIL-SERVICE-CENSUS"
+    ]
   }
 };
 
 /**
- * Resolves full source metadata from SOURCE_MAP.
+ * Resolves source object from ID.
  */
 function resolveSource(sourceId) {
-  if (!sourceId) return null;
-  return SOURCE_MAP.get(sourceId) || null;
+  if (SOURCE_MAP[sourceId]) return SOURCE_MAP[sourceId];
+  return SOURCE_MANIFEST.find(s => s.id === sourceId) || null;
 }
 
 /**
- * Resolves full institution metadata.
+ * Resolves institution display name from ID.
  */
 function resolveInstitutionName(instId) {
-  if (!instId) return null;
-  const inst = INSTITUTIONS_REGISTRY[instId];
-  return inst ? inst.name_en : instId;
+  if (!instId) return '';
+  if (INSTITUTIONS_REGISTRY && INSTITUTIONS_REGISTRY[instId]) {
+    const inst = INSTITUTIONS_REGISTRY[instId];
+    return inst.short_name || inst.name_en || inst.name || instId;
+  }
+  if (Array.isArray(INSTITUTIONS_REGISTRY)) {
+    const inst = INSTITUTIONS_REGISTRY.find(i => (i.id === instId || i.institution_id === instId));
+    return inst ? (inst.short_name || inst.name_en || inst.name || instId) : instId;
+  }
+  return instId;
 }
 
 /**
- * Renders an epistemic classification badge on paper surface.
+ * Renders an epistemic classification badge on paper canvas.
  */
 function renderClassificationBadge(classification) {
-  switch (classification) {
-    case EPISTEMIC_CLASSIFICATION.FACT:
-      return `<span class="stamp-badge stamp-paper-fact">FACT</span>`;
-    case EPISTEMIC_CLASSIFICATION.CLAIM:
-      return `<span class="stamp-badge stamp-paper-claim">CLAIM · ATTRIBUTED</span>`;
-    case EPISTEMIC_CLASSIFICATION.ANALYSIS:
-      return `<span class="stamp-badge stamp-paper-analysis">ANALYSIS</span>`;
-    case EPISTEMIC_CLASSIFICATION.DATA_GAP:
-      return `<span class="stamp-badge stamp-paper-gap">DATA GAP</span>`;
-    default:
-      return `<span class="stamp-badge stamp-paper-fact">${escapeHtml(classification || 'FACT')}</span>`;
-  }
-}
+  const c = classification || EPISTEMIC_CLASSIFICATION.FACT;
+  let bg = "bg-[#FAF8F5]";
+  let text = "text-paper-main";
+  let border = "border-paper";
 
-/**
- * Renders record type badge with restrained editorial style.
- */
-function renderRecordTypeBadge(type) {
-  const label = (type || 'EVENT').replace(/_/g, ' ');
+  if (c === EPISTEMIC_CLASSIFICATION.FACT) {
+    bg = "bg-emerald-50";
+    text = "text-emerald-800";
+    border = "border-emerald-300";
+  } else if (c === EPISTEMIC_CLASSIFICATION.CLAIM) {
+    bg = "bg-amber-50";
+    text = "text-amber-900";
+    border = "border-amber-300";
+  } else if (c === EPISTEMIC_CLASSIFICATION.ANALYSIS) {
+    bg = "bg-sky-50";
+    text = "text-sky-900";
+    border = "border-sky-300";
+  } else if (c === "DATA_GAP" || c === "GAP") {
+    bg = "bg-[#FEF9C3]";
+    text = "text-amber-900";
+    border = "border-amber-400";
+  }
+
   return `
-    <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 bg-[#F2EFE9] border border-paper text-paper-main font-semibold">
-      ${escapeHtml(label)}
+    <span class="inline-flex items-center px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider uppercase border ${bg} ${text} ${border}">
+      ${escapeHtml(c)}
     </span>
   `;
 }
 
 /**
- * Renders promise or legal status badge.
+ * Renders a record type badge.
+ */
+function renderRecordTypeBadge(type) {
+  const formatted = (type || 'EVENT').replace(/_/g, ' ');
+  return `
+    <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 bg-[#FAF8F5] border border-paper text-paper-dim font-bold">
+      ${escapeHtml(formatted)}
+    </span>
+  `;
+}
+
+/**
+ * Renders a promise or outcome status badge.
  */
 function renderStatusBadge(status) {
   if (!status) return '';
-  const label = status.replace(/_/g, ' ');
-  let colorClasses = "bg-[#F2EFE9] text-paper-muted border-paper";
+  const s = String(status).toUpperCase();
+  let colorClasses = "bg-[#FAF8F5] text-paper-main border-paper";
+  let label = s.replace(/_/g, ' ');
 
-  if (status === "BROKEN" || status === "UNEXECUTED" || status === "CONVICTED" || status === "NOT_PUBLISHED") {
-    colorClasses = "bg-red-50 text-paper-red border-red-200 font-bold";
-  } else if (status === "FULFILLED" || status === "ENACTED" || status === "OPERATIONAL") {
-    colorClasses = "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold";
-  } else if (status === "PARTIALLY_FULFILLED" || status === "IN_PROGRESS" || status === "CONTESTED" || status === "PARTIAL") {
-    colorClasses = "bg-amber-50 text-amber-900 border-amber-200 font-semibold";
+  if (s === "UNFULFILLED" || s === "STALLED" || s === "REJECTED" || s === "NOT_PUBLISHED" || s === "BLOCKED") {
+    colorClasses = "bg-[#FAF8F5] text-paper-red border-paper-red/40 font-bold";
+  } else if (s === "FULFILLED" || s === "CONFIRMED" || s === "OPERATIONAL" || s === "PASSED" || s === "CERTIFIED") {
+    colorClasses = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
+  } else if (s === "PARTIAL" || s === "MODIFIED" || s === "UNDER_REVIEW" || s === "PENDING" || s === "ACTIVE") {
+    colorClasses = "bg-amber-50 text-amber-900 border-amber-300 font-semibold";
   }
 
   return `
@@ -401,9 +524,9 @@ function renderResponsibilityList(recordId) {
 }
 
 /**
- * Renders an editorial Chronology Item card for /presidency narrative.
+ * Level 1 Information Hierarchy: Lead Chronology Item (Strong Documentary Treatment).
  */
-function renderChronologyItem(rec) {
+export function renderLeadChronologyItem(rec) {
   if (!rec) return '';
 
   const dateStr = rec.date_start ? rec.date_start : (rec.date || '2019–2026');
@@ -511,21 +634,24 @@ function renderChronologyItem(rec) {
   const sourceHtml = renderSourceSlip(rec.source_ids);
 
   return `
-    <article class="chronology-record-item py-4 space-y-2.5 border-b border-paper last:border-b-0" id="${escapeHtml(rec.id)}" data-record-type="${escapeHtml(rec.record_type)}" data-record-classification="${escapeHtml(rec.classification)}">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2">
+    <article class="chronology-record-item lead-record-item py-5 space-y-3 border-b border-paper last:border-b-0" id="${escapeHtml(rec.id)}" data-record-type="${escapeHtml(rec.record_type)}" data-record-classification="${escapeHtml(rec.classification)}">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
         <div class="flex items-center gap-2 flex-wrap">
           <time class="text-xs font-mono font-bold text-paper-red">${escapeHtml(dateStr)}</time>
+          <span class="text-[9px] font-mono uppercase px-2 py-0.5 bg-[#141517] text-white border border-[#141517] font-bold">LEAD ACTION</span>
           ${typeBadge}
           ${classBadge}
           ${statusBadge}
         </div>
         <div class="text-[10px] font-mono text-paper-dim">
-          ID: <span class="text-paper-muted font-mono">${escapeHtml(rec.id)}</span>
+          ID: <a href="/presidency/archive#${escapeHtml(rec.id)}" class="text-paper-muted hover:text-paper-red font-mono">${escapeHtml(rec.id)}</a>
         </div>
       </div>
 
-      <h3 class="font-editorial font-bold text-paper-main text-lg sm:text-xl leading-snug">
-        ${escapeHtml(rec.title)}
+      <h3 class="font-editorial font-bold text-paper-main text-lg sm:text-2xl leading-snug">
+        <a href="/presidency/archive#${escapeHtml(rec.id)}" class="hover:text-paper-red transition-colors">
+          ${escapeHtml(rec.title)}
+        </a>
       </h3>
 
       <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-prose">
@@ -537,6 +663,56 @@ function renderChronologyItem(rec) {
       ${sourceHtml}
     </article>
   `;
+}
+
+/**
+ * Level 2 Information Hierarchy: Supporting Chronology Item (Compact Restrained Reading Row).
+ */
+export function renderSupportingChronologyItem(rec) {
+  if (!rec) return '';
+
+  const dateStr = rec.date_start ? rec.date_start : (rec.date || '2019–2026');
+  const typeBadge = renderRecordTypeBadge(rec.record_type);
+  const classBadge = renderClassificationBadge(rec.classification);
+  const instNames = (rec.institution_ids || []).map(id => resolveInstitutionName(id)).filter(Boolean).join(', ');
+  const sourceCount = (rec.source_ids || []).length;
+
+  return `
+    <article class="supporting-record-item py-3.5 border-b border-paper/50 last:border-b-0 space-y-1.5" id="${escapeHtml(rec.id)}" data-record-type="${escapeHtml(rec.record_type)}" data-record-classification="${escapeHtml(rec.classification)}">
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap">
+          <time class="text-xs font-mono font-bold text-paper-red">${escapeHtml(dateStr)}</time>
+          ${typeBadge}
+          ${classBadge}
+        </div>
+        <a href="/presidency/archive#${escapeHtml(rec.id)}" class="text-[10px] font-mono text-paper-red hover:underline font-bold shrink-0">
+          VIEW EVIDENCE →
+        </a>
+      </div>
+
+      <h4 class="font-sans font-bold text-paper-main text-sm sm:text-base leading-snug">
+        <a href="/presidency/archive#${escapeHtml(rec.id)}" class="hover:text-paper-red transition-colors">
+          ${escapeHtml(rec.title)}
+        </a>
+      </h4>
+
+      <p class="text-xs text-paper-muted font-light leading-relaxed">
+        ${escapeHtml(rec.summary)}
+      </p>
+
+      <div class="flex items-center justify-between text-[10px] font-mono text-paper-dim pt-0.5">
+        <span class="truncate max-w-md">${escapeHtml(instNames || rec.id)}</span>
+        <span>${sourceCount} ${sourceCount === 1 ? 'source' : 'sources'} · <span class="font-mono text-paper-muted">${escapeHtml(rec.id)}</span></span>
+      </div>
+    </article>
+  `;
+}
+
+/**
+ * Backward compatibility alias for legacy test runners.
+ */
+export function renderChronologyItem(rec) {
+  return renderLeadChronologyItem(rec);
 }
 
 /**
@@ -598,25 +774,18 @@ function renderTraceFamilyCard(tf) {
     const rec = getRecordById(stepItem.recordId);
     if (!rec) return '';
     const isLast = idx === tf.chain.length - 1;
+    const dateStr = rec.date_start || rec.date || '2019–2026';
     const stepBadge = `
-      <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 ${
-        stepItem.step === 'PROMISE' ? 'bg-[#141517] text-white' :
-        stepItem.step === 'LAW' ? 'bg-[#B91C1C] text-white' :
-        stepItem.step === 'OUTCOME' ? 'bg-emerald-800 text-white' :
-        stepItem.step === 'DATA GAP' ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold' :
-        'bg-[#F2EFE9] text-paper-main border border-paper'
-      }">
+      <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 bg-[#FAF8F5] border border-paper text-paper-red font-bold">
         ${escapeHtml(stepItem.step)}
       </span>
     `;
-    const dateStr = rec.date_start ? rec.date_start.substring(0, 4) : '';
-    const sourcesCount = rec.source_ids ? rec.source_ids.length : 0;
+    const sourcesCount = (rec.source_ids || []).length;
 
     return `
-      <div class="relative pl-6 pb-6 last:pb-0 group">
-        <!-- Connective Timeline Rail -->
-        ${!isLast ? `<div class="absolute left-[11px] top-6 bottom-0 w-px bg-paper-red/30"></div>` : ''}
-        <div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#FAF8F5] border-2 border-paper-red flex items-center justify-center text-[10px] font-mono font-bold text-paper-red">
+      <div class="relative pl-8 sm:pl-10 pb-6 last:pb-0">
+        ${!isLast ? '<div class="absolute left-3.5 sm:left-4.5 top-6 bottom-0 w-0.5 bg-paper-red/30"></div>' : ''}
+        <div class="absolute left-1.5 sm:left-2.5 top-1.5 w-4 h-4 rounded-full bg-paper-red text-white flex items-center justify-center text-[9px] font-mono font-bold shadow-xs">
           ${idx + 1}
         </div>
 
@@ -764,17 +933,31 @@ function renderPresidentialSpine() {
 }
 
 /**
- * Renders an entire year section with 3–5 featured primary records and contextual link to archive.
+ * Renders an entire year section with Level 1 Lead records, Level 2 Supporting records, and link to archive.
  */
 function renderYearChronologySection(year, config, customModules = '') {
-  const featuredRecords = config.featuredIds.map(id => getRecordById(id)).filter(Boolean);
+  const leadRecords = (config.leadIds || []).map(id => getRecordById(id)).filter(Boolean);
+  const supportingRecords = (config.supportingIds || []).map(id => getRecordById(id)).filter(Boolean);
 
-  const featuredItemsHtml = featuredRecords.map(r => `
-    <div class="chronology-node">
+  const effectiveLeads = leadRecords.length > 0 ? leadRecords : config.featuredIds.slice(0, 1).map(id => getRecordById(id)).filter(Boolean);
+  const effectiveSupporting = supportingRecords.length > 0 ? supportingRecords : config.featuredIds.slice(1).map(id => getRecordById(id)).filter(Boolean);
+
+  const leadsHtml = effectiveLeads.map(r => `
+    <div class="chronology-node lead-node">
       <span class="chronology-node-dot-paper"></span>
-      ${renderChronologyItem(r)}
+      ${renderLeadChronologyItem(r)}
     </div>
   `).join('');
+
+  const supportingHtml = effectiveSupporting.length > 0 ? `
+    <div class="chronology-supporting-block pl-4 sm:pl-6 border-l-2 border-paper/60 space-y-1 my-3 bg-[#FAF8F5]/50 p-3 sm:p-5 border border-paper">
+      <div class="flex items-center justify-between pb-1 border-b border-paper/40 mb-2">
+        <span class="text-[9px] font-mono uppercase tracking-widest text-paper-dim font-bold block">SUPPORTING DOCUMENTARY CHRONOLOGY · ${year}</span>
+        <span class="text-[9px] font-mono text-paper-dim">${effectiveSupporting.length} RECORDS</span>
+      </div>
+      ${effectiveSupporting.map(r => renderSupportingChronologyItem(r)).join('')}
+    </div>
+  ` : '';
 
   return `
     <section id="year-${year}" class="space-y-6 pt-8 border-t border-paper">
@@ -787,20 +970,21 @@ function renderYearChronologySection(year, config, customModules = '') {
           <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">${escapeHtml(config.subtitle)}</p>
         </div>
         <div class="text-[10px] font-mono text-paper-dim shrink-0">
-          ${config.featuredIds.length} FEATURED · ${config.allIds.length} TOTAL IN ARCHIVE
+          ${config.featuredIds.length} CURATED (${effectiveLeads.length} LEAD · ${effectiveSupporting.length} SUPPORTING) · ${config.allIds.length} IN ARCHIVE
         </div>
       </div>
 
       ${customModules ? `<div class="space-y-4">${customModules}</div>` : ''}
 
       <div class="chronology-spine-paper space-y-4 pt-2">
-        ${featuredItemsHtml}
+        ${leadsHtml}
+        ${supportingHtml}
       </div>
 
       <div class="mt-4 pt-3 border-t border-paper/60 flex items-center justify-between flex-wrap gap-2 text-xs font-mono">
-        <span class="text-paper-dim uppercase text-[10px]">${config.allIds.length} DOCUMENTED RECORDS IN ${year} ERA</span>
+        <span class="text-paper-dim uppercase text-[10px]">${config.allIds.length} TOTAL ${year} RECORDS INDEXED IN ARCHIVE</span>
         <a href="/presidency/archive?year=${year}" class="text-paper-red hover:underline font-bold flex items-center gap-1 group">
-          <span>VIEW FULL ${year} ARCHIVE (${config.allIds.length} RECORDS)</span>
+          <span>VIEW COMPLETE ${year} ARCHIVE (${config.allIds.length} RECORDS)</span>
           <span class="group-hover:translate-x-0.5 transition-transform">→</span>
         </a>
       </div>
@@ -809,7 +993,7 @@ function renderYearChronologySection(year, config, customModules = '') {
 }
 
 /**
- * Renders the "WHAT THE STATE SAID" vs "WHAT THE RECORD SHOWS" comparison module for July 25 rupture on paper.
+ * Specialized 2021 Rupture / Decree 117 Comparison Module.
  */
 function renderStateComparisonModule() {
   const stm = getRecordById("ROP-STM-2021-0725-001");
@@ -819,8 +1003,8 @@ function renderStateComparisonModule() {
   return `
     <div class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4 my-4">
       <div class="pb-3 border-b border-paper">
-        <span class="text-[10px] font-mono uppercase tracking-meta text-paper-red font-bold block">COMPETING INTERPRETATIONS · JULY 25 RUPTURE</span>
-        <h3 class="font-editorial text-2xl text-paper-main mt-1">What Was Claimed vs What The Law Enacted</h3>
+        <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim font-bold block">INSTITUTIONAL ANALYSIS</span>
+        <h3 class="font-editorial text-2xl text-paper-main mt-1">July 25 Statement vs Decree 117 Concentration</h3>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -866,7 +1050,7 @@ function renderStateComparisonModule() {
 }
 
 /**
- * Renders Certified Result vs Contested Claim for the 2024 Election on paper.
+ * Specialized 2024 Election Module: Certified 90.69% Result vs Administrative Court Appeals.
  */
 function renderCertifiedVsContestedModule() {
   const elec2024 = getRecordById("ROP-EVT-2024-ELEC-001");
@@ -918,7 +1102,7 @@ function renderCertifiedVsContestedModule() {
             ${escapeHtml(opp2024.summary)}
           </p>
           <div class="text-[10px] font-mono text-paper-dim pt-2 border-t border-paper">
-            Status: <span class="text-paper-sand font-bold uppercase">${escapeHtml(opp2024.status)}</span> · Tribunal Administratif Decisions
+            Tribunal Administratif Rulings overridden by ISIE &amp; Law 2024-45
           </div>
           ${renderSourceSlip(opp2024.source_ids)}
         </div>
@@ -928,15 +1112,15 @@ function renderCertifiedVsContestedModule() {
 }
 
 /**
- * Renders the Editorial Archive Transition Block (Replaces giant 88-row directory on /presidency).
+ * Section 07: Transition Hand-off Block to /presidency/archive.
  */
 function renderExploreCompleteRecordSection() {
   return `
-    <section id="the-complete-record" class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6 my-8" aria-label="The Complete Record Transition">
-      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
-        <div class="space-y-1">
-          <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">RESEARCH REPOSITORY · 88 CANONICAL RECORDS</span>
-          <h3 class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">The Complete Record of Power (2019–2026)</h3>
+    <section id="the-complete-record" class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6" aria-label="The Complete Record Archive">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">RESEARCH REPOSITORY</span>
+          <h2 class="font-editorial text-2xl sm:text-3xl text-paper-main mt-1">The Complete Record of Power (2019–2026)</h2>
         </div>
         <div class="text-xs font-mono text-paper-muted">
           FULL SEARCH &amp; FILTER REGISTER
@@ -967,7 +1151,7 @@ function renderExploreCompleteRecordSection() {
 
       <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-paper/60">
         <a href="/presidency/archive" class="w-full sm:w-auto px-6 py-3.5 bg-[#B91C1C] hover:bg-[#991b1b] text-white text-xs font-mono font-bold uppercase tracking-wider transition-colors text-center shadow-sm flex items-center justify-center gap-2 group">
-          <span>EXPLORE THE PRESIDENTIAL ARCHIVE</span>
+          <span>EXPLORE THE PRESIDENTIAL ARCHIVE (88 RECORDS)</span>
           <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
         <div class="text-xs font-mono text-paper-dim">
@@ -1031,91 +1215,54 @@ export function renderPresidencyReportViewHtml() {
         <div class="p-3 bg-[#FAF8F5] border border-paper">
           <span class="text-[9px] text-paper-dim uppercase tracking-wider block">CHRONOLOGICAL ERAS</span>
           <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-main mt-1 block">08</span>
-          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">2019 through 2026</span>
-        </div>
-        <div class="p-3 bg-[#FAF8F5] border border-paper">
-          <span class="text-[9px] text-paper-dim uppercase tracking-wider block">STATE INSTITUTIONS</span>
-          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-main mt-1 block">${Object.keys(INSTITUTIONS_REGISTRY).length}</span>
-          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">Jurisdiction Mapped</span>
+          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">2019 → 2026</span>
         </div>
         <div class="p-3 bg-[#FAF8F5] border border-paper">
           <span class="text-[9px] text-paper-dim uppercase tracking-wider block">PRIMARY SOURCES</span>
-          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-sand mt-1 block">${SOURCE_MANIFEST.length}</span>
-          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">JORT, INS, BCT, Courts</span>
+          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-main mt-1 block">${SOURCE_MANIFEST.length}</span>
+          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">JORT, INS, BCT, Court</span>
         </div>
         <div class="p-3 bg-[#FAF8F5] border border-paper">
-          <span class="text-[9px] text-paper-dim uppercase tracking-wider block">ACCOUNTABILITY EDGES</span>
-          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-main mt-1 block">${RELATIONSHIPS.length}</span>
-          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">Directional Traces</span>
+          <span class="text-[9px] text-paper-dim uppercase tracking-wider block">ACCOUNTABILITY CHAINS</span>
+          <span class="font-editorial text-2xl sm:text-3xl font-bold text-paper-main mt-1 block">07</span>
+          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">Multi-Hop Traces</span>
+        </div>
+        <div class="p-3 bg-[#FAF8F5] border border-paper col-span-2 sm:col-span-1">
+          <span class="text-[9px] text-paper-dim uppercase tracking-wider block">AUDITED DATA GAPS</span>
+          <span class="font-editorial text-2xl sm:text-3xl font-bold text-amber-800 mt-1 block">04</span>
+          <span class="text-[9px] text-paper-muted font-sans mt-0.5 block">Unpublished Ledgers</span>
         </div>
       </div>
     </section>
   `;
 
-  // 03. 6-Question Accountability Grammar Block (Adapted for Paper)
-  const accountabilityGrammarHtml = `
-    <section class="p-6 sm:p-8 bg-white border border-paper shadow-sm space-y-6" aria-label="Accountability Grammar">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-paper">
-        <div>
-          <span class="text-xs font-mono uppercase tracking-widest text-paper-red font-bold block">404TN ACCOUNTABILITY GRAMMAR</span>
-          <h3 class="font-editorial text-2xl text-paper-main mt-1">The Record of Power: Centralized Governance Audit (2019–2026)</h3>
-        </div>
-        <div class="text-xs font-mono text-paper-muted">
-          RESPONSIBLE: <span class="text-paper-main font-bold">Presidency of the Republic of Tunisia (Carthage Palace)</span>
-        </div>
-      </div>
+  // 08. Accountability Grammar Block
+  const accountabilityGrammarHtml = renderAccountabilityQuestionBlock({
+    title: "Documentary Rules & Neutrality Standard",
+    questions: [
+      { question: "What is the distinction between a FACT and a CLAIM in this record?", answer: "FACT denotes a statutory law, presidential decree, verified metric, or formal judicial action published in the Official Gazette (JORT) or official statistical bulletins. CLAIM denotes an official pledge, political speech justification, or opposition challenge, preserved as attributed text without editorial endorsement." },
+      { question: "How are documented data gaps identified?", answer: "A DATA GAP represents a legally mandated or institutionally expected public record that 404TN audited and verified as absent, unpublished, or restricted from public access as of 2026." },
+      { question: "How were accountability traces constructed?", answer: "Accountability traces link initial presidential promises or decrees to their subsequent statutory implementation, measured administrative outcomes, and identified data gaps using strict directional graph edges." }
+    ]
+  });
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs font-sans">
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">1. WHAT WAS PROMISED?</span>
-          <p class="text-paper-muted font-light leading-relaxed">A moral, self-reliant republic with eliminated corruption, decentralized grassroots councils, working public utilities, and rejection of external financial dictates.</p>
-        </div>
-
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">2. WHAT ACTION WAS ANNOUNCED?</span>
-          <p class="text-paper-muted font-light leading-relaxed">Concentrated executive and decree power via Decree 117 and 2022 Constitution; dissolved elected CSM; enacted Decree-Law 54; froze IMF EFF arrangement.</p>
-        </div>
-
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-paper-sand uppercase tracking-wider block font-bold">3. WHAT HAPPENED?</span>
-          <p class="text-paper-muted font-light leading-relaxed">Institutional counter-powers were dismantled; sovereign debt reached 80.2% of GDP; graduate unemployment stood at 26.6% (male 14.2%, female 35.6%); potable water rationing became operational in Summer 2026.</p>
-        </div>
-
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-paper-main uppercase tracking-wider block font-bold">4. WHO WAS RESPONSIBLE?</span>
-          <p class="text-paper-muted font-light leading-relaxed">Presidency of the Republic of Tunisia (Carthage Palace)</p>
-        </div>
-
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-emerald-800 uppercase tracking-wider block font-bold">5. WHAT EVIDENCE SHOWS</span>
-          <p class="text-paper-main font-medium leading-relaxed">Under the 2022 Constitution, all executive authority and ministerial appointments are formally centralized in the presidency, establishing unambiguous institutional responsibility.</p>
-        </div>
-
-        <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
-          <span class="text-[10px] font-mono text-paper-red uppercase tracking-wider block font-bold">6. WHAT REMAINS UNKNOWN?</span>
-          <p class="text-paper-muted font-light leading-relaxed">Itemized individual penal reconciliation settlement agreements (subject to statutory confidentiality under Decree-Law 2022-13 Article 25) and real-time industrial ambient emissions in Gabès.</p>
-        </div>
-      </div>
-    </section>
-  `;
-
-  // Specific data gaps for 2026
+  // Resolve 2026 data gaps
   const gabesGap = getRecordById("ROP-GAP-2026-GABES-AIR-001");
   const reconGap = getRecordById("ROP-GAP-2026-RECON-RECEIPTS-001");
   const energyGap = getRecordById("ROP-GAP-2026-ENERGY-SUBSIDY");
   const civilGap = getRecordById("ROP-GAP-2026-CIVIL-SERVICE-CENSUS");
 
   return `
-    <article class="presidency-dossier-page">
+    <article class="presidency-report-view">
 
-      <!-- 01. INVESTIGATION OPENER (DARK INVESTIGATIVE CANVAS) -->
+      <!-- 01. INVESTIGATION OPENER (DARK CANVAS) -->
       <div class="bg-background text-bone-100 py-10 sm:py-14 border-b border-surface-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           ${headerHtml}
         </div>
       </div>
 
-      <!-- 02–08. DOCUMENTARY REPORT VIEW (REAL WARM PAPER SURFACE) -->
+      <!-- 02. INVESTIGATIVE NARRATIVE BODY (WARM PAPER CANVAS) -->
       <div class="surface-paper py-10 sm:py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
 
@@ -1128,7 +1275,7 @@ export function renderPresidencyReportViewHtml() {
           <!-- 04. 2019→2026 PRESIDENTIAL SPINE -->
           ${renderPresidentialSpine()}
 
-          <!-- 05. CURATED ERA-BY-ERA DOCUMENTARY RECORD -->
+          <!-- 05. CURATED ERA-BY-ERA DOCUMENTARY RECORD (3-LEVEL HIERARCHY) -->
 
           <!-- ERA 1: 2019 — MANDATE & PROMISES -->
           ${renderYearChronologySection(2019, CURATED_ERA_CONFIG[2019])}
@@ -1176,28 +1323,28 @@ export function renderPresidencyReportViewHtml() {
 
             <!-- Macroeconomic Indicators & Public Services (Open broadsheet 2-column layout) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              ${renderChronologyItem(getRecordById("ROP-IND-UNEMP-GRAD-001"))}
-              ${renderChronologyItem(getRecordById("ROP-IND-GDP-GROWTH-001"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-UNEMP-GRAD-001"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-GDP-GROWTH-001"))}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-              ${renderChronologyItem(getRecordById("ROP-IND-2026-PUBLIC-DEBT"))}
-              ${renderChronologyItem(getRecordById("ROP-IND-2026-INFLATION-FOOD"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-2026-PUBLIC-DEBT"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-2026-INFLATION-FOOD"))}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-              ${renderChronologyItem(getRecordById("ROP-IND-2026-ENERGY-DEFICIT"))}
-              ${renderChronologyItem(getRecordById("ROP-IND-2026-FX-DAYS"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-2026-ENERGY-DEFICIT"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-IND-2026-FX-DAYS"))}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-              ${renderChronologyItem(getRecordById("ROP-OUT-2026-RECON-001"))}
-              ${renderChronologyItem(getRecordById("ROP-OUT-2026-WATER-001"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-OUT-2026-RECON-001"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-OUT-2026-WATER-001"))}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-              ${renderChronologyItem(getRecordById("ROP-OUT-2026-GABES-RELOC-FAIL"))}
-              ${renderChronologyItem(getRecordById("ROP-OUT-2026-DL54-CONVICT"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-OUT-2026-GABES-RELOC-FAIL"))}
+              ${renderLeadChronologyItem(getRecordById("ROP-OUT-2026-DL54-CONVICT"))}
             </div>
 
             <!-- Documented Data Gaps Sub-Section -->
@@ -1250,7 +1397,7 @@ export function renderPresidencyReportViewHtml() {
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-3 border-b border-paper">
                       <div>
                         <span class="text-[10px] font-mono uppercase tracking-meta text-paper-dim">SURVEY EVIDENCE</span>
-                        <div class="font-sans font-bold text-paper-main text-sm sm:text-base">${escapeHtml(trust.metadata.primarySource)} · 2018–2024 Trends</div>
+                        <div class="font-sans font-bold text-paper-main text-sm sm:text-base">${escapeHtml(trust.metadata.primarySource)}</div>
                       </div>
                       <div class="text-[10px] font-mono text-paper-dim">
                         ${escapeHtml(trust.metadata.sampleSize)} · ±2.5% MoE
@@ -1370,134 +1517,177 @@ export function renderPresidencyReportViewHtml() {
 }
 
 /**
- * Renders an expandable documentary record card for /presidency/archive.
+ * Renders an accessible compact row for the Documentary Evidence Index on /presidency/archive.
  */
-function renderArchiveRecordCard(rec) {
-  if (!rec) return '';
-
-  const year = rec.date_start ? rec.date_start.substring(0, 4) : '2019';
+export function renderArchiveRecordRow(rec) {
+  const dateStr = rec.date_start ? rec.date_start : (rec.date || '2019–2026');
   const typeBadge = renderRecordTypeBadge(rec.record_type);
   const classBadge = renderClassificationBadge(rec.classification);
-  const statusBadge = renderStatusBadge(rec.status || rec.data_gap_status);
-  const sourceCount = rec.source_ids ? rec.source_ids.length : 0;
+  const statusBadge = renderStatusBadge(rec.status);
   const instNames = (rec.institution_ids || []).map(id => resolveInstitutionName(id)).filter(Boolean).join(', ');
-
-  // Search indexing string
-  const searchCorpus = [
-    rec.id,
-    rec.title,
-    rec.short_title,
-    rec.summary,
-    rec.record_type,
-    rec.classification,
-    year,
-    instNames,
-    ...(rec.issue_tags || []),
-    rec.official_title || '',
-    rec.jort_reference || '',
-    rec.value || rec.measurement || rec.result || ''
-  ].join(' ').toLowerCase();
+  const sourceCount = (rec.source_ids || []).length;
+  const yearStr = rec.year ? String(rec.year) : (dateStr.match(/\b(2019|2020|2021|2022|2023|2024|2025|2026)\b/) ? dateStr.match(/\b(2019|2020|2021|2022|2023|2024|2025|2026)\b/)[0] : '2019');
 
   const respHtml = renderResponsibilityList(rec.id);
   const sourceHtml = renderSourceSlip(rec.source_ids);
 
+  const searchIndexString = [
+    rec.id,
+    rec.title,
+    rec.short_title || '',
+    rec.summary || '',
+    rec.official_title || '',
+    rec.record_type || '',
+    rec.classification || '',
+    yearStr,
+    instNames,
+    (rec.issue_tags || []).join(' '),
+    rec.jort_reference || '',
+    (rec.relevant_articles || []).join(' ')
+  ].join(' ').toLowerCase();
+
   return `
-    <article class="archive-record-card p-5 bg-white border border-paper hover:border-paper-red/50 transition-colors space-y-3 relative group" id="${escapeHtml(rec.id)}" data-record-id="${escapeHtml(rec.id)}" data-year="${escapeHtml(year)}" data-type="${escapeHtml(rec.record_type)}" data-classification="${escapeHtml(rec.classification)}" data-search="${escapeHtml(searchCorpus)}">
-      <!-- Card Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-paper/60">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs font-mono font-bold text-paper-red">${escapeHtml(year)}</span>
+    <details class="archive-record-details archive-record-row group border border-paper bg-white hover:border-paper-red/60 transition-colors" id="${escapeHtml(rec.id)}" data-year="${yearStr}" data-type="${escapeHtml(rec.record_type)}" data-classification="${escapeHtml(rec.classification)}" data-search="${escapeHtml(searchIndexString)}">
+      <summary class="cursor-pointer select-none p-3.5 sm:p-4 list-none flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-sans">
+
+        <!-- Left: Date & Type Badge -->
+        <div class="flex items-center gap-2 sm:w-48 shrink-0 font-mono">
+          <time class="text-xs font-bold text-paper-red shrink-0">${escapeHtml(dateStr)}</time>
           ${typeBadge}
+        </div>
+
+        <!-- Center: Record Title & Institution / ID Meta -->
+        <div class="flex-1 min-w-0 pr-2">
+          <div class="font-sans font-bold text-paper-main text-sm sm:text-base leading-snug group-hover:text-paper-red transition-colors">
+            ${escapeHtml(rec.title)}
+          </div>
+          <div class="text-[10px] font-mono text-paper-dim mt-0.5 flex items-center gap-2 flex-wrap">
+            <span class="truncate max-w-sm">${escapeHtml(instNames || rec.id)}</span>
+            <span>·</span>
+            <span class="text-paper-muted">ID: ${escapeHtml(rec.id)}</span>
+            ${statusBadge ? `<span>·</span>${statusBadge}` : ''}
+          </div>
+        </div>
+
+        <!-- Right: Epistemic Standard & Evidence Disclosure Toggle -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-paper/40">
           ${classBadge}
-          ${statusBadge}
+          <span class="text-[10px] font-mono text-paper-dim">${sourceCount} ${sourceCount === 1 ? 'src' : 'srcs'}</span>
+          <span class="text-paper-red text-xs font-mono font-bold group-open:rotate-180 transition-transform">▼</span>
         </div>
-        <div class="flex items-center gap-2 text-[10px] font-mono text-paper-dim">
-          <span>ID: <a href="#${escapeHtml(rec.id)}" class="text-paper-muted hover:text-paper-red font-mono">${escapeHtml(rec.id)}</a></span>
-          <span>·</span>
-          <span>${sourceCount} ${sourceCount === 1 ? 'src' : 'srcs'}</span>
-        </div>
-      </div>
 
-      <!-- Title & Headline -->
-      <h3 class="font-editorial font-bold text-paper-main text-lg sm:text-xl leading-snug">
-        <a href="#${escapeHtml(rec.id)}" class="hover:text-paper-red transition-colors">
+      </summary>
+
+      <!-- Expanded Documentary Evidence Docket -->
+      <div class="p-4 sm:p-5 bg-[#FAF8F5] border-t border-paper space-y-3.5 text-xs font-sans border-l-2 border-l-paper-red">
+
+        <!-- Summary / Stated Purpose -->
+        <div>
+          <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">CANONICAL SUMMARY &amp; CONTEXT</span>
+          <p class="text-xs text-paper-main font-light leading-relaxed mt-0.5">${escapeHtml(rec.summary)}</p>
+        </div>
+
+        ${rec.official_title ? `
+          <div>
+            <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">OFFICIAL STATUTORY TITLE</span>
+            <p class="text-xs font-mono text-paper-main mt-0.5">${escapeHtml(rec.official_title)}</p>
+          </div>
+        ` : ''}
+
+        ${rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target ? `
+          <div>
+            <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">STATED PURPOSE / PLEDGED TARGET</span>
+            <p class="text-xs text-paper-muted italic mt-0.5 font-serif">"${escapeHtml(rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target)}"</p>
+          </div>
+        ` : ''}
+
+        ${rec.documented_effect ? `
+          <div>
+            <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">DOCUMENTED LEGAL EFFECT</span>
+            <p class="text-xs text-paper-main mt-0.5">${escapeHtml(rec.documented_effect)}</p>
+          </div>
+        ` : ''}
+
+        ${rec.value || rec.measurement || rec.result ? `
+          <div class="p-2.5 bg-white border border-paper flex items-center justify-between text-xs font-mono">
+            <span class="text-[9px] uppercase tracking-wider text-paper-sand font-bold">MEASURED STATISTICAL RECORD:</span>
+            <span class="font-bold text-paper-red">${escapeHtml(rec.value || rec.measurement || rec.result)} ${rec.unit ? `<span class="text-paper-muted font-normal">(${escapeHtml(rec.unit)})</span>` : ''}</span>
+          </div>
+        ` : ''}
+
+        ${rec.jort_reference || rec.relevant_articles ? `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-paper-muted pt-1 border-t border-paper/60">
+            ${rec.jort_reference ? `<div>GAZETTE: <strong class="text-paper-main">${escapeHtml(rec.jort_reference)}</strong></div>` : ''}
+            ${rec.relevant_articles && rec.relevant_articles.length > 0 ? `<div>ARTICLES: <span class="text-paper-main">${escapeHtml(rec.relevant_articles.join(', '))}</span></div>` : ''}
+          </div>
+        ` : ''}
+
+        ${rec.editorial_notes ? `
+          <div class="text-[11px] font-sans text-paper-muted pt-1 border-t border-paper/60">
+            <strong class="text-paper-dim font-mono text-[9px] uppercase">EDITORIAL NOTE:</strong> ${escapeHtml(rec.editorial_notes)}
+          </div>
+        ` : ''}
+
+        ${rec.related_record_ids && rec.related_record_ids.length > 0 ? `
+          <div class="pt-1 border-t border-paper/60 text-[10px] font-mono">
+            <span class="text-paper-dim uppercase font-bold">CONNECTED RECORDS:</span>
+            ${rec.related_record_ids.map(rid => `<a href="#${escapeHtml(rid)}" class="ml-1 text-paper-red hover:underline font-bold">${escapeHtml(rid)}</a>`).join(', ')}
+          </div>
+        ` : ''}
+
+        ${respHtml}
+        ${sourceHtml}
+      </div>
+    </details>
+  `;
+}
+
+/**
+ * Backward compatibility alias for legacy test runners.
+ */
+export function renderArchiveRecordCard(rec) {
+  return renderArchiveRecordRow(rec);
+}
+
+/**
+ * Renders the 3 signature orientation cards at the top of the archive.
+ */
+function renderArchiveFeaturedOrientationSection() {
+  const featuredRecordIds = [
+    { id: "ROP-EVT-2021-0725-001", label: "25 JULY 2021", theme: "Article 80 Exceptional Rupture" },
+    { id: "ROP-DEC-2021-0922-001", label: "DECREE 117", theme: "Concentration of Plenary Powers" },
+    { id: "ROP-LAW-2022-CONST-001", label: "2022 CONSTITUTION", theme: "Promulgation of New Executive Order" }
+  ];
+
+  const cardsHtml = featuredRecordIds.map(item => {
+    const rec = getRecordById(item.id);
+    if (!rec) return '';
+    return `
+      <a href="#${escapeHtml(rec.id)}" class="p-3.5 bg-white border border-paper hover:border-paper-red transition-all block group">
+        <div class="flex items-center justify-between text-[9px] font-mono text-paper-dim pb-1 border-b border-paper/40">
+          <span class="font-bold text-paper-red">${escapeHtml(item.label)}</span>
+          ${renderClassificationBadge(rec.classification)}
+        </div>
+        <div class="font-sans font-bold text-paper-main text-xs sm:text-sm mt-1.5 group-hover:text-paper-red transition-colors line-clamp-2">
           ${escapeHtml(rec.title)}
-        </a>
-      </h3>
+        </div>
+        <div class="text-[10px] font-mono text-paper-dim mt-1">
+          ${escapeHtml(item.theme)}
+        </div>
+      </a>
+    `;
+  }).join('');
 
-      <!-- Narrative Summary -->
-      <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed">
-        ${escapeHtml(rec.summary)}
-      </p>
-
-      <!-- Key Metadata Tags -->
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-paper-dim pt-1">
-        ${instNames ? `<div><span class="text-[9px] uppercase font-bold text-paper-sand">INSTITUTION:</span> <span class="text-paper-main">${escapeHtml(instNames)}</span></div>` : ''}
-        ${rec.issue_tags && rec.issue_tags.length > 0 ? `<div><span class="text-[9px] uppercase font-bold text-paper-sand">TAGS:</span> <span class="text-paper-muted">${escapeHtml(rec.issue_tags.slice(0, 3).join(', '))}</span></div>` : ''}
+  return `
+    <section id="archive-featured-records" class="space-y-2 pt-2" aria-label="Signature Archival Anchors">
+      <div class="flex items-center justify-between text-[10px] font-mono uppercase text-paper-dim font-bold">
+        <span>FEATURED ORIENTATION ANCHORS</span>
+        <span>KEY CONSTITUTIONAL TURNING POINTS</span>
       </div>
-
-      <!-- Measured Metric Highlight if present -->
-      ${rec.value || rec.measurement || rec.result ? `
-        <div class="p-2.5 bg-[#FAF8F5] border border-paper flex items-center justify-between text-xs font-mono">
-          <span class="text-[9px] uppercase tracking-wider text-paper-sand font-bold">MEASURED RECORD:</span>
-          <span class="font-bold text-paper-red">${escapeHtml(rec.value || rec.measurement || rec.result)} ${rec.unit ? `<span class="text-paper-muted font-normal">(${escapeHtml(rec.unit)})</span>` : ''}</span>
-        </div>
-      ` : ''}
-
-      <!-- Expandable Forensic Evidence Slip -->
-      <details class="archive-record-details pt-2 border-t border-paper/60 text-xs font-sans group/details">
-        <summary class="cursor-pointer select-none text-[11px] font-mono font-semibold text-paper-red hover:underline flex items-center gap-1 list-none">
-          <span class="group-open/details:hidden">▶ VIEW FULL EVIDENCE &amp; PROVENANCE</span>
-          <span class="hidden group-open/details:inline">▼ COLLAPSE EVIDENCE SLIP</span>
-        </summary>
-
-        <div class="mt-3 p-4 bg-[#FAF8F5] border border-paper space-y-3">
-          ${rec.official_title ? `
-            <div>
-              <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">OFFICIAL STATUTORY TITLE</span>
-              <p class="text-xs font-mono text-paper-main mt-0.5">${escapeHtml(rec.official_title)}</p>
-            </div>
-          ` : ''}
-
-          ${rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target ? `
-            <div>
-              <span class="text-[9px] font-mono uppercase text-paper-dim font-bold block">STATED PURPOSE / PLEDGE</span>
-              <p class="text-xs text-paper-muted italic mt-0.5">${escapeHtml(rec.stated_purpose || rec.stated_commitment || rec.stated_outcome_target)}</p>
-            </div>
-          ` : ''}
-
-          ${rec.documented_effect ? `
-            <div>
-              <span class="text-[9px] font-mono uppercase text-paper-sand font-bold block">DOCUMENTED EFFECT</span>
-              <p class="text-xs text-paper-main mt-0.5">${escapeHtml(rec.documented_effect)}</p>
-            </div>
-          ` : ''}
-
-          ${rec.jort_reference || rec.relevant_articles ? `
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-paper-muted pt-1 border-t border-paper/60">
-              ${rec.jort_reference ? `<div>GAZETTE: <strong class="text-paper-main">${escapeHtml(rec.jort_reference)}</strong></div>` : ''}
-              ${rec.relevant_articles ? `<div>ARTICLES: <span class="text-paper-main">${escapeHtml(rec.relevant_articles.join(', '))}</span></div>` : ''}
-            </div>
-          ` : ''}
-
-          ${rec.editorial_notes ? `
-            <div class="text-[11px] font-sans text-paper-muted pt-1 border-t border-paper/60">
-              <strong class="text-paper-dim font-mono text-[9px] uppercase">EDITORIAL NOTE:</strong> ${escapeHtml(rec.editorial_notes)}
-            </div>
-          ` : ''}
-
-          ${rec.related_record_ids && rec.related_record_ids.length > 0 ? `
-            <div class="pt-1 border-t border-paper/60 text-[10px] font-mono">
-              <span class="text-paper-dim uppercase font-bold">CONNECTED RECORDS:</span>
-              ${rec.related_record_ids.map(rid => `<a href="#${escapeHtml(rid)}" class="ml-1 text-paper-red hover:underline font-bold">${escapeHtml(rid)}</a>`).join(', ')}
-            </div>
-          ` : ''}
-
-          ${respHtml}
-          ${sourceHtml}
-        </div>
-      </details>
-    </article>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        ${cardsHtml}
+      </div>
+    </section>
   `;
 }
 
@@ -1505,7 +1695,39 @@ function renderArchiveRecordCard(rec) {
  * Renders the complete, searchable, filterable research archive view for /presidency/archive.
  */
 export function renderPresidencyArchiveViewHtml() {
-  const allCardsHtml = SEED_RECORDS.map(rec => renderArchiveRecordCard(rec)).join('');
+  // Group all 88 records by year
+  const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+  const eraTitles = {
+    2019: "Mandate & Founding Pledges",
+    2020: "Governing Crisis & Pandemic",
+    2021: "July 25 Rupture & Decree 117",
+    2022: "Constitutional Reordering",
+    2023: "Political Consolidation & Sovereignty",
+    2024: "BCT Lending & Presidential Re-election",
+    2025: "Institutional Outcomes & Public Confidence",
+    2026: "Measured Results & Audited Transparency Gaps"
+  };
+
+  const yearGroupsHtml = years.map(y => {
+    const eraConfig = CURATED_ERA_CONFIG[y];
+    const yearRecords = (eraConfig && eraConfig.allIds) ? eraConfig.allIds.map(id => getRecordById(id)).filter(Boolean) : getRecordsByYear(y);
+    const rowsHtml = yearRecords.map(rec => renderArchiveRecordRow(rec)).join('');
+
+    return `
+      <div class="archive-year-group space-y-2 pt-6 first:pt-0" data-year="${y}">
+        <div class="flex items-center justify-between pb-2 border-b-2 border-paper/80">
+          <div class="flex items-baseline gap-2.5">
+            <span class="font-editorial text-2xl sm:text-3xl text-paper-red font-light">${y}</span>
+            <span class="text-xs font-mono uppercase text-paper-main font-bold">· ${escapeHtml(eraTitles[y])}</span>
+          </div>
+          <span class="text-[10px] font-mono text-paper-dim uppercase font-bold">${yearRecords.length} RECORDS</span>
+        </div>
+        <div class="space-y-1.5 pt-1">
+          ${rowsHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
 
   const breadcrumbHtml = `
     <nav aria-label="Breadcrumb" class="text-xs font-mono text-surface-400">
@@ -1656,7 +1878,7 @@ export function renderPresidencyArchiveViewHtml() {
 
                 <!-- Sort Order -->
                 <div class="space-y-1">
-                  <label for="archive-sort-select" class="text-[10px] uppercase font-bold text-paper-dim block">SORT ORDER:</label>
+                  <label for="archive-sort-select" class="text-[10px] uppercase font-bold text-paper-dim block">CHRONOLOGICAL SORT:</label>
                   <select id="archive-sort-select" class="w-full px-3 py-2 bg-[#FAF8F5] border border-paper text-paper-main text-xs font-mono focus:outline-none focus:border-paper-red">
                     <option value="asc">Chronological (Oldest → Newest)</option>
                     <option value="desc">Reverse Chronological (Newest → Oldest)</option>
@@ -1678,9 +1900,12 @@ export function renderPresidencyArchiveViewHtml() {
 
           </section>
 
-          <!-- Records List Container (Cards Grid) -->
-          <div id="archive-records-list" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            ${allCardsHtml}
+          <!-- Featured Orientation Anchors (Max 3) -->
+          ${renderArchiveFeaturedOrientationSection()}
+
+          <!-- Records List Container (Documentary Evidence Index grouped by year) -->
+          <div id="archive-records-list" class="space-y-6 pt-2">
+            ${yearGroupsHtml}
           </div>
 
           <!-- Empty State (Hidden by default) -->
@@ -1759,11 +1984,11 @@ export function renderPresidencyArchiveViewHtml() {
 }
 
 /**
- * Client-Side Interactive Controller for /presidency/archive
+ * Controller initializing client-side search, filters, sorting and URL synchronization for /presidency/archive.
  */
 export function initPresidencyArchiveController() {
   const searchInput = document.getElementById("archive-search-input");
-  const yearButtons = document.querySelectorAll(".archive-filter-btn");
+  const yearButtons = Array.from(document.querySelectorAll("#archive-year-filters button"));
   const typeSelect = document.getElementById("archive-type-select");
   const classSelect = document.getElementById("archive-class-select");
   const sortSelect = document.getElementById("archive-sort-select");
@@ -1774,7 +1999,8 @@ export function initPresidencyArchiveController() {
 
   if (!recordsContainer) return;
 
-  const cards = Array.from(recordsContainer.querySelectorAll(".archive-record-card"));
+  const yearGroups = Array.from(recordsContainer.querySelectorAll(".archive-year-group"));
+  const allRows = Array.from(recordsContainer.querySelectorAll(".archive-record-row"));
 
   // State
   let activeYear = "ALL";
@@ -1825,22 +2051,35 @@ export function initPresidencyArchiveController() {
     const q = activeQuery.toLowerCase().trim();
     let visibleCount = 0;
 
-    cards.forEach(card => {
-      const cardYear = card.getAttribute("data-year");
-      const cardType = card.getAttribute("data-type");
-      const cardClass = card.getAttribute("data-classification");
-      const cardSearch = card.getAttribute("data-search") || "";
+    yearGroups.forEach(group => {
+      const groupYear = group.getAttribute("data-year");
+      const groupMatchesYear = activeYear === "ALL" || groupYear === activeYear;
 
-      let matchesYear = activeYear === "ALL" || cardYear === activeYear;
-      let matchesType = activeType === "ALL" || cardType === activeType;
-      let matchesClass = activeClass === "ALL" || cardClass === activeClass;
-      let matchesQuery = !q || cardSearch.includes(q);
+      let groupVisibleRows = 0;
+      const rowsInGroup = Array.from(group.querySelectorAll(".archive-record-row"));
 
-      if (matchesYear && matchesType && matchesClass && matchesQuery) {
-        card.classList.remove("hidden");
-        visibleCount++;
+      rowsInGroup.forEach(row => {
+        const rowType = row.getAttribute("data-type");
+        const rowClass = row.getAttribute("data-classification");
+        const rowSearch = row.getAttribute("data-search") || "";
+
+        const matchesType = activeType === "ALL" || rowType === activeType;
+        const matchesClass = activeClass === "ALL" || rowClass === activeClass;
+        const matchesQuery = !q || rowSearch.includes(q);
+
+        if (groupMatchesYear && matchesType && matchesClass && matchesQuery) {
+          row.classList.remove("hidden");
+          groupVisibleRows++;
+          visibleCount++;
+        } else {
+          row.classList.add("hidden");
+        }
+      });
+
+      if (groupMatchesYear && groupVisibleRows > 0) {
+        group.classList.remove("hidden");
       } else {
-        card.classList.add("hidden");
+        group.classList.add("hidden");
       }
     });
 
@@ -1863,11 +2102,11 @@ export function initPresidencyArchiveController() {
       }
     }
 
-    // Sort cards in DOM
+    // Sort year groups in DOM
     if (activeSort === "desc") {
-      cards.slice().reverse().forEach(card => recordsContainer.appendChild(card));
+      yearGroups.slice().reverse().forEach(g => recordsContainer.appendChild(g));
     } else {
-      cards.forEach(card => recordsContainer.appendChild(card));
+      yearGroups.forEach(g => recordsContainer.appendChild(g));
     }
 
     updateUrlParams();
@@ -1952,9 +2191,16 @@ export function initPresidencyArchiveController() {
     const targetId = window.location.hash.substring(1);
     const targetCard = document.getElementById(targetId);
     if (targetCard) {
+      // Find parent group and ensure visible
+      const parentGroup = targetCard.closest(".archive-year-group");
+      if (parentGroup) parentGroup.classList.remove("hidden");
       targetCard.classList.remove("hidden");
-      const details = targetCard.querySelector(".archive-record-details");
-      if (details) details.open = true;
+      if (targetCard.tagName.toLowerCase() === "details") {
+        targetCard.open = true;
+      } else {
+        const details = targetCard.querySelector(".archive-record-details");
+        if (details) details.open = true;
+      }
       targetCard.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }
