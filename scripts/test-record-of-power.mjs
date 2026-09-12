@@ -588,6 +588,142 @@ test("38. R2.3 UI: Epistemic Distinctions & Correct Macro Indicator Numbers Rend
   assert.ok(html.includes("7.5%"), "Must render 7.5% for August 2026 Food Inflation");
 });
 
+
+// ============================================================
+// 7. PHASE R2.4A READING ARCHITECTURE & DOM INTEGRITY TESTS
+// ============================================================
+import { TRACE_FAMILIES, CURATED_ERA_CONFIG } from '../src/presidency-data.js';
+
+test("39. R2.4A UI: Presidency Reading Architecture 8-Part Structure & Anchors", () => {
+  const html = renderPresidencyReportViewHtml();
+
+  // Section 01: Opener
+  assert.ok(html.includes('Tunisia under Kais Saied, 2019–2026'), "Must contain header H1");
+
+  // Section 02: The Record in Numbers
+  assert.ok(html.includes('id="the-record-in-numbers"'), "Must contain #the-record-in-numbers section");
+  assert.ok(html.includes('88'), "Must display total records count");
+  assert.ok(html.includes('08'), "Must display total eras count");
+
+  // Section 03: Accountability Chains
+  assert.ok(html.includes('id="accountability-chains"'), "Must contain #accountability-chains section");
+
+  // Section 04: Presidential Spine
+  assert.ok(html.includes('id="presidential-spine"'), "Must contain #presidential-spine section");
+
+  // Section 05: Eras 2019 to 2026
+  for (let y = 2019; y <= 2026; y++) {
+    assert.ok(html.includes(`id="year-${y}"`), `Must contain anchor #year-${y}`);
+  }
+
+  // Section 06: Full Archive Access
+  assert.ok(html.includes('id="full-archive-access"'), "Must contain #full-archive-access section");
+
+  // Section 07: Methodological Closing
+  assert.ok(html.includes('id="methodological-closing"'), "Must contain #methodological-closing section");
+});
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+test("40. R2.4A UI: All 7 Accountability Trace Families Render with Valid Nodes & Canonical Provenance", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.strictEqual(TRACE_FAMILIES.length, 7, "Must define exactly 7 trace families");
+
+  for (const tf of TRACE_FAMILIES) {
+    assert.ok(html.includes(`id="${tf.id}"`), `Must render trace container for ${tf.id}`);
+    assert.ok(html.includes(escapeHtml(tf.title)), `Must render title for ${tf.title}`);
+
+    // Check every step node in chain exists in DOM and resolves to canonical record
+    for (const step of tf.chain) {
+      const rec = getRecordById(step.recordId);
+      assert.ok(rec, `Step record ID ${step.recordId} must exist in canonical dataset`);
+      assert.ok(html.includes(rec.id), `Step record ID ${rec.id} must be referenced in DOM`);
+      assert.ok(html.includes(escapeHtml(step.role)), `Step role ${step.role} must be rendered`);
+    }
+  }
+});
+
+test("41. R2.4A UI: All 88 Canonical Records Rendered in the DOM with Zero Omissions", () => {
+  const html = renderPresidencyReportViewHtml();
+  assert.strictEqual(SEED_RECORDS.length, 88, "Dataset must contain exactly 88 canonical records");
+
+  // Every single record ID must be present in the HTML output
+  for (const rec of SEED_RECORDS) {
+    assert.ok(
+      html.includes(`id="${rec.id}"`) || html.includes(`href="#${rec.id}"`),
+      `Canonical record ${rec.id} must be accessible and indexed in /presidency DOM`
+    );
+  }
+});
+
+test("42. R2.4A UI: Era Curation Renders Primary Reading Path & Accessible <details> for Secondary Records", () => {
+  const html = renderPresidencyReportViewHtml();
+
+  // Eras 2019 to 2025 must have curated config with featured and secondary records
+  for (let y = 2019; y <= 2025; y++) {
+    const config = CURATED_ERA_CONFIG[y];
+    assert.ok(config, `Config must exist for year ${y}`);
+    assert.ok(config.featuredIds.length >= 3 && config.featuredIds.length <= 5, `Year ${y} must feature 3-5 records`);
+
+    // Check details element exists for eras with secondary records
+    if (config.allIds.length > config.featuredIds.length) {
+      assert.ok(html.includes(`VIEW FULL ${y} ARCHIVE (${config.allIds.length} RECORDS)`), `Must render disclosure button for ${y}`);
+    }
+  }
+});
+
+test("43. R2.4A UI: DOM ID Uniqueness across Entire Generated Presidency HTML", () => {
+  const html = renderPresidencyReportViewHtml();
+  const idRegex = /\sid="([^"]+)"/g;
+  const ids = [];
+  let match;
+  while ((match = idRegex.exec(html)) !== null) {
+    ids.push(match[1]);
+  }
+
+  const idCounts = {};
+  const duplicates = [];
+  for (const id of ids) {
+    idCounts[id] = (idCounts[id] || 0) + 1;
+    if (idCounts[id] === 2) {
+      duplicates.push(id);
+    }
+  }
+
+  assert.strictEqual(duplicates.length, 0, `DOM IDs must be unique across /presidency view. Duplicates: ${duplicates.join(', ')}`);
+});
+
+test("44. R2.4A UI: Exactly One Global Footer Invariant in Full Site Prerender", async () => {
+  const fs = await import('node:fs');
+  const path = await import('node:path');
+  const indexHtmlPath = path.resolve(process.cwd(), 'index.html');
+  const indexHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+
+  const footerMatches = indexHtml.match(/<footer[\s\S]*?<\/footer>/gi) || [];
+  assert.strictEqual(footerMatches.length, 1, "index.html template must contain exactly ONE <footer> element");
+
+  // In /presidency rendered article, verify no nested <footer> tag exists
+  const presHtml = renderPresidencyReportViewHtml();
+  const presFooterMatches = presHtml.match(/<footer[\s\S]*?<\/footer>/gi) || [];
+  assert.strictEqual(presFooterMatches.length, 0, "renderPresidencyReportViewHtml must NOT contain nested <footer> tags");
+});
+
+test("45. R2.4A UI: Presidential Spine Navigation Links Match All 8 Era Anchor IDs", () => {
+  const html = renderPresidencyReportViewHtml();
+  for (let y = 2019; y <= 2026; y++) {
+    assert.ok(html.includes(`href="#year-${y}"`), `Spine must link to #year-${y}`);
+    assert.ok(html.includes(`id="year-${y}"`), `Target anchor #year-${y} must exist in DOM`);
+  }
+});
+
 console.log("\n============================================================");
 console.log(`RECORD OF POWER TEST SUMMARY: All ${passed} tests PASSED!`);
 console.log("============================================================\n");
