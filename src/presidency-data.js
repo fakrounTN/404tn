@@ -1,6 +1,6 @@
 // src/presidency-data.js
 // 404TN — The Record of Power: Documentary Chronology UI (Tunisia 2019–2026)
-// Authoritative evidence-backed interface for /presidency route directly consuming R2.1 data architecture.
+// Authoritative evidence-backed interface for /presidency route directly consuming R2.3 data architecture.
 
 import { escapeHtml, stripHtml } from './utils.js';
 import {
@@ -147,6 +147,7 @@ function renderSourceSlip(sourceIds) {
  * Renders a primary chronology record row/entry on paper (open broadsheet item, NO enclosing card rectangle).
  */
 function renderChronologyItem(rec) {
+  if (!rec) return '';
   const typeBadge = `<span class="stamp-badge bg-[#F2EFE9] border-paper text-paper-muted font-semibold uppercase">${escapeHtml(rec.record_type.replace(/_/g, ' '))}</span>`;
   const classBadge = renderClassificationBadge(rec.classification);
   const statusBadge = rec.status ? renderStatusBadge(rec.status) : '';
@@ -253,6 +254,19 @@ function renderChronologyItem(rec) {
           <span class="text-xs font-mono font-bold text-paper-main block mt-1">${escapeHtml((rec.causation_status || '').replace(/_/g, ' '))}</span>
         </div>
       </div>
+    `;
+  }
+
+  // OFFICIAL STATEMENT Metadata
+  else if (rec.record_type === RECORD_TYPES.OFFICIAL_STATEMENT) {
+    specificDetailsHtml = `
+      ${rec.statement_text_or_summary ? `
+        <div class="mt-2 text-xs font-sans p-3 bg-[#F2EFE9] border border-paper space-y-1">
+          <span class="text-[9px] font-mono text-paper-sand uppercase font-bold block">RECORDED STATEMENT</span>
+          <blockquote class="text-paper-main font-light italic leading-relaxed">"${escapeHtml(rec.statement_text_or_summary)}"</blockquote>
+          ${rec.speaker ? `<div class="text-[10px] font-mono text-paper-dim pt-1">Speaker: <strong class="text-paper-main">${escapeHtml(rec.speaker)}</strong> (${escapeHtml(rec.speaker_role || '')})</div>` : ''}
+        </div>
+      ` : ''}
     `;
   }
 
@@ -590,6 +604,39 @@ function renderDataGapCard(gapRecord) {
 }
 
 /**
+ * Helper to render an entire year section from SEED_RECORDS
+ */
+function renderYearChronologySection(year, title, subtitle, recordIds, customModules = '') {
+  const records = recordIds.map(id => getRecordById(id)).filter(Boolean);
+  const itemsHtml = records.map(r => `
+    <div class="chronology-node">
+      <span class="chronology-node-dot-paper"></span>
+      ${renderChronologyItem(r)}
+    </div>
+  `).join('');
+
+  return `
+    <section id="year-${year}" class="space-y-6 pt-8 border-t border-paper">
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
+        <div class="space-y-1">
+          <div class="flex items-baseline gap-3">
+            <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">${year}</span>
+            <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— ${escapeHtml(title)}</span>
+          </div>
+          <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">${escapeHtml(subtitle)}</p>
+        </div>
+      </div>
+
+      ${customModules ? `<div class="space-y-4">${customModules}</div>` : ''}
+
+      <div class="chronology-spine-paper space-y-4 pt-2">
+        ${itemsHtml}
+      </div>
+    </section>
+  `;
+}
+
+/**
  * Renders the complete, rich, single-H1 documentary chronology for /presidency.
  */
 export function renderPresidencyReportViewHtml() {
@@ -613,27 +660,12 @@ export function renderPresidencyReportViewHtml() {
     h1: "Tunisia under Kais Saied, 2019–2026",
     deck: "A documented chronology of mandate, exceptional measures, institutional restructuring, political consolidation and measurable outcomes.",
     metadataItems: [
-      { label: "ACCOUNTABILITY PERIOD", value: "2019 → 2026", highlight: true, subtext: "7 YEARS OF EXECUTIVE POWER" },
-      { label: "RECORDS AUDITED", value: "18 SEED RECORDS", highlight: false, subtext: "ALL CORE TYPES REPRESENTED" },
-      { label: "EPISTEMIC STANDARD", value: "FACT / CLAIM / ANALYSIS", highlight: false, subtext: "STRICT SEPARATION" },
-      { label: "PRIMARY SOURCES", value: "OFFICIAL GAZETTE & INS", highlight: false, subtext: "ZERO UNVERIFIED URLS" }
+      { label: "ACCOUNTABILITY PERIOD", value: "2019 → 2026", highlight: true, subtext: "8 CHRONOLOGICAL ERAS" },
+      { label: "RECORDS AUDITED", value: "88 CANONICAL RECORDS", highlight: false, subtext: "10 CORE TYPES REPRESENTED" },
+      { label: "EPISTEMIC STANDARD", value: "FACT / CLAIM / ANALYSIS", highlight: false, subtext: "STRICT PROVENANCE SEPARATION" },
+      { label: "PRIMARY SOURCES", value: "OFFICIAL GAZETTE & INS", highlight: false, subtext: "28 PRIMARY SOURCES LINKED" }
     ]
   });
-
-  // Fetch Era Records from R2.1 Selectors
-  const elec2019 = getRecordById("ROP-EVT-2019-ELEC-001");
-  const elec2021 = getRecordById("ROP-EVT-2021-0725-001");
-  const dec2021 = getRecordById("ROP-DEC-2021-0922-001");
-  const csm2022 = getRecordById("ROP-INS-2022-CSM-001");
-  const judges2022 = getRecordById("ROP-DEC-2022-JUDGES-001");
-  const const2022 = getRecordById("ROP-LAW-2022-CONST-001");
-  const law54 = getRecordById("ROP-LAW-2022-054-001");
-  const unempGrad = getRecordById("ROP-IND-UNEMP-GRAD-001");
-  const gdpGrowth = getRecordById("ROP-IND-GDP-GROWTH-001");
-  const waterOutcome = getRecordById("ROP-OUT-2026-WATER-001");
-  const reconOutcome = getRecordById("ROP-OUT-2026-RECON-001");
-  const gabesGap = getRecordById("ROP-GAP-2026-GABES-AIR-001");
-  const reconGap = getRecordById("ROP-GAP-2026-RECON-RECEIPTS-001");
 
   // 6-Question Accountability Grammar Block (Adapted for Paper)
   const accountabilityGrammarHtml = `
@@ -676,11 +708,17 @@ export function renderPresidencyReportViewHtml() {
 
         <div class="p-4 bg-[#FAF8F5] border border-paper space-y-1">
           <span class="text-[10px] font-mono text-paper-red uppercase tracking-wider block font-bold">6. WHAT REMAINS UNKNOWN?</span>
-          <p class="text-paper-muted font-light leading-relaxed">The exact fiscal ledger of penal reconciliation settlements (held confidential under Decree-Law 2022-13) and real-time industrial ambient emissions in Gabès.</p>
+          <p class="text-paper-muted font-light leading-relaxed">Itemized individual penal reconciliation settlement agreements (subject to statutory confidentiality under Decree-Law 2022-13 Article 25) and real-time industrial ambient emissions in Gabès.</p>
         </div>
       </div>
     </section>
   `;
+
+  // Specific data gaps for 2026
+  const gabesGap = getRecordById("ROP-GAP-2026-GABES-AIR-001");
+  const reconGap = getRecordById("ROP-GAP-2026-RECON-RECEIPTS-001");
+  const energyGap = getRecordById("ROP-GAP-2026-ENERGY-SUBSIDY");
+  const civilGap = getRecordById("ROP-GAP-2026-CIVIL-SERVICE-CENSUS");
 
   return `
     <article class="presidency-dossier-page">
@@ -700,7 +738,7 @@ export function renderPresidencyReportViewHtml() {
           <section class="p-5 sm:p-6 bg-white border border-paper shadow-sm space-y-4" aria-label="Methodology and Standards">
             <div class="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-paper">
               <span class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold block">404TN EPISTEMIC STANDARD &amp; VERIFICATION RULES</span>
-              <span class="text-[10px] font-mono text-paper-dim">PHASE R2.2 CHRONOLOGY ENGINE · PAPER EDITION</span>
+              <span class="text-[10px] font-mono text-paper-dim">PHASE R2.3 CHRONOLOGY ENGINE · 88 CANONICAL RECORDS</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-sans">
               <div class="p-3.5 bg-[#FAF8F5] border border-paper space-y-1">
@@ -724,104 +762,178 @@ export function renderPresidencyReportViewHtml() {
 
           <!-- CHRONOLOGY NAVIGATION & FILTER BAR -->
           <nav id="chronology-nav" class="sticky top-0 z-20 bg-[#FAF8F5]/95 backdrop-blur border-y border-paper py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono" aria-label="Chronology Navigation">
-            <div class="flex items-center gap-1.5 sm:gap-3 flex-wrap">
+            <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <span class="text-[10px] uppercase text-paper-dim font-bold mr-1">CHRONOLOGY:</span>
-              <a href="#year-2019" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2019 · Mandate</a>
-              <a href="#year-2021" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2021 · Rupture</a>
-              <a href="#year-2022" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2022 · New Order</a>
-              <a href="#year-2024" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2024 · Consolidation</a>
-              <a href="#year-2026" class="px-2.5 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2026 · Outcomes</a>
+              <a href="#year-2019" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2019</a>
+              <a href="#year-2020" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2020</a>
+              <a href="#year-2021" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2021</a>
+              <a href="#year-2022" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2022</a>
+              <a href="#year-2023" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2023</a>
+              <a href="#year-2024" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2024</a>
+              <a href="#year-2025" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2025</a>
+              <a href="#year-2026" class="px-2 py-1 bg-white hover:bg-surface-200 border border-paper text-paper-main hover:text-paper-red transition-colors">2026</a>
             </div>
           </nav>
 
           <!-- =====================================================================
-               ERA 1: 2019 — MANDATE
+               ERA 1: 2019 — THE MANDATE & PROMISES
                ===================================================================== -->
-          <section id="year-2019" class="space-y-6 pt-2">
-            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
-              <div class="space-y-1">
-                <div class="flex items-baseline gap-3">
-                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2019</span>
-                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Mandate</span>
-                </div>
-                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Elected on October 13, 2019 with 72.71% of the vote (2.77 million ballots) on a platform pledging direct grassroots democracy, anti-corruption restitution, and text-based economic sovereignty.</p>
-              </div>
-            </div>
-
-            <div class="chronology-spine-paper space-y-4 pt-2">
-              ${elec2019 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(elec2019)}</div>` : ''}
-              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}</div>
-              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}</div>
-            </div>
-          </section>
+          ${renderYearChronologySection(
+            2019,
+            "The Mandate & Promises",
+            "Elected on October 13, 2019 with 72.71% of the vote (2.77 million ballots) on a platform pledging direct grassroots democracy, anti-corruption restitution, and sovereign economic self-reliance.",
+            [
+              "ROP-EVT-2019-ELEC-001",
+              "ROP-EVT-2019-PARL-001",
+              "ROP-PRM-2019-RECON-001",
+              "ROP-PRM-2019-SOV-001",
+              "ROP-PRM-2019-CONCLAVE-001",
+              "ROP-STM-2019-INAUG-001",
+              "ROP-IND-2019-GDP-BASE",
+              "ROP-IND-2019-UNEMP-BASE",
+              "ROP-IND-2019-DEBT-BASE",
+              "ROP-IND-2019-INFL-BASE"
+            ],
+            `<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              ${renderPromiseAccountabilityModule("ROP-PRM-2019-RECON-001")}
+              ${renderPromiseAccountabilityModule("ROP-PRM-2019-SOV-001")}
+            </div>`
+          )}
 
           <!-- =====================================================================
-               ERA 2: 2021 — RUPTURE
+               ERA 2: 2020 — GOVERNING CRISIS & INSTITUTIONAL CONFLICT
                ===================================================================== -->
-          <section id="year-2021" class="space-y-6 pt-8 border-t border-paper">
-            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
-              <div class="space-y-1">
-                <div class="flex items-baseline gap-3">
-                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2021</span>
-                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Rupture</span>
-                </div>
-                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Following severe pandemic healthcare distress and nationwide unrest, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament, and concentrated executive and legislative powers.</p>
-              </div>
-            </div>
-
-            <div class="chronology-spine-paper space-y-4 pt-2">
-              ${elec2021 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(elec2021)}</div>` : ''}
-              <div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderStateComparisonModule()}</div>
-              ${dec2021 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(dec2021)}</div>` : ''}
-            </div>
-          </section>
+          ${renderYearChronologySection(
+            2020,
+            "Governing Crisis & Institutional Conflict",
+            "Parliamentary fragmentation and successive cabinet collapses amid the COVID-19 pandemic contraction (-8.6% real GDP), culminating in growing friction between Carthage Palace and the Kasbah.",
+            [
+              "ROP-EVT-2020-GOV-FRIB-001",
+              "ROP-DEC-2020-FFAIL-001",
+              "ROP-EVT-2020-FAKH-RESIGN",
+              "ROP-DEC-2020-MECH-APPOINT",
+              "ROP-STM-2020-DIPL-001",
+              "ROP-DEC-2020-KAMOUR-001",
+              "ROP-OUT-2020-COVID-001"
+            ]
+          )}
 
           <!-- =====================================================================
-               ERA 3: 2022 — NEW POLITICAL ORDER
+               ERA 3: 2021 — JULY 25 RUPTURE / ARTICLE 80 / EXCEPTIONAL MEASURES
                ===================================================================== -->
-          <section id="year-2022" class="space-y-6 pt-8 border-t border-paper">
-            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
-              <div class="space-y-1">
-                <div class="flex items-baseline gap-3">
-                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2022</span>
-                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The New Political Order</span>
-                </div>
-                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Structural transition to an executive-dominant republic: dissolution of the High Judicial Council, executive revocation of 57 magistrates, promulgation of the 2022 Constitution via referendum, and enactment of Decree-Law 54.</p>
-              </div>
-            </div>
-
-            <div class="chronology-spine-paper space-y-4 pt-2">
-              ${csm2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(csm2022)}</div>` : ''}
-              ${judges2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(judges2022)}</div>` : ''}
-              ${const2022 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(const2022)}</div>` : ''}
-              ${law54 ? `<div class="chronology-node"><span class="chronology-node-dot-paper"></span>${renderChronologyItem(law54)}</div>` : ''}
-            </div>
-          </section>
+          ${renderYearChronologySection(
+            2021,
+            "July 25 Rupture & Exceptional Measures",
+            "Following severe pandemic healthcare distress and nationwide unrest, President Kais Saied invoked Article 80 of the 2014 Constitution, suspended parliament, dismissed the Prime Minister, and promulgated Decree 117 consolidating decree powers.",
+            [
+              "ROP-EVT-2021-CABINET-CRISIS",
+              "ROP-EVT-2021-0725-PROTESTS",
+              "ROP-EVT-2021-0725-001",
+              "ROP-STM-2021-0725-001",
+              "ROP-DEC-2021-DISMISS-MECH",
+              "ROP-DEC-2021-0922-001",
+              "ROP-DEC-2021-BOUDEN-APPOINT",
+              "ROP-DEC-2021-INLUCC-001",
+              "ROP-OPP-2021-COUP-001",
+              "ROP-DEC-2021-ROADMAP-001"
+            ],
+            renderStateComparisonModule()
+          )}
 
           <!-- =====================================================================
-               ERA 4: 2024 — CONSOLIDATION
+               ERA 4: 2022 — STRUCTURAL TRANSFORMATION & 2022 CONSTITUTION
                ===================================================================== -->
-          <section id="year-2024" class="space-y-6 pt-8 border-t border-paper">
-            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
-              <div class="space-y-1">
-                <div class="flex items-baseline gap-3">
-                  <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2024</span>
-                  <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— Political Consolidation</span>
-                </div>
-                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Kais Saied secured re-election on October 6, 2024 with 90.69% of the vote on a 28.8% turnout in a ballot characterized by candidate disqualifications and non-execution of Administrative Court reinstatement orders.</p>
-              </div>
-            </div>
-
-            <div class="chronology-spine-paper space-y-4 pt-2">
-              <div class="chronology-node">
-                <span class="chronology-node-dot-paper"></span>
-                ${renderCertifiedVsContestedModule()}
-              </div>
-            </div>
-          </section>
+          ${renderYearChronologySection(
+            2022,
+            "Structural Transformation & 2022 Constitution",
+            "Executive dissolution of the High Judicial Council, revocation of 57 magistrates, promulgation of the 2022 Constitution via national referendum (30.5% turnout), enactment of Decree-Law 54, and negotiation of the IMF Staff-Level Agreement.",
+            [
+              "ROP-INS-2022-CSM-001",
+              "ROP-DEC-2022-JUDGES-001",
+              "ROP-DEC-2022-ARP-DISSOLVE",
+              "ROP-INS-2022-ISIE-REORG",
+              "ROP-LAW-2022-RECON-001",
+              "ROP-LAW-2022-CONST-001",
+              "ROP-EVT-2022-REFERENDUM",
+              "ROP-LAW-2022-054-001",
+              "ROP-LAW-2022-ELEC-001",
+              "ROP-EVT-2022-IMF-SLA",
+              "ROP-EVT-2022-PARL-ELEC-R1",
+              "ROP-OPP-2022-BOYCOTT",
+              "ROP-OUT-2022-JUDICIAL-INJ"
+            ]
+          )}
 
           <!-- =====================================================================
-               ERA 5: 2026 — RECORD & OUTCOMES
+               ERA 5: 2023 — INSTITUTIONAL CONSOLIDATION & PROSECUTIONS
+               ===================================================================== -->
+          ${renderYearChronologySection(
+            2023,
+            "Institutional Consolidation, Prosecutions & Foreign Shift",
+            "Inauguration of the new unicameral ARP (11.4% turnout), dissolution of municipal councils, detention of opposition figures under conspiracy charges, public rejection of the IMF program, and signature of the EU-Tunisia Strategic MoU.",
+            [
+              "ROP-EVT-2023-PARL-ELEC-R2",
+              "ROP-INS-2023-ARP-INAUG",
+              "ROP-DEC-2023-MUNICIPAL-DISS",
+              "ROP-LAW-2023-REGIONS-001",
+              "ROP-EVT-2023-ARRESTS-CONSP",
+              "ROP-STM-2023-MIGRATION-SPEECH",
+              "ROP-EVT-2023-SFAX-TENSIONS",
+              "ROP-EVT-2023-EU-MOU",
+              "ROP-STM-2023-IMF-REFUSAL",
+              "ROP-DEC-2023-HACHANI-APPOINT",
+              "ROP-EVT-2023-SNJT-PROSEC",
+              "ROP-IND-2023-INFLATION-PEAK",
+              "ROP-IND-2023-BCT-RATE-HIKE"
+            ]
+          )}
+
+          <!-- =====================================================================
+               ERA 6: 2024 — PRESIDENTIAL ELECTION & LITIGATION CONFLICT
+               ===================================================================== -->
+          ${renderYearChronologySection(
+            2024,
+            "Presidential Election & Judicial Authority Conflict",
+            "Inauguration of the National Council of Regions, enactment of Law 2024-10 authorizing direct Central Bank lending to settle Eurobonds, ISIE rejection of Administrative Court candidate reinstatements, emergency Law 2024-45 stripping administrative court jurisdiction, and Kais Saied re-election with 90.69% of the vote.",
+            [
+              "ROP-LAW-2024-BCT-LENDING",
+              "ROP-INS-2024-NRC-INAUG",
+              "ROP-EVT-2024-MAY-CRACKDOWN",
+              "ROP-DEC-2024-MADOURI-APPOINT",
+              "ROP-DEC-2024-ISIE-DISQUAL",
+              "ROP-LAW-2024-ELEC-STRIP",
+              "ROP-EVT-2024-ELEC-001",
+              "ROP-OPP-2024-ISIE-001",
+              "ROP-STM-2024-SWEAR-IN",
+              "ROP-OUT-2024-EU-BUDGET-DISB",
+              "ROP-IND-2024-AB-TRUST-DROP",
+              "ROP-OUT-2024-SOV-DEBT-REPAY"
+            ],
+            renderCertifiedVsContestedModule()
+          )}
+
+          <!-- =====================================================================
+               ERA 7: 2025 — OUTCOMES, INSTITUTIONAL EFFECTS & PUBLIC OPINION
+               ===================================================================== -->
+          ${renderYearChronologySection(
+            2025,
+            "Outcomes, Institutional Effects & Public Confidence",
+            "Debates on draft civil society and foreign NGO financing legislation, administrative rollout of community enterprises (236 created, 60 operational by Nov 2025; 95M TND state credit lines), National Guard maritime interceptions exceeding 70,000 persons, phosphate extraction performance (~3.3M tonnes), and civil society rebuttals on utility disruptions.",
+            [
+              "ROP-EVT-2025-ASSOCIATIONS-DEB",
+              "ROP-DEC-2025-COMMUNITY-ENT",
+              "ROP-OUT-2025-COMMUNITY-YIELD",
+              "ROP-EVT-2025-BORDER-PATROL",
+              "ROP-IND-2025-FDI-INFLOWS",
+              "ROP-OUT-2025-PHOSPHATE-TARGET",
+              "ROP-GAP-2025-MIGRATION-RETURNS",
+              "ROP-STM-2025-WATER-PLOTS",
+              "ROP-OPP-2025-CLIMATE-RESP"
+            ]
+          )}
+
+          <!-- =====================================================================
+               ERA 8: 2026 — MEASURABLE RESULTS & ACCOUNTABILITY
                ===================================================================== -->
           <section id="year-2026" class="space-y-8 pt-8 border-t border-paper">
             <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 pb-4 border-b border-paper">
@@ -830,30 +942,47 @@ export function renderPresidencyReportViewHtml() {
                   <span class="font-editorial text-4xl sm:text-5xl lg:text-6xl text-paper-red font-light tracking-tight">2026</span>
                   <span class="font-editorial text-2xl sm:text-3xl text-paper-main font-normal">— The Record &amp; Measured Outcomes</span>
                 </div>
-                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps.</p>
+                <p class="text-xs sm:text-sm text-paper-muted font-light leading-relaxed max-w-3xl">Seven years following the 2019 mandate and five years following the July 2021 rupture, all institutional mechanisms are directly accountable to the presidency. 404TN measures macroeconomic indicators, public service delivery, and documented data gaps.</p>
               </div>
             </div>
 
             <!-- Macroeconomic Indicators & Public Services (Open broadsheet layout) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              ${unempGrad ? renderChronologyItem(unempGrad) : ''}
-              ${gdpGrowth ? renderChronologyItem(gdpGrowth) : ''}
+              ${renderChronologyItem(getRecordById("ROP-IND-UNEMP-GRAD-001"))}
+              ${renderChronologyItem(getRecordById("ROP-IND-GDP-GROWTH-001"))}
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
-              ${reconOutcome ? renderChronologyItem(reconOutcome) : ''}
-              ${waterOutcome ? renderChronologyItem(waterOutcome) : ''}
+              ${renderChronologyItem(getRecordById("ROP-IND-2026-PUBLIC-DEBT"))}
+              ${renderChronologyItem(getRecordById("ROP-IND-2026-INFLATION-FOOD"))}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+              ${renderChronologyItem(getRecordById("ROP-IND-2026-ENERGY-DEFICIT"))}
+              ${renderChronologyItem(getRecordById("ROP-IND-2026-FX-DAYS"))}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+              ${renderChronologyItem(getRecordById("ROP-OUT-2026-RECON-001"))}
+              ${renderChronologyItem(getRecordById("ROP-OUT-2026-WATER-001"))}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+              ${renderChronologyItem(getRecordById("ROP-OUT-2026-GABES-RELOC-FAIL"))}
+              ${renderChronologyItem(getRecordById("ROP-OUT-2026-DL54-CONVICT"))}
             </div>
 
             <!-- Documented Data Gaps Sub-Section -->
             <div class="space-y-4 pt-6 border-t border-paper">
               <div class="flex items-center justify-between pb-2 border-b border-paper">
                 <span class="text-xs font-mono uppercase tracking-widest text-paper-sand font-bold">DOCUMENTED TRANSPARENCY DATA GAPS</span>
-                <span class="text-[10px] font-mono text-paper-dim">2 AUDITED GAPS</span>
+                <span class="text-[10px] font-mono text-paper-dim">4 AUDITED GAPS</span>
               </div>
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 ${gabesGap ? renderDataGapCard(gabesGap) : ''}
                 ${reconGap ? renderDataGapCard(reconGap) : ''}
+                ${energyGap ? renderDataGapCard(energyGap) : ''}
+                ${civilGap ? renderDataGapCard(civilGap) : ''}
               </div>
             </div>
 

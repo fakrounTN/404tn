@@ -24,7 +24,7 @@ export const SOURCE_MANIFEST = Object.freeze([
     "source_type": "PRIMARY",
     "accessed_at": "2026-09-11",
     "language": "fr",
-    "notes": "Preliminary quarterly real GDP year-on-year growth (+0.8%)."
+    "notes": "Official Q2 2026 real GDP growth rate (+2.3% YoY, +1.4% QoQ)."
   },
   {
     "source_id": "SRC-INS-EMP2019",
@@ -48,7 +48,7 @@ export const SOURCE_MANIFEST = Object.freeze([
     "source_type": "PRIMARY",
     "accessed_at": "2026-09-11",
     "language": "fr",
-    "notes": "Overall unemployment 16.0% (664.8k unemployed) and graduate unemployment 38.8%."
+    "notes": "Official Q2 2026 higher-education graduate unemployment rate (26.6% overall; 14.2% male, 35.6% female; Q1 was 24.2%)."
   },
   {
     "source_id": "SRC-INS-IPC2019",
@@ -72,7 +72,7 @@ export const SOURCE_MANIFEST = Object.freeze([
     "source_type": "PRIMARY",
     "accessed_at": "2026-09-11",
     "language": "fr",
-    "notes": "Headline inflation 7.0% YoY; food products inflation 9.8% YoY."
+    "notes": "Official August 2026 consumer price index: headline inflation 5.4% YoY, food and non-alcoholic beverages 7.5% YoY."
   },
   {
     "source_id": "SRC-MF-DEBT2019",
@@ -325,7 +325,211 @@ export const SOURCE_MANIFEST = Object.freeze([
     "accessed_at": "2026-09-11",
     "language": "fr",
     "notes": "Government decision pledging dismantling and relocation of GCT chemical processing units away from coastal urban perimeter."
-  }
+  },
+  {
+    "source_id": "SRC-JORT-DEC2021-80",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décrets présidentiels n° 2021-80 et 2021-81 du 25 juillet 2021, relatifs à la suspension des compétences de l'Assemblée et la fin des fonctions du Chef du Gouvernement",
+    "publication_date": "2021-07-26",
+    "reference_period": "July 25, 2021",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Official gazette decrees formalizing Article 80 implementation, assembly suspension, and dismissal of PM Mechichi (JORT n° 64/2021)."
+  },
+  {
+    "source_id": "SRC-JORT-DEC2022-11",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décret-loi n° 2022-11 du 12 février 2022, relatif à la création du Conseil supérieur provisoire de la magistrature",
+    "publication_date": "2022-02-12",
+    "reference_period": "February 12, 2022",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Dissolved the 2016 elected High Judicial Council and established a provisional executive-appointed council (JORT n° 16/2022)."
+  },
+  {
+    "source_id": "SRC-JORT-DEC2022-13",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décret-loi n° 2022-13 du 20 mars 2022, portant sur la réconciliation pénale et l'affectation de ses ressources",
+    "publication_date": "2022-03-20",
+    "reference_period": "March 20, 2022",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Created the National Penal Reconciliation Commission to negotiate financial settlements with businessmen and fund regional projects (JORT n° 32/2022)."
+  },
+  {
+    "source_id": "SRC-JORT-DEC2022-22",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décret-loi n° 2022-22 du 21 avril 2022, modifiant et complétant la loi organique créant l'Instance supérieure indépendante pour les élections",
+    "publication_date": "2022-04-21",
+    "reference_period": "April 21, 2022",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Reorganized the ISIE council, granting the President of the Republic authority to appoint all 7 members (JORT n° 45/2022)."
+  },
+  {
+    "source_id": "SRC-JORT-DEC2022-55",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décret-loi n° 2022-55 du 15 septembre 2022, modifiant la loi organique relative aux élections et référendums",
+    "publication_date": "2022-09-15",
+    "reference_period": "September 15, 2022",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Introduced two-round uninominal voting in single-member districts, eliminating party lists and introducing recall mechanisms (JORT n° 103/2022)."
+  },
+  {
+    "source_id": "SRC-JORT-DEC2023-8",
+    "organization": "Presidency of the Republic of Tunisia",
+    "title": "Décrets-lois n° 2023-8, 2023-9 et 2023-10 du 8 mars 2023 relatifs aux conseils municipaux et au Conseil national des régions et des districts",
+    "publication_date": "2023-03-08",
+    "reference_period": "March 8, 2023",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Dissolved all 350 elected municipal councils and established the legislative structure for regional and district councils (JORT n° 24/2023)."
+  },
+  {
+    "source_id": "SRC-JORT-LAW2024-10",
+    "organization": "Assembly of the Representatives of the People / Presidency of the Republic",
+    "title": "Loi n° 2024-10 du 6 février 2024, portant dérogation exceptionnelle aux dispositions de la loi portant fixation des statuts de la Banque Centrale de Tunisie",
+    "publication_date": "2024-02-07",
+    "reference_period": "February 6, 2024",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Authorized BCT to grant exceptional direct cash financing of 7 billion TND to the Ministry of Finance without interest for sovereign debt repayment (JORT n° 19/2024)."
+  },
+  {
+    "source_id": "SRC-JORT-LAW2024-45",
+    "organization": "Assembly of the Representatives of the People / Presidency of the Republic",
+    "title": "Loi n° 2024-45 du 27 septembre 2024, modifiant certaines dispositions de la loi organique relative aux élections et référendums",
+    "publication_date": "2024-09-28",
+    "reference_period": "September 27, 2024",
+    "url": "http://www.iort.gov.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Transferred electoral litigation jurisdiction from the Administrative Court to the Court of Appeal of Tunis nine days before the presidential election (JORT n° 117/2024)."
+  },
+  {
+    "source_id": "SRC-ISIE-PARL2019",
+    "organization": "Instance Supérieure Indépendante pour les Élections (ISIE)",
+    "title": "Décision de l'ISIE n° 2019-28 fixant les résultats définitifs des élections législatives de 2019",
+    "publication_date": "2019-11-08",
+    "reference_period": "October 6, 2019",
+    "url": "http://www.isie.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "ar",
+    "notes": "Certified results of the 2019 parliamentary election: 52 seats Ennahdha, 38 Qalb Tounes, 22 Attayar, 21 Karama, on 41.7% turnout (JORT n° 90/2019)."
+  },
+  {
+    "source_id": "SRC-ISIE-REF2022",
+    "organization": "Instance Supérieure Indépendante pour les Élections (ISIE)",
+    "title": "Décision de l'ISIE n° 2022-22 relative aux résultats définitifs du référendum du 25 juillet 2022",
+    "publication_date": "2022-08-16",
+    "reference_period": "July 25, 2022",
+    "url": "http://www.isie.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "ar",
+    "notes": "Certified 2022 constitutional referendum results: 94.60% Yes (2,607,884 votes), 5.40% No (148,720 votes), on 30.5% turnout (JORT n° 89/2022)."
+  },
+  {
+    "source_id": "SRC-ISIE-PARL2022",
+    "organization": "Instance Supérieure Indépendante pour les Élections (ISIE)",
+    "title": "Décisions de l'ISIE relatives aux résultats définitifs des élections législatives (Tours 1 et 2)",
+    "publication_date": "2023-02-25",
+    "reference_period": "Dec 2022 – Jan 2023",
+    "url": "http://www.isie.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "ar",
+    "notes": "Certified legislative turnout: 11.22% in Round 1 (Dec 17, 2022) and 11.40% in Round 2 (Jan 29, 2023) (JORT n° 20/2023)."
+  },
+  {
+    "source_id": "SRC-TA-RULINGS-2024",
+    "organization": "Tribunal Administratif de Tunis (Administrative Court)",
+    "title": "Arrêts de l'Assemblée Plénière du Tribunal Administratif sur les recours électoraux",
+    "publication_date": "2024-08-30",
+    "reference_period": "August 2024",
+    "url": "http://www.tribunal-administratif.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "ar",
+    "notes": "Definitive appellate judgments ordering the reinstatement of disqualified presidential candidates (Abdellatif Mekki, Mondher Znaidi, Imed Daimi)."
+  },
+  {
+    "source_id": "SRC-SNJT-REPORT2024",
+    "organization": "Syndicat National des Journalistes Tunisiens (SNJT)",
+    "title": "Rapport Annuel sur la Liberté de la Presse et la Sécurité des Journalistes en Tunisie",
+    "publication_date": "2024-05-03",
+    "reference_period": "2022–2024",
+    "url": "https://snjt.org/rapport-annuel-2024",
+    "source_type": "INDEPENDENT",
+    "accessed_at": "2026-09-12",
+    "language": "ar",
+    "notes": "Empirical documentation of over 60 proceedings under Decree-Law 54 Article 24 targeting journalists, media commentators, and lawyers."
+  },
+  {
+    "source_id": "SRC-FTDES-PROTESTS2025",
+    "organization": "Forum Tunisien pour les Droits Économiques et Sociaux (FTDES)",
+    "title": "Rapport Annuel des Mouvements Sociaux, des Violations et de la Justice Environnementale",
+    "publication_date": "2025-01-20",
+    "reference_period": "2024–2025",
+    "url": "https://ftdes.net/rapport-social-2024",
+    "source_type": "INDEPENDENT",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Statistical observatory documenting over 3,000 localized social and hydraulic protests and tracking central Mediterranean interception telemetry."
+  },
+  {
+    "source_id": "SRC-BCT-ANNUAL2024",
+    "organization": "Banque Centrale de Tunisie (BCT)",
+    "title": "Rapport Annuel de la BCT - 66ème Exercice",
+    "publication_date": "2025-07-15",
+    "reference_period": "2024 Full Year",
+    "url": "https://www.bct.gov.tn/bct/site-box/rapport_annuel.jsp",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Documents monetary expansion, state direct borrowing impact, dinar exchange rate trajectory, and commercial bank liquidity."
+  },
+  {
+    "source_id": "SRC-CPG-STATS2025",
+    "organization": "Compagnie des Phosphates de Gafsa (CPG) / Ministry of Industry",
+    "title": "Bulletins Statistiques de la Production et du Transport de Phosphate Commercial",
+    "publication_date": "2025-02-10",
+    "reference_period": "2019–2025",
+    "url": "http://www.cpg.com.tn",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Official extraction data documenting actual national production hovering between 3.0M and 3.4M tonnes against 8M tonne annual capacity."
+  },
+  {
+    "source_id": "SRC-MEFP-COMM2025",
+    "organization": "Ministère de l'Emploi et de la Formation Professionnelle / TAP",
+    "title": "Bulletins de Suivi de la Création des Sociétés Communautaires (2025)",
+    "publication_date": "2025-11-15",
+    "reference_period": "2025 Cumulative",
+    "url": "http://www.emploi.gov.tn/fr/societes-communautaires",
+    "source_type": "PRIMARY",
+    "accessed_at": "2026-09-12",
+    "language": "fr",
+    "notes": "Official Ministry of Employment administrative series: 144 created in Feb 2025, 255 with tax identifier (55 operating) in Aug 2025, 236 created (60 operating) by 15 Nov 2025, supported by 95M TND in dedicated credit lines across 2023–2026 finance laws."
+  },
 ]);
 
 export const SOURCE_MAP = Object.freeze(new Map(SOURCE_MANIFEST.map(s => [s.source_id, s])));

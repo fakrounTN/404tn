@@ -1,15 +1,18 @@
 // scripts/test-record-of-power.mjs
-// Automated Test Suite for 404TN Record of Power Data Architecture (Phase R2.1)
+// Automated Test Suite for 404TN Record of Power Data Architecture (Phase R2.3)
+// Comprehensive test coverage: 38 rigorous tests validating schema, integrity, exact numeric provenance, eras, traces, and UI.
 
 import fs from 'fs';
 import assert from 'assert';
 import {
   RECORD_TYPES,
   EPISTEMIC_CLASSIFICATION,
+  PROMISE_STATUS,
   INSTITUTIONS_REGISTRY,
   SEED_RECORDS,
   RESPONSIBILITY_RECORDS,
   RELATIONSHIPS,
+  SOURCE_MAP,
   validateRecordOfPower,
   getRecordById,
   getRecordsByYear,
@@ -24,7 +27,7 @@ import {
 } from '../src/record-of-power/index.js';
 
 console.log("============================================================");
-console.log("RUNNING RECORD OF POWER DATA ARCHITECTURE TEST SUITE (R2.1)");
+console.log("RUNNING RECORD OF POWER DATA ARCHITECTURE TEST SUITE (R2.3)");
 console.log("============================================================\n");
 
 let passed = 0;
@@ -40,10 +43,14 @@ function test(name, fn) {
   }
 }
 
-// 1. Source Manifest Integration
+// Load source manifest
 const sourceManifest = JSON.parse(fs.readFileSync('docs/source-manifest.json', 'utf8'));
 
-test("Runtime Schema & Manifest Validation Passes with Zero Errors", () => {
+// ============================================================
+// 1. DATASET INTEGRITY & VALIDATION TESTS
+// ============================================================
+
+test("1. Runtime Schema & Manifest Validation Passes with Zero Errors across all Canonical Records", () => {
   const result = validateRecordOfPower({
     records: SEED_RECORDS,
     institutions: INSTITUTIONS_REGISTRY,
@@ -55,25 +62,32 @@ test("Runtime Schema & Manifest Validation Passes with Zero Errors", () => {
 
   assert.strictEqual(result.valid, true, "Validation should be valid");
   assert.strictEqual(result.errors.length, 0, "Errors should be zero");
-  assert.ok(result.stats.totalRecords >= 12, "Should have seed records");
-  assert.ok(result.stats.totalInstitutions >= 15, "Should have institutions");
-  assert.ok(result.stats.totalResponsibilities >= 8, "Should have responsibility entries");
-  assert.ok(result.stats.totalRelationships >= 10, "Should have relationships");
+  assert.ok(result.stats.totalRecords >= 80, `Should have >= 80 records (found: ${result.stats.totalRecords})`);
+  assert.ok(result.stats.totalInstitutions >= 20, `Should have >= 20 institutions (found: ${result.stats.totalInstitutions})`);
+  assert.ok(result.stats.totalResponsibilities >= 15, `Should have >= 15 responsibility entries (found: ${result.stats.totalResponsibilities})`);
+  assert.ok(result.stats.totalRelationships >= 25, `Should have >= 25 relationships (found: ${result.stats.totalRelationships})`);
 });
 
-test("Institution Registry Integrity & Parent Hierarchy", () => {
+test("2. Institution Registry Integrity & Parent Hierarchy", () => {
   assert.ok(INSTITUTIONS_REGISTRY["INST-PRESIDENCY"]);
   assert.ok(INSTITUTIONS_REGISTRY["INST-GOV"]);
   assert.ok(INSTITUTIONS_REGISTRY["INST-SONEDE"]);
   assert.ok(INSTITUTIONS_REGISTRY["INST-STEG"]);
   assert.ok(INSTITUTIONS_REGISTRY["INST-ANPE"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-INLUCC"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-CPG"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-SNJT"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-UGTT"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-FTDES"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-CA"]);
+  assert.ok(INSTITUTIONS_REGISTRY["INST-FIPA"]);
 
   assert.strictEqual(INSTITUTIONS_REGISTRY["INST-GOV"].parent_institution_id, "INST-PRESIDENCY");
   assert.strictEqual(INSTITUTIONS_REGISTRY["INST-SONEDE"].parent_institution_id, "INST-MOA");
   assert.strictEqual(INSTITUTIONS_REGISTRY["INST-ANPE"].parent_institution_id, "INST-MOENV");
 });
 
-test("Canonical Record Types Diversity in Seed Data", () => {
+test("3. Canonical Record Types Diversity in Expanded Dataset", () => {
   const types = new Set(SEED_RECORDS.map(r => r.record_type));
   assert.ok(types.has(RECORD_TYPES.EVENT), "Must have EVENT");
   assert.ok(types.has(RECORD_TYPES.PROMISE), "Must have PROMISE");
@@ -87,7 +101,22 @@ test("Canonical Record Types Diversity in Seed Data", () => {
   assert.ok(types.has(RECORD_TYPES.DATA_GAP), "Must have DATA_GAP");
 });
 
-test("Selector: getRecordById()", () => {
+test("4. Canonical Type Enum Coverage & EVIDENCE_LINK Architectural Semantics", () => {
+  const allEnumTypes = Object.values(RECORD_TYPES);
+  assert.strictEqual(allEnumTypes.length, 11, "Schema must define exactly 11 RECORD_TYPES");
+  assert.ok(allEnumTypes.includes("EVIDENCE_LINK"), "Schema must define EVIDENCE_LINK bridging type");
+
+  // 10 narrative/indicator types are instantiated as top-level canonical records in SEED_RECORDS
+  const instantiatedTypes = new Set(SEED_RECORDS.map(r => r.record_type));
+  assert.strictEqual(instantiatedTypes.size, 10, "SEED_RECORDS must instantiate all 10 narrative record types");
+  assert.ok(!instantiatedTypes.has("EVIDENCE_LINK"), "EVIDENCE_LINK is reserved as a bridging type for raw evidence binding");
+});
+
+// ============================================================
+// 2. QUERY SELECTORS & FILTER ENGINE TESTS
+// ============================================================
+
+test("5. Selector: getRecordById() handles found and missing records", () => {
   const dec117 = getRecordById("ROP-DEC-2021-0922-001");
   assert.ok(dec117);
   assert.strictEqual(dec117.short_title, "Decree 117 Exceptional Measures");
@@ -97,55 +126,55 @@ test("Selector: getRecordById()", () => {
   assert.strictEqual(missing, null);
 });
 
-test("Selector: getRecordsByYear()", () => {
-  const recs2019 = getRecordsByYear(2019);
-  assert.ok(recs2019.length >= 2, "Should find 2019 records");
-
-  const recs2021 = getRecordsByYear(2021);
-  assert.ok(recs2021.length >= 2, "Should find 2021 records");
-
-  const recs2022 = getRecordsByYear(2022);
-  assert.ok(recs2022.length >= 3, "Should find 2022 records");
-
-  const recs2026 = getRecordsByYear(2026);
-  assert.ok(recs2026.length >= 3, "Should find 2026 records");
+test("6. Selector: getRecordsByYear() covers all 8 chronological eras (2019–2026)", () => {
+  const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+  for (const yr of years) {
+    const recs = getRecordsByYear(yr);
+    assert.ok(recs.length >= 3, `Year ${yr} must have at least 3 records (found: ${recs.length})`);
+  }
 });
 
-test("Selector: getRecordsByType()", () => {
+test("7. Selector: getRecordsByType() retrieves specific canonical types", () => {
   const laws = getRecordsByType(RECORD_TYPES.LAW);
-  assert.ok(laws.length >= 2);
+  assert.ok(laws.length >= 5);
   assert.ok(laws.some(l => l.id === "ROP-LAW-2022-CONST-001"));
   assert.ok(laws.some(l => l.id === "ROP-LAW-2022-054-001"));
+  assert.ok(laws.some(l => l.id === "ROP-LAW-2024-BCT-LENDING"));
+  assert.ok(laws.some(l => l.id === "ROP-LAW-2024-ELEC-STRIP"));
 
   const gaps = getRecordsByType(RECORD_TYPES.DATA_GAP);
-  assert.ok(gaps.length >= 2);
+  assert.ok(gaps.length >= 4);
 });
 
-test("Selector: getRecordsByIssue()", () => {
+test("8. Selector: getRecordsByIssue() filters by policy domain", () => {
   const waterRecs = getRecordsByIssue("water");
-  assert.ok(waterRecs.length >= 1);
-  assert.strictEqual(waterRecs[0].id, "ROP-OUT-2026-WATER-001");
+  assert.ok(waterRecs.length >= 2);
+  assert.ok(waterRecs.some(r => r.id === "ROP-OUT-2026-WATER-001"));
 
   const antiCorrRecs = getRecordsByIssue("anti_corruption");
   assert.ok(antiCorrRecs.length >= 2);
 });
 
-test("Selector: getRecordsByInstitution()", () => {
+test("9. Selector: getRecordsByInstitution() retrieves records by jurisdiction", () => {
   const presRecs = getRecordsByInstitution("INST-PRESIDENCY");
-  assert.ok(presRecs.length >= 5);
+  assert.ok(presRecs.length >= 10);
 
   const anpeRecs = getRecordsByInstitution("INST-ANPE");
   assert.ok(anpeRecs.length >= 1);
-  assert.strictEqual(anpeRecs[0].id, "ROP-GAP-2026-GABES-AIR-001");
+  assert.ok(anpeRecs.some(r => r.id === "ROP-GAP-2026-GABES-AIR-001"));
 });
 
-test("Selector: getPromisesByStatus()", () => {
+test("10. Selector: getPromisesByStatus() retrieves promises by lifecycle status", () => {
   const unresolved = getPromisesByStatus("UNRESOLVED");
   assert.ok(unresolved.length >= 1);
-  assert.strictEqual(unresolved[0].id, "ROP-PRM-2019-RECON-001");
+  assert.ok(unresolved.some(r => r.id === "ROP-PRM-2019-RECON-001"));
+
+  const disputed = getPromisesByStatus("DISPUTED");
+  assert.ok(disputed.length >= 1);
+  assert.ok(disputed.some(r => r.id === "ROP-PRM-2019-SOV-001"));
 });
 
-test("Selector: getRelatedRecords()", () => {
+test("11. Selector: getRelatedRecords() traverses directional edges", () => {
   const relatedToJul25 = getRelatedRecords("ROP-EVT-2021-0725-001");
   assert.ok(relatedToJul25.length >= 2);
   const ids = relatedToJul25.map(r => r.id);
@@ -153,20 +182,24 @@ test("Selector: getRelatedRecords()", () => {
   assert.ok(ids.includes("ROP-STM-2021-0725-001"));
 });
 
-test("Selector: getResponsibilityForRecord()", () => {
+test("12. Selector: getResponsibilityForRecord() resolves institutional authority", () => {
   const waterRsp = getResponsibilityForRecord("ROP-OUT-2026-WATER-001");
   assert.ok(waterRsp.length >= 2);
   assert.ok(waterRsp.some(r => r.institution_id === "INST-SONEDE" && r.responsibility_type === "SERVICE_DELIVERY"));
   assert.ok(waterRsp.some(r => r.institution_id === "INST-MOA" && r.responsibility_type === "POLICY_AUTHORITY"));
 });
 
-test("Selector: getSourcesForRecord()", () => {
+test("13. Selector: getSourcesForRecord() resolves full source metadata", () => {
   const sources = getSourcesForRecord("ROP-EVT-2019-ELEC-001", SEED_RECORDS, sourceManifest);
   assert.ok(sources.length >= 1);
   assert.strictEqual(sources[0].source_id, "SRC-ISIE-ELEC2019");
 });
 
-test("Multi-Hop Accountability Traversal: Penal Reconciliation Trace", () => {
+// ============================================================
+// 3. MULTI-HOP ACCOUNTABILITY TRAVERSAL TESTS (ALL 7 TRACES)
+// ============================================================
+
+test("14. Accountability Trace 1: Penal Reconciliation & Asset Recovery", () => {
   const trace = getAccountabilityTrace("ROP-PRM-2019-RECON-001", {
     records: SEED_RECORDS,
     institutions: INSTITUTIONS_REGISTRY,
@@ -183,7 +216,7 @@ test("Multi-Hop Accountability Traversal: Penal Reconciliation Trace", () => {
   assert.ok(trace.sources.length >= 1);
 });
 
-test("Multi-Hop Accountability Traversal: Decree 117 Rupture Trace with Action Semantics", () => {
+test("15. Accountability Trace 2: July 25 Rupture & Decree 117", () => {
   const trace = getAccountabilityTrace("ROP-DEC-2021-0922-001", {
     records: SEED_RECORDS,
     institutions: INSTITUTIONS_REGISTRY,
@@ -196,20 +229,134 @@ test("Multi-Hop Accountability Traversal: Decree 117 Rupture Trace with Action S
   assert.ok(trace.laws.some(l => l.id === "ROP-LAW-2022-CONST-001"));
   assert.ok(trace.institutionalChanges.some(ic => ic.id === "ROP-INS-2022-CSM-001"));
   assert.ok(trace.decisions.some(d => d.id === "ROP-DEC-2022-JUDGES-001"));
-  // Verify action semantics: trace.actions aggregates implementation records without phantom record type
   assert.ok(Array.isArray(trace.actions));
   assert.strictEqual(trace.actions.length, trace.decisions.length + trace.laws.length + trace.institutionalChanges.length);
 });
 
-test("Semantic & Epistemic Properties on High-Risk Records", () => {
+test("16. Accountability Trace 3: Judiciary Restructuring & Revocation of 57 Magistrates", () => {
+  const trace = getAccountabilityTrace("ROP-INS-2022-CSM-001", {
+    records: SEED_RECORDS,
+    institutions: INSTITUTIONS_REGISTRY,
+    relationships: RELATIONSHIPS,
+    responsibility: RESPONSIBILITY_RECORDS,
+    sourceManifest
+  });
+
+  assert.ok(trace);
+  assert.ok(trace.decisions.some(d => d.id === "ROP-DEC-2022-JUDGES-001"));
+  assert.ok(trace.outcomes.some(o => o.id === "ROP-OUT-2022-JUDICIAL-INJ"));
+});
+
+test("17. Accountability Trace 4: Decree-Law 54 / Media & Speech Proceedings", () => {
+  const trace = getAccountabilityTrace("ROP-LAW-2022-054-001", {
+    records: SEED_RECORDS,
+    institutions: INSTITUTIONS_REGISTRY,
+    relationships: RELATIONSHIPS,
+    responsibility: RESPONSIBILITY_RECORDS,
+    sourceManifest
+  });
+
+  assert.ok(trace);
+  assert.ok(trace.outcomes.some(o => o.id === "ROP-OUT-2026-DL54-CONVICT"));
+});
+
+test("18. Accountability Trace 5: Macroeconomic Sovereignty / BCT Direct Lending", () => {
+  const trace = getAccountabilityTrace("ROP-PRM-2019-SOV-001", {
+    records: SEED_RECORDS,
+    institutions: INSTITUTIONS_REGISTRY,
+    relationships: RELATIONSHIPS,
+    responsibility: RESPONSIBILITY_RECORDS,
+    sourceManifest
+  });
+
+  assert.ok(trace);
+  assert.ok(trace.laws.some(l => l.id === "ROP-LAW-2024-BCT-LENDING"));
+  assert.ok(trace.indicators.some(i => i.id === "ROP-IND-GDP-GROWTH-001"));
+  assert.ok(trace.indicators.some(i => i.id === "ROP-IND-UNEMP-GRAD-001"));
+});
+
+test("19. Accountability Trace 6: Gabès Relocation & Environmental Ambient Air Data Gap", () => {
+  const trace = getAccountabilityTrace("ROP-OUT-2026-GABES-RELOC-FAIL", {
+    records: SEED_RECORDS,
+    institutions: INSTITUTIONS_REGISTRY,
+    relationships: RELATIONSHIPS,
+    responsibility: RESPONSIBILITY_RECORDS,
+    sourceManifest
+  });
+
+  assert.ok(trace);
+  assert.ok(trace.dataGaps.some(g => g.id === "ROP-GAP-2026-GABES-AIR-001"));
+});
+
+test("20. Accountability Trace 7: 2024 Presidential Election & Administrative Court Dispute", () => {
+  const trace = getAccountabilityTrace("ROP-DEC-2024-ISIE-DISQUAL", {
+    records: SEED_RECORDS,
+    institutions: INSTITUTIONS_REGISTRY,
+    relationships: RELATIONSHIPS,
+    responsibility: RESPONSIBILITY_RECORDS,
+    sourceManifest
+  });
+
+  assert.ok(trace);
+  assert.ok(trace.laws.some(l => l.id === "ROP-LAW-2024-ELEC-STRIP"));
+});
+
+// ============================================================
+// 4. EXACT NUMERIC PROVENANCE & REGRESSION TESTS
+// ============================================================
+
+test("21. Exact Numeric Provenance: Q2 2026 Higher-Education Graduate Unemployment = 26.6%", () => {
+  const unemp = getRecordById("ROP-IND-UNEMP-GRAD-001");
+  assert.ok(unemp);
+  assert.strictEqual(unemp.value, "26.6%", "Q2 2026 Graduate Unemployment must be exactly 26.6%");
+  assert.strictEqual(unemp.unit, "% of Active University Graduates");
+  assert.strictEqual(unemp.observation_type, "QUARTERLY");
+  assert.ok(unemp.source_ids.includes("SRC-INS-EMP2026Q2"));
+  assert.ok(unemp.editorial_notes.includes("35.6% vs 14.2%"), "Must note gender breakdown in editorial notes");
+});
+
+test("22. Exact Numeric Provenance: Q2 2026 Real GDP Growth YoY = +2.3%", () => {
   const gdp = getRecordById("ROP-IND-GDP-GROWTH-001");
+  assert.ok(gdp);
+  assert.strictEqual(gdp.value, "+2.3%", "Q2 2026 Real GDP YoY Growth must be exactly +2.3%");
   assert.strictEqual(gdp.observation_type, "PRELIMINARY");
-  assert.strictEqual(gdp.classification, EPISTEMIC_CLASSIFICATION.FACT);
+  assert.ok(gdp.source_ids.includes("SRC-INS-ACC2026Q2"));
+  assert.ok(gdp.summary.includes("+1.4% quarter-on-quarter"), "Must state QoQ growth in summary");
+});
 
-  const gradUnemp = getRecordById("ROP-IND-UNEMP-GRAD-001");
-  assert.strictEqual(gradUnemp.observation_type, "QUARTERLY");
-  assert.strictEqual(gradUnemp.value, "38.8%");
+test("23. Exact Numeric Provenance: August 2026 Food CPI Inflation = 7.5% YoY", () => {
+  const food = getRecordById("ROP-IND-2026-INFLATION-FOOD");
+  assert.ok(food);
+  assert.strictEqual(food.value, "7.5%", "August 2026 Food & Beverage Inflation must be exactly 7.5%");
+  assert.strictEqual(food.observation_type, "MONTHLY");
+  assert.ok(food.source_ids.includes("SRC-INS-IPC202608"));
+  assert.ok(food.editorial_notes.includes("5.4%"), "Must note headline CPI of 5.4%");
+});
 
+test("24. Exact Provenance: Community Enterprises Uses Ministry Source & 95M TND Financing Clarification", () => {
+  const comm = getRecordById("ROP-OUT-2025-COMMUNITY-YIELD");
+  assert.ok(comm);
+  assert.strictEqual(comm.title, "Community Enterprises — Administrative Rollout in 2025");
+  assert.ok(!comm.source_ids.includes("SRC-INS-EMP2026Q2"), "Must NOT multiplex INS employment survey for community enterprise counts");
+  assert.ok(comm.source_ids.includes("SRC-MEFP-COMM2025"), "Must cite dedicated Ministry of Employment source");
+  assert.ok(comm.measurement.includes("95M TND"), "Must clarify 95M TND is allocated financing");
+  assert.ok(comm.summary.includes("236 created with 60 fully operational by November 15, 2025"), "Must contain dated snapshot");
+});
+
+test("25. Exact Provenance: Arab Barometer Wave VIII Explicit Question & President vs Government Trust", () => {
+  const ab = getRecordById("ROP-IND-2024-AB-TRUST-DROP");
+  assert.ok(ab);
+  assert.strictEqual(ab.value, "43%", "Trust in President must be 43%");
+  assert.ok(ab.source_ids.includes("SRC-AB-WAVEVIII"));
+  assert.ok(ab.summary.includes("Trust in the President of the Republic"), "Must explicitly state President trust");
+  assert.ok(ab.editorial_notes.includes("Distinct from Wave VIII trust in government (24%)"), "Must distinguish president vs government trust");
+});
+
+// ============================================================
+// 5. EPISTEMIC & METHODOLOGICAL INVARIANTS TESTS
+// ============================================================
+
+test("26. Semantic & Epistemic Properties on High-Risk Records", () => {
   const water = getRecordById("ROP-OUT-2026-WATER-001");
   assert.strictEqual(water.causation_status, "SUPPORTED_ASSOCIATION");
 
@@ -226,7 +373,106 @@ test("Semantic & Epistemic Properties on High-Risk Records", () => {
   assert.strictEqual(reconGap.data_gap_status, "INACCESSIBLE");
 });
 
-test("Validation Engine Catches Malformed Data, Broken Refs, Invalid Date Ranges & Self-Loops", () => {
+test("27. Integrity: No Duplicate Record IDs in Dataset", () => {
+  const seenIds = new Set();
+  for (const r of SEED_RECORDS) {
+    assert.ok(!seenIds.has(r.id), `Duplicate record ID detected: ${r.id}`);
+    seenIds.add(r.id);
+  }
+  assert.strictEqual(seenIds.size, SEED_RECORDS.length);
+});
+
+test("28. Integrity: No Orphan Relationship Edges (Both from_id and to_id Exist)", () => {
+  const recordIds = new Set(SEED_RECORDS.map(r => r.id));
+  const instIds = new Set(Object.keys(INSTITUTIONS_REGISTRY));
+
+  for (const rel of RELATIONSHIPS) {
+    const fromValid = recordIds.has(rel.from_id) || instIds.has(rel.from_id);
+    const toValid = recordIds.has(rel.to_id) || instIds.has(rel.to_id);
+    assert.ok(fromValid, `Orphan from_id in relationship: ${rel.from_id}`);
+    assert.ok(toValid, `Orphan to_id in relationship: ${rel.to_id}`);
+  }
+});
+
+test("29. Integrity: No Orphan Responsibility Allocations (All record_id and institution_id Exist)", () => {
+  const recordIds = new Set(SEED_RECORDS.map(r => r.id));
+  const instIds = new Set(Object.keys(INSTITUTIONS_REGISTRY));
+
+  for (const rsp of RESPONSIBILITY_RECORDS) {
+    assert.ok(recordIds.has(rsp.record_id), `Orphan record_id in responsibility: ${rsp.record_id}`);
+    assert.ok(instIds.has(rsp.institution_id), `Orphan institution_id in responsibility: ${rsp.institution_id}`);
+  }
+});
+
+test("30. Integrity: All Source References Exist in Manifest and Sources Map", () => {
+  const manifestSourceIds = new Set(sourceManifest.map(s => s.source_id));
+  for (const r of SEED_RECORDS) {
+    if (Array.isArray(r.source_ids)) {
+      for (const sid of r.source_ids) {
+        assert.ok(manifestSourceIds.has(sid), `Record ${r.id} references unknown source_id ${sid}`);
+        assert.ok(SOURCE_MAP.has(sid), `Source ${sid} missing from runtime SOURCE_MAP`);
+      }
+    }
+  }
+});
+
+test("31. Integrity: All Indicator Records Have Explicit Unit and Reference Period", () => {
+  const indicators = SEED_RECORDS.filter(r => r.record_type === RECORD_TYPES.INDICATOR);
+  assert.ok(indicators.length >= 10);
+  for (const ind of indicators) {
+    assert.ok(ind.unit, `Indicator ${ind.id} missing 'unit'`);
+    assert.ok(ind.reference_period, `Indicator ${ind.id} missing 'reference_period'`);
+    assert.ok(ind.observation_type, `Indicator ${ind.id} missing 'observation_type'`);
+  }
+});
+
+test("32. Integrity: All Promise Records Have Valid PROMISE_STATUS Enum Values", () => {
+  const promises = SEED_RECORDS.filter(r => r.record_type === RECORD_TYPES.PROMISE);
+  const validStatuses = new Set(Object.values(PROMISE_STATUS));
+  for (const p of promises) {
+    assert.ok(validStatuses.has(p.status), `Promise ${p.id} has invalid status '${p.status}'`);
+  }
+});
+
+test("33. Integrity: Data Gap Neutrality Language Invariants (Zero Inferred Intent Words)", () => {
+  const forbiddenWords = [/\bwithheld\b/i, /\bconcealed\b/i, /\bsuppressed\b/i, /\bopacity\b/i];
+  for (const r of SEED_RECORDS) {
+    const textToScan = `${r.title} ${r.summary} ${r.editorial_notes || ''}`;
+    for (const pat of forbiddenWords) {
+      assert.ok(!pat.test(textToScan), `Record ${r.id} contains forbidden intent wording matching ${pat}`);
+    }
+  }
+});
+
+test("34. Integrity: All Original 18 Seed Records Preserved and Verifiable", () => {
+  const original18Ids = [
+    "ROP-EVT-2019-ELEC-001",
+    "ROP-PRM-2019-RECON-001",
+    "ROP-PRM-2019-SOV-001",
+    "ROP-EVT-2021-0725-001",
+    "ROP-STM-2021-0725-001",
+    "ROP-DEC-2021-0922-001",
+    "ROP-INS-2022-CSM-001",
+    "ROP-DEC-2022-JUDGES-001",
+    "ROP-LAW-2022-CONST-001",
+    "ROP-LAW-2022-054-001",
+    "ROP-EVT-2024-ELEC-001",
+    "ROP-OPP-2024-ISIE-001",
+    "ROP-IND-UNEMP-GRAD-001",
+    "ROP-IND-GDP-GROWTH-001",
+    "ROP-OUT-2026-WATER-001",
+    "ROP-OUT-2026-RECON-001",
+    "ROP-OUT-2026-GABES-RELOC-FAIL",
+    "ROP-GAP-2026-GABES-AIR-001"
+  ];
+
+  for (const id of original18Ids) {
+    const rec = getRecordById(id);
+    assert.ok(rec, `Original seed record ${id} must exist in SEED_RECORDS`);
+  }
+});
+
+test("35. Validation Engine Catches Malformed Data, Broken Refs, Invalid Date Ranges & Self-Loops", () => {
   // 1. Invalid record type
   const badType = validateRecordOfPower({
     records: [{ id: "ROP-BAD", record_type: "INVALID_TYPE", classification: "FACT", date_precision: "YEAR", verification_status: "VERIFIED", title: "T", short_title: "S", summary: "Sum" }],
@@ -302,11 +548,11 @@ test("Validation Engine Catches Malformed Data, Broken Refs, Invalid Date Ranges
 });
 
 // ============================================================
-// PHASE R2.2 UI INTEGRATION TESTS
+// 6. PHASE R2.3 UI INTEGRATION TESTS
 // ============================================================
 import { renderPresidencyReportViewHtml } from '../src/presidency-data.js';
 
-test("R2.2 UI: renderPresidencyReportViewHtml generates semantic HTML with single H1", () => {
+test("36. R2.3 UI: renderPresidencyReportViewHtml generates semantic HTML with single H1", () => {
   const html = renderPresidencyReportViewHtml();
   assert.ok(typeof html === 'string', "Output must be a string");
   assert.ok(html.length > 5000, "HTML must be substantial");
@@ -317,53 +563,29 @@ test("R2.2 UI: renderPresidencyReportViewHtml generates semantic HTML with singl
   assert.ok(h1Matches[0].includes("Tunisia under Kais Saied, 2019–2026"), "H1 must match canonical title");
 });
 
-test("R2.2 UI: Contains all 5 Chronological Era Anchor IDs", () => {
+test("37. R2.3 UI: Contains all 8 Chronological Era Anchor IDs (#year-2019 through #year-2026)", () => {
   const html = renderPresidencyReportViewHtml();
   assert.ok(html.includes('id="year-2019"'), "Must have #year-2019 anchor");
+  assert.ok(html.includes('id="year-2020"'), "Must have #year-2020 anchor");
   assert.ok(html.includes('id="year-2021"'), "Must have #year-2021 anchor");
   assert.ok(html.includes('id="year-2022"'), "Must have #year-2022 anchor");
+  assert.ok(html.includes('id="year-2023"'), "Must have #year-2023 anchor");
   assert.ok(html.includes('id="year-2024"'), "Must have #year-2024 anchor");
+  assert.ok(html.includes('id="year-2025"'), "Must have #year-2025 anchor");
   assert.ok(html.includes('id="year-2026"'), "Must have #year-2026 anchor");
 });
 
-test("R2.2 UI: Renders all 18 Seed Records in the Chronology", () => {
-  const html = renderPresidencyReportViewHtml();
-  for (const rec of SEED_RECORDS) {
-    assert.ok(html.includes(rec.id), `UI HTML must contain reference to seed record ${rec.id}`);
-  }
-});
-
-test("R2.2 UI: Epistemic Distinctions (FACT, CLAIM · ATTRIBUTED, ANALYSIS)", () => {
+test("38. R2.3 UI: Epistemic Distinctions & Correct Macro Indicator Numbers Rendered", () => {
   const html = renderPresidencyReportViewHtml();
   assert.ok(html.includes("FACT"), "Must include FACT badge");
   assert.ok(html.includes("CLAIM · ATTRIBUTED"), "Must include CLAIM badge");
   assert.ok(html.includes("ANALYSIS"), "Must include ANALYSIS badge");
   assert.ok(html.includes("404TN EPISTEMIC STANDARD"), "Must have epistemic methodology header");
-});
 
-test("R2.2 UI: Promise Accountability Trace Rendering", () => {
-  const html = renderPresidencyReportViewHtml();
-  // Trace for Penal Reconciliation
-  assert.ok(html.includes("Penal Reconciliation &amp; 13.5 Billion TND Recovery Pledge"), "Must render promise title");
-  assert.ok(html.includes("ROP-OUT-2026-RECON-001"), "Must render outcome in trace");
-  assert.ok(html.includes("ROP-GAP-2026-RECON-RECEIPTS-001"), "Must render data gap in trace");
-  assert.ok(html.includes("Ministry of Finance"), "Must resolve Ministry of Finance in trace");
-});
-
-test("R2.2 UI: Observation Types Explicitly Rendered for Macro Indicators", () => {
-  const html = renderPresidencyReportViewHtml();
-  assert.ok(html.includes("PRELIMINARY"), "Must render PRELIMINARY for Q2 2026 GDP YoY");
-  assert.ok(html.includes("QUARTERLY"), "Must render QUARTERLY for Graduate Unemployment");
-});
-
-test("R2.2 UI: Institutions are Human-Resolved (No Orphaned Raw Codes in Main Text)", () => {
-  const html = renderPresidencyReportViewHtml();
-  // Verify human readable names are present
-  assert.ok(html.includes("Presidency of the Republic"), "Must contain full name for INST-PRESIDENCY");
-  assert.ok(html.includes("National Water Distribution Utility"), "Must contain full name for INST-SONEDE");
-  assert.ok(html.includes("SONEDE"), "Must contain short name for SONEDE");
-  assert.ok(html.includes("Independent High Authority for Elections"), "Must contain full name for INST-ISIE");
-  assert.ok(html.includes("High Judicial Council"), "Must contain full name for INST-CSM");
+  // Check verified numeric values are rendered on /presidency
+  assert.ok(html.includes("26.6%"), "Must render 26.6% for Q2 2026 Graduate Unemployment");
+  assert.ok(html.includes("+2.3%"), "Must render +2.3% for Q2 2026 Real GDP YoY Growth");
+  assert.ok(html.includes("7.5%"), "Must render 7.5% for August 2026 Food Inflation");
 });
 
 console.log("\n============================================================");

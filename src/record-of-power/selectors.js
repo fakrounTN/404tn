@@ -120,19 +120,23 @@ export function getAccountabilityTrace(promiseOrRecordId, {
   const primaryRecord = getRecordById(promiseOrRecordId, records);
   if (!primaryRecord) return null;
 
-  // 1. Direct Related Records via Graph
-  const directlyRelated = getRelatedRecords(promiseOrRecordId, null, records, relationships);
-  
-  // 2. Multi-hop traversal to collect full trace
+  // 1. Multi-hop BFS traversal to collect full trace (depth up to 3)
   const allTraceRecords = new Map();
   allTraceRecords.set(primaryRecord.id, primaryRecord);
-  directlyRelated.forEach(r => allTraceRecords.set(r.id, r));
-
-  // Second hop for outcomes and indicators
-  directlyRelated.forEach(r => {
-    const secondHop = getRelatedRecords(r.id, null, records, relationships);
-    secondHop.forEach(r2 => allTraceRecords.set(r2.id, r2));
-  });
+  let currentLayer = [primaryRecord];
+  for (let depth = 0; depth < 3; depth++) {
+    const nextLayer = [];
+    currentLayer.forEach(r => {
+      const neighbors = getRelatedRecords(r.id, null, records, relationships);
+      neighbors.forEach(n => {
+        if (!allTraceRecords.has(n.id)) {
+          allTraceRecords.set(n.id, n);
+          nextLayer.push(n);
+        }
+      });
+    });
+    currentLayer = nextLayer;
+  }
 
   const recordList = Array.from(allTraceRecords.values());
 

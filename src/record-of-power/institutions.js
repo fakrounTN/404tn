@@ -273,5 +273,96 @@ export const INSTITUTIONS_REGISTRY = Object.freeze({
     active_from: "1956-12-06",
     active_to: null,
     source_ids: ["SRC-MF-DEBT2026Q2"]
+  },
+
+  "INST-INLUCC": {
+    institution_id: "INST-INLUCC",
+    name: "National Anti-Corruption Authority (Instance Nationale de Lutte Contre la Corruption)",
+    short_name: "INLUCC",
+    institution_type: "INDEPENDENT_CONSTITUTIONAL_BODY",
+    authority_area: "Asset declarations, anti-corruption investigations, whistleblower protection, Bouderbala file custody",
+    legal_responsibilities: "Investigating administrative and financial corruption, managing mandatory public asset declarations under Law 2018-46.",
+    parent_institution_id: null,
+    active_from: "2011-11-24",
+    active_to: "2021-08-20",
+    source_ids: ["SRC-JORT-DEC117"]
+  },
+
+  "INST-CPG": {
+    institution_id: "INST-CPG",
+    name: "Gafsa Phosphate Company (Compagnie des Phosphates de Gafsa)",
+    short_name: "CPG",
+    institution_type: "STATE_OWNED_ENTERPRISE",
+    authority_area: "Phosphate extraction, washing plants in Gafsa mining basin, rail logistics to Gabès and Skhira chemical hubs",
+    legal_responsibilities: "Commercial extraction and supply of raw phosphate rock for domestic chemical transformation and export.",
+    parent_institution_id: "INST-MOE",
+    active_from: "1897-01-01",
+    active_to: null,
+    source_ids: ["SRC-ONME-DEF2026"]
+  },
+
+  "INST-SNJT": {
+    institution_id: "INST-SNJT",
+    name: "National Syndicate of Tunisian Journalists (Syndicat National des Journalistes Tunisiens)",
+    short_name: "SNJT",
+    institution_type: "PROFESSIONAL_SYNDICATE",
+    authority_area: "Press freedom advocacy, journalist defense, monitoring Decree-Law 54 prosecutions",
+    legal_responsibilities: "Representing Tunisian professional journalists and documenting freedom of expression and press violations.",
+    parent_institution_id: null,
+    active_from: "2008-01-13",
+    active_to: null,
+    source_ids: ["SRC-JORT-DEC54"]
+  },
+
+  "INST-UGTT": {
+    institution_id: "INST-UGTT",
+    name: "Tunisian General Labour Union (Union Générale Tunisienne du Travail)",
+    short_name: "UGTT",
+    institution_type: "TRADE_UNION_CONFEDERATION",
+    authority_area: "Labor negotiations, public enterprise wage bargaining, national dialogue initiatives",
+    legal_responsibilities: "Representing Tunisian civil service and private sector workers; negotiating national collective agreements.",
+    parent_institution_id: null,
+    active_from: "1946-01-20",
+    active_to: null,
+    source_ids: ["SRC-INS-EMP2019"]
+  },
+
+  "INST-FTDES": {
+    institution_id: "INST-FTDES",
+    name: "Tunisian Forum for Economic and Social Rights (Forum Tunisien pour les Droits Économiques et Sociaux)",
+    short_name: "FTDES",
+    institution_type: "NON_GOVERNMENTAL_ORGANIZATION",
+    authority_area: "Social movements monitoring, migration telemetry, water rights tracking, labor dispute documentation",
+    legal_responsibilities: "Publishing empirical monthly observatory reports on social protests, maritime migration, and environmental rights.",
+    parent_institution_id: null,
+    active_from: "2011-03-01",
+    active_to: null,
+    source_ids: ["SRC-EU-MOU2023"]
+  },
+
+  "INST-CA": {
+    institution_id: "INST-CA",
+    name: "Tunis Court of Appeal (Cour d'Appel de Tunis)",
+    short_name: "Tunis Court of Appeal",
+    institution_type: "JUDICIAL_COURT",
+    authority_area: "Appellate judicial proceedings, presidential candidate dispute adjudication (post-Law 2024-45)",
+    legal_responsibilities: "Adjudicating secondary appellate litigation and electoral candidacy appeals under Law 2024-45.",
+    parent_institution_id: "INST-MOJ",
+    active_from: "1956-06-01",
+    active_to: null,
+    source_ids: ["SRC-ISIE-ELEC2024"]
+  },
+
+  "INST-FIPA": {
+    institution_id: "INST-FIPA",
+    name: "Foreign Investment Promotion Agency (FIPA-Tunisia)",
+    short_name: "FIPA",
+    institution_type: "PUBLIC_INVESTMENT_AGENCY",
+    authority_area: "Foreign direct investment promotion, international investor facilitation, FDI flow telemetry",
+    legal_responsibilities: "Attracting and monitoring foreign direct investment projects in Tunisia.",
+    parent_institution_id: "INST-GOV",
+    active_from: "1995-01-01",
+    active_to: null,
+    source_ids: ["SRC-INS-ACC2026Q2"]
   }
 });
